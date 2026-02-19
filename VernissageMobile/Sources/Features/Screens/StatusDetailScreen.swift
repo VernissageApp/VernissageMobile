@@ -296,7 +296,7 @@ struct StatusDetailScreen: View {
             }
 
             HStack(spacing: 14) {
-                Label("\(displayedStatus.favouritesCount ?? 0)", systemImage: "heart")
+                Label("\(displayedStatus.favouritesCount ?? 0)", systemImage: "star")
                 Label("\(displayedStatus.reblogsCount ?? 0)", systemImage: "arrow.2.squarepath")
                 Label("\(displayedStatus.repliesCount ?? 0)", systemImage: "bubble.right")
                 Spacer(minLength: 8)

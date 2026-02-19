@@ -9,4 +9,8 @@ import SwiftUI
 struct NewStatusRequest: Encodable {
     let note: String
     let replyToStatusId: String?
+    let visibility = StatusVisibility.public;
+    let sensitive = false;
+    let commentsDisabled = false;
+    let attachmentIds: [String] = [];
 }

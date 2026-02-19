@@ -198,6 +198,8 @@
 		F688A8F51B3D107ABD6ACDE5 /* AttachmentMetadata.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94D783E430E9F53AC39D86C4 /* AttachmentMetadata.swift */; };
 		F795137FCF103A52DC76B534 /* FollowButtonsSectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A25A845D39846779B59F3E91 /* FollowButtonsSectionView.swift */; };
 		F884102F2F3E470E005A28A3 /* AlertToast in Frameworks */ = {isa = PBXBuildFile; productRef = F884102E2F3E470E005A28A3 /* AlertToast */; };
+		F88F26452F47308C002054F2 /* Nuke in Frameworks */ = {isa = PBXBuildFile; productRef = F88F26442F47308C002054F2 /* Nuke */; };
+		F88F26472F47308C002054F2 /* NukeUI in Frameworks */ = {isa = PBXBuildFile; productRef = F88F26462F47308C002054F2 /* NukeUI */; };
 		F8CA916E2F3CDA9A0083AA60 /* EmojiText in Frameworks */ = {isa = PBXBuildFile; productRef = F8CA916D2F3CDA9A0083AA60 /* EmojiText */; };
 		F9890CF098024616CACB85B1 /* StatusAttachmentViewerScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = E842E611B270FF32C1C65287 /* StatusAttachmentViewerScreen.swift */; };
 		FAEA1D4BDE659C32D0934E46 /* ReplySheetMode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7E835FE4D06402E4ECDF9EC2 /* ReplySheetMode.swift */; };
@@ -420,6 +422,8 @@
 			files = (
 				F884102F2F3E470E005A28A3 /* AlertToast in Frameworks */,
 				F8CA916E2F3CDA9A0083AA60 /* EmojiText in Frameworks */,
+				F88F26452F47308C002054F2 /* Nuke in Frameworks */,
+				F88F26472F47308C002054F2 /* NukeUI in Frameworks */,
 				A10000211000000100000021 /* HTML2Markdown in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -805,6 +809,8 @@
 				A10000221000000100000022 /* HTML2Markdown */,
 				F8CA916D2F3CDA9A0083AA60 /* EmojiText */,
 				F884102E2F3E470E005A28A3 /* AlertToast */,
+				F88F26442F47308C002054F2 /* Nuke */,
+				F88F26462F47308C002054F2 /* NukeUI */,
 			);
 			productName = VernissageMobile;
 			productReference = A10000041000000100000004 /* VernissageMobile.app */;
@@ -838,6 +844,7 @@
 				A10000231000000100000023 /* XCRemoteSwiftPackageReference "HTML2Markdown" */,
 				F8CA916C2F3CDA9A0083AA60 /* XCRemoteSwiftPackageReference "EmojiText" */,
 				F884102D2F3E470E005A28A3 /* XCRemoteSwiftPackageReference "AlertToast" */,
+				F88F26432F47308C002054F2 /* XCRemoteSwiftPackageReference "Nuke" */,
 			);
 			productRefGroup = A10000081000000100000008 /* Products */;
 			projectDirPath = "";
@@ -1068,6 +1075,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_ENABLE_OBJC_ARC = YES;
 				CLANG_ENABLE_OBJC_WEAK = YES;
@@ -1128,6 +1136,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_ENABLE_OBJC_ARC = YES;
 				CLANG_ENABLE_OBJC_WEAK = YES;
@@ -1182,7 +1191,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 5;
+				CURRENT_PROJECT_VERSION = 6;
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = VernissageMobile/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = Vernissage;
@@ -1207,7 +1216,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 5;
+				CURRENT_PROJECT_VERSION = 6;
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = VernissageMobile/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = Vernissage;
@@ -1267,6 +1276,14 @@
 				minimumVersion = 1.3.9;
 			};
 		};
+		F88F26432F47308C002054F2 /* XCRemoteSwiftPackageReference "Nuke" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/kean/Nuke";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 12.8.0;
+			};
+		};
 		F8CA916C2F3CDA9A0083AA60 /* XCRemoteSwiftPackageReference "EmojiText" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/divadretlaw/EmojiText";
@@ -1287,6 +1304,16 @@
 			isa = XCSwiftPackageProductDependency;
 			package = F884102D2F3E470E005A28A3 /* XCRemoteSwiftPackageReference "AlertToast" */;
 			productName = AlertToast;
+		};
+		F88F26442F47308C002054F2 /* Nuke */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = F88F26432F47308C002054F2 /* XCRemoteSwiftPackageReference "Nuke" */;
+			productName = Nuke;
+		};
+		F88F26462F47308C002054F2 /* NukeUI */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = F88F26432F47308C002054F2 /* XCRemoteSwiftPackageReference "Nuke" */;
+			productName = NukeUI;
 		};
 		F8CA916D2F3CDA9A0083AA60 /* EmojiText */ = {
 			isa = XCSwiftPackageProductDependency;

@@ -22,13 +22,13 @@ extension View {
             }
         )) {
             AlertToast(
-                displayMode: .banner(.slide),
-                type: .error(.red),
+                displayMode: .alert,
+                type: .error(.white.opacity(0.8)),
                 title: message.wrappedValue?.toastPresentableMessage ?? "Error",
                 style: .style(
-                    backgroundColor: Color.red.opacity(0.95),
-                    titleColor: .white,
-                    subTitleColor: .white.opacity(0.9)
+                    backgroundColor: .red.opacity(0.8),
+                    titleColor: .white.opacity(0.8),
+                    subTitleColor: .white.opacity(0.8)
                 )
             )
         }

@@ -5,6 +5,7 @@
 //
 
 import SwiftUI
+import NukeUI
 
 struct TimelinePhotoTileView: View {
     let status: Status
@@ -14,6 +15,8 @@ struct TimelinePhotoTileView: View {
     @AppStorage("settings.alwaysShowNsfw") private var alwaysShowNsfw = false
     @AppStorage("settings.showAvatarsOnTimeline") private var showAvatarsOnTimeline = false
     @AppStorage("settings.showImageCountsOnTimeline") private var showImageCountsOnTimeline = false
+    @State private var imageOpacity: Double = 0
+    @State private var animatedPreviewURL: String?
 
     private var mainStatus: Status {
         status.mainStatus
@@ -85,35 +88,59 @@ struct TimelinePhotoTileView: View {
                 }
             }
         } else if let preview = mainStatus.firstAttachmentURL {
-            AsyncImage(url: URL(string: preview),
-                       transaction: Transaction(animation: .easeInOut(duration: 0.3))) { phase in
-                switch phase {
-                case .success(let image):
-                    image
-                        .resizable()
-                        .scaledToFit()
-                        .frame(width: width, height: height)
-                        .transition(.opacity)
-                case .empty, .failure:
-                    AttachmentBlurHashPlaceholderView(
-                        blurHash: mainStatus.firstAttachmentBlurHash,
-                        cornerRadius: 0,
-                        aspectRatio: nil,
-                        fixedHeight: nil
-                    )
-                    .frame(width: width, height: height)
-                    .clipped()
-                @unknown default:
-                    AttachmentBlurHashPlaceholderView(
-                        blurHash: mainStatus.firstAttachmentBlurHash,
-                        cornerRadius: 0,
-                        aspectRatio: nil,
-                        fixedHeight: nil
-                    )
-                    .frame(width: width, height: height)
-                    .clipped()
+            LazyImage(url: URL(string: preview)) { state in
+                let hasImage = state.image != nil
+
+                ZStack {
+                    timelinePlaceholder(width: width, height: height)
+                        .opacity(hasImage ? (1 - imageOpacity) : 1)
+
+                    if let image = state.image {
+                        image
+                            .resizable()
+                            .scaledToFit()
+                            .frame(width: width, height: height)
+                            .opacity(imageOpacity)
+                            .onAppear {
+                                animateImageAppearance()
+                            }
+                    }
+                }
+                .clipped()
+                .onChange(of: preview, initial: true) { _, newPreview in
+                    prepareImageAppearance(for: newPreview)
                 }
             }
+        }
+    }
+
+    private func timelinePlaceholder(width: CGFloat, height: CGFloat) -> some View {
+        AttachmentBlurHashPlaceholderView(
+            blurHash: mainStatus.firstAttachmentBlurHash,
+            cornerRadius: 0,
+            aspectRatio: nil,
+            fixedHeight: nil
+        )
+        .frame(width: width, height: height)
+        .clipped()
+    }
+
+    private func prepareImageAppearance(for preview: String) {
+        guard animatedPreviewURL != preview else {
+            return
+        }
+
+        animatedPreviewURL = preview
+        imageOpacity = 0
+    }
+
+    private func animateImageAppearance() {
+        guard imageOpacity < 1 else {
+            return
+        }
+
+        withAnimation(.easeInOut(duration: 0.28)) {
+            imageOpacity = 1
         }
     }
 }

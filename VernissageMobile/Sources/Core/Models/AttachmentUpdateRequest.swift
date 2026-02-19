@@ -8,6 +8,8 @@ import SwiftUI
 
 struct AttachmentUpdateRequest: Encodable {
     let id: String
+    let url = ""
+    let previewUrl = ""
     let description: String?
     let blurhash: String?
     let make: String?

@@ -69,15 +69,15 @@ struct AppSettingsScreen: View {
                 Text("Third party")
             }
 
-            Link(destination: URL(string: "https://mczachurski.dev/vernissage/privacy-policy.html")!) {
+            Link(destination: URL(string: "https://mczachurski.dev/vernissage-ios/privacy-policy.html")!) {
                 Label("Privacy policy", systemImage: "hand.raised.square")
             }
 
-            Link(destination: URL(string: "https://mczachurski.dev/vernissage/terms.html")!) {
+            Link(destination: URL(string: "https://mczachurski.dev/vernissage-ios/terms.html")!) {
                 Label("Terms of service", systemImage: "doc.text")
             }
 
-            Link(destination: URL(string: "https://apps.apple.com/app/id1663543216?action=write-review")!) {
+            Link(destination: URL(string: "https://apps.apple.com/app/id6759335335?action=write-review")!) {
                 Label("Rate the app", systemImage: "star")
             }
 

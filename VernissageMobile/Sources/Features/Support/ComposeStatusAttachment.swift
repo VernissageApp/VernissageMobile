@@ -11,7 +11,7 @@ struct ComposeStatusAttachment: Identifiable, Equatable {
     var serverId: String?
     var remoteImageURL: String?
     var localImage: UIImage?
-    var originalImageData: Data?
+    var resizedImageData: Data?
     var blurhash: String?
     var isExistingAttachment: Bool
     var isUploading: Bool
@@ -86,7 +86,7 @@ struct ComposeStatusAttachment: Identifiable, Equatable {
             serverId: attachment.id,
             remoteImageURL: attachment.smallImageURL,
             localImage: nil,
-            originalImageData: nil,
+            resizedImageData: nil,
             blurhash: attachment.blurhash,
             isExistingAttachment: true,
             isUploading: false,
@@ -140,7 +140,7 @@ struct ComposeStatusAttachment: Identifiable, Equatable {
             serverId: nil,
             remoteImageURL: nil,
             localImage: image,
-            originalImageData: imageData,
+            resizedImageData: imageData,
             blurhash: nil,
             isExistingAttachment: false,
             isUploading: false,

@@ -31,7 +31,6 @@ struct StatusComposeScreen: View {
     @State private var countries: [Country] = []
     @State private var maxStatusCharacters: Int = 500
     @State private var maxMediaAttachments: Int = 4
-    @State private var maxUploadBytes: Int = 10 * 1024 * 1024
     @State private var isOpenAIEnabled = false
     @State private var statusTextTemplate = ""
 
@@ -614,7 +613,6 @@ struct StatusComposeScreen: View {
             let instance = try await fetchedInstance
             maxStatusCharacters = max(instance.configuration?.statuses?.maxCharacters ?? 500, 1)
             maxMediaAttachments = max(instance.configuration?.statuses?.maxMediaAttachments ?? 4, 1)
-            maxUploadBytes = max(instance.configuration?.attachments?.imageSizeLimit ?? (10 * 1024 * 1024), 1)
             isOpenAIEnabled = (try? await fetchedPublicSettings)?.isOpenAIEnabled ?? false
             statusTextTemplate = (try? await fetchedStatusTextTemplate)?.value ?? ""
 
@@ -684,13 +682,17 @@ struct StatusComposeScreen: View {
             }
 
             do {
-                guard let data = try await item.loadTransferable(type: Data.self),
-                      let image = UIImage(data: data) else {
+                guard let originalData = try await item.loadTransferable(type: Data.self),
+                      let prepared = preparedAttachmentPayload(from: originalData) else {
                     continue
                 }
 
-                let parsedExif = ComposeParsedExifParser.parse(from: data)
-                let localAttachment = ComposeStatusAttachment.local(image: image, imageData: data, parsedExif: parsedExif)
+                let parsedExif = ComposeParsedExifParser.parse(from: originalData)
+                let localAttachment = ComposeStatusAttachment.local(
+                    image: prepared.image,
+                    imageData: prepared.data,
+                    parsedExif: parsedExif
+                )
                 let attachmentId = localAttachment.id
                 attachments.append(localAttachment)
 
@@ -713,9 +715,13 @@ struct StatusComposeScreen: View {
             return
         }
 
+        guard let prepared = preparedAttachmentPayload(from: image) else {
+            errorMessage = "Unable to prepare selected photo."
+            return
+        }
         let attachment = ComposeStatusAttachment.local(
-            image: image,
-            imageData: image.jpegData(compressionQuality: 1.0),
+            image: prepared.image,
+            imageData: prepared.data,
             parsedExif: .init()
         )
         let attachmentId = attachment.id
@@ -763,13 +769,17 @@ struct StatusComposeScreen: View {
             }
 
             do {
-                let data = try Data(contentsOf: url)
-                guard let image = UIImage(data: data) else {
+                let originalData = try Data(contentsOf: url)
+                guard let prepared = preparedAttachmentPayload(from: originalData) else {
                     continue
                 }
 
-                let parsedExif = ComposeParsedExifParser.parse(from: data)
-                let localAttachment = ComposeStatusAttachment.local(image: image, imageData: data, parsedExif: parsedExif)
+                let parsedExif = ComposeParsedExifParser.parse(from: originalData)
+                let localAttachment = ComposeStatusAttachment.local(
+                    image: prepared.image,
+                    imageData: prepared.data,
+                    parsedExif: parsedExif
+                )
                 let attachmentId = localAttachment.id
                 attachments.append(localAttachment)
 
@@ -791,8 +801,8 @@ struct StatusComposeScreen: View {
             return
         }
 
-        guard let image = attachments[index].localImage,
-              let uploadData = preparedUploadData(from: image) else {
+        guard let uploadData = attachments[index].resizedImageData,
+              uploadData.isEmpty == false else {
             throw ComposeError.uploadPreparationFailed
         }
 
@@ -879,9 +889,14 @@ struct StatusComposeScreen: View {
                 throw ComposeError.missingUploadedAttachments
             }
 
-            for attachment in attachments {
-                guard let serverId = attachment.serverId?.nilIfEmpty,
-                      let payload = attachment.attachmentUpdateRequest() else {
+            for index in attachments.indices {
+                if attachments[index].blurhash?.nilIfEmpty == nil,
+                   let localImage = attachments[index].localImage {
+                    attachments[index].blurhash = localImage.blurHash(numberOfComponents: (4, 3), maxLongestEdge: 180)
+                }
+
+                guard let serverId = attachments[index].serverId?.nilIfEmpty,
+                      let payload = attachments[index].attachmentUpdateRequest() else {
                     continue
                 }
 
@@ -1034,29 +1049,8 @@ struct StatusComposeScreen: View {
         return $attachments[index]
     }
 
-    private func preparedUploadData(from image: UIImage) -> Data? {
-        let resizedImage = resizedImageForUpload(image)
-        var quality: CGFloat = 0.92
-
-        guard var jpegData = resizedImage.jpegData(compressionQuality: quality) else {
-            return nil
-        }
-
-        while jpegData.count > maxUploadBytes && quality > 0.25 {
-            quality -= 0.1
-
-            guard let reducedData = resizedImage.jpegData(compressionQuality: quality) else {
-                break
-            }
-
-            jpegData = reducedData
-        }
-
-        return jpegData
-    }
-
-    private func resizedImageForUpload(_ image: UIImage) -> UIImage {
-        let maxDimension: CGFloat = 3840
+    private func resizedImageForAttachmentSelection(_ image: UIImage) -> UIImage {
+        let maxDimension: CGFloat = 4096
         let originalSize = image.size
         let maxOriginal = max(originalSize.width, originalSize.height)
 
@@ -1071,5 +1065,23 @@ struct StatusComposeScreen: View {
         return renderer.image { _ in
             image.draw(in: CGRect(origin: .zero, size: targetSize))
         }
+    }
+
+    private func preparedAttachmentPayload(from sourceData: Data) -> (image: UIImage, data: Data)? {
+        guard let image = UIImage(data: sourceData) else {
+            return nil
+        }
+
+        return preparedAttachmentPayload(from: image)
+    }
+
+    private func preparedAttachmentPayload(from image: UIImage) -> (image: UIImage, data: Data)? {
+        let resizedImage = resizedImageForAttachmentSelection(image)
+        guard let convertedData = resizedImage.convertToExtendedSRGBJpeg(),
+              let convertedImage = UIImage(data: convertedData) else {
+            return nil
+        }
+
+        return (convertedImage, convertedData)
     }
 }

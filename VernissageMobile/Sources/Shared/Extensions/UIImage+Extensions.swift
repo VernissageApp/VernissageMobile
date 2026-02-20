@@ -5,6 +5,7 @@
 //
 
 import SwiftUI
+import CoreImage
 
 extension UIImage {
     var averageColor: UIColor? {
@@ -109,6 +110,165 @@ public extension UIImage {
 
         self.init(cgImage: cgImage)
     }
+
+    /// Code downloaded from: https://github.com/woltapp/blurhash/tree/master/Swift
+    func blurHash(numberOfComponents components: (Int, Int) = (4, 3), maxLongestEdge: CGFloat = 180) -> String? {
+        let imageForHash: UIImage
+        if maxLongestEdge > 0 {
+            imageForHash = self.resizedForBlurHash(maxLongestEdge: maxLongestEdge)
+        } else {
+            imageForHash = self
+        }
+
+        guard let cgImage = imageForHash.cgImage else {
+            return nil
+        }
+
+        let width = cgImage.width
+        let height = cgImage.height
+        guard width > 0, height > 0 else {
+            return nil
+        }
+
+        let numX = min(max(components.0, 1), 9)
+        let numY = min(max(components.1, 1), 9)
+
+        let bitsPerComponent = 8
+        let bytesPerPixel = 4
+        let bytesPerRow = width * bytesPerPixel
+        let bitmapInfo = CGImageAlphaInfo.premultipliedLast.rawValue | CGBitmapInfo.byteOrder32Big.rawValue
+
+        var pixelData = [UInt8](repeating: 0, count: width * height * bytesPerPixel)
+        guard let context = CGContext(
+            data: &pixelData,
+            width: width,
+            height: height,
+            bitsPerComponent: bitsPerComponent,
+            bytesPerRow: bytesPerRow,
+            space: CGColorSpaceCreateDeviceRGB(),
+            bitmapInfo: bitmapInfo
+        ) else {
+            return nil
+        }
+
+        context.draw(cgImage, in: CGRect(x: 0, y: 0, width: width, height: height))
+
+        var factors: [(Float, Float, Float)] = []
+        factors.reserveCapacity(numX * numY)
+
+        for yComponent in 0..<numY {
+            for xComponent in 0..<numX {
+                let normalisation: Float = (xComponent == 0 && yComponent == 0) ? 1 : 2
+                var red: Float = 0
+                var green: Float = 0
+                var blue: Float = 0
+
+                for y in 0..<height {
+                    for x in 0..<width {
+                        let basis = cos(Float.pi * Float(xComponent) * Float(x) / Float(width)) *
+                            cos(Float.pi * Float(yComponent) * Float(y) / Float(height))
+                        let index = 4 * x + y * bytesPerRow
+
+                        red += basis * sRGBToLinear(pixelData[index])
+                        green += basis * sRGBToLinear(pixelData[index + 1])
+                        blue += basis * sRGBToLinear(pixelData[index + 2])
+                    }
+                }
+
+                let scale = normalisation / Float(width * height)
+                factors.append((red * scale, green * scale, blue * scale))
+            }
+        }
+
+        let dc = factors[0]
+        let ac = Array(factors.dropFirst())
+        let maximumValue: Float
+        let quantisedMaximumValue: Int
+
+        if ac.isEmpty {
+            maximumValue = 1
+            quantisedMaximumValue = 0
+        } else {
+            var maxAC: Float = 0
+            for factor in ac {
+                maxAC = max(maxAC, abs(factor.0), abs(factor.1), abs(factor.2))
+            }
+
+            quantisedMaximumValue = Int(max(0, min(82, floor(maxAC * 166 - 0.5))))
+            maximumValue = Float(quantisedMaximumValue + 1) / 166
+        }
+
+        var blurHash = ""
+        blurHash += encode83((numX - 1) + (numY - 1) * 9, length: 1)
+        blurHash += encode83(quantisedMaximumValue, length: 1)
+        blurHash += encode83(encodeDC(dc), length: 4)
+
+        for factor in ac {
+            blurHash += encode83(encodeAC(factor, maximumValue: maximumValue), length: 2)
+        }
+
+        return blurHash
+    }
+
+    func convertToExtendedSRGBJpeg() -> Data? {
+        guard let sourceImage = CIImage(image: self, options: [.applyOrientationProperty: true]) else {
+            return self.jpegData(compressionQuality: 0.9)
+        }
+
+        let orientedImage = sourceImage.oriented(forExifOrientation: self.imageOrientation.exifOrientation)
+
+        let sRGBName = CGColorSpace(name: CGColorSpace.sRGB)?.name
+        let extendedSRGBName = CGColorSpace(name: CGColorSpace.extendedSRGB)?.name
+        if orientedImage.colorSpace?.name == sRGBName || orientedImage.colorSpace?.name == extendedSRGBName {
+            return self.jpegData(compressionQuality: 0.9)
+        }
+
+        guard let colorSpace = CGColorSpace(name: CGColorSpace.extendedSRGB) else {
+            return self.jpegData(compressionQuality: 0.9)
+        }
+
+        guard let displayP3 = CGColorSpace(name: CGColorSpace.displayP3) else {
+            return self.jpegData(compressionQuality: 0.9)
+        }
+
+        let ciContext = CIContext(options: [
+            CIContextOption.workingColorSpace: orientedImage.colorSpace ?? displayP3
+        ])
+
+        let representationOptions: [CIImageRepresentationOption: Any] = [
+            kCGImageDestinationLossyCompressionQuality as CIImageRepresentationOption: 0.9
+        ]
+
+        guard let converted = ciContext.jpegRepresentation(
+            of: orientedImage,
+            colorSpace: colorSpace,
+            options: representationOptions
+        ) else {
+            return self.jpegData(compressionQuality: 0.9)
+        }
+
+        return converted
+    }
+
+    private func resizedForBlurHash(maxLongestEdge: CGFloat) -> UIImage {
+        guard maxLongestEdge > 0 else {
+            return self
+        }
+
+        let originalSize = self.size
+        let longestEdge = max(originalSize.width, originalSize.height)
+        guard longestEdge > maxLongestEdge, longestEdge > 0 else {
+            return self
+        }
+
+        let scale = maxLongestEdge / longestEdge
+        let targetSize = CGSize(width: originalSize.width * scale, height: originalSize.height * scale)
+        let renderer = UIGraphicsImageRenderer(size: targetSize)
+
+        return renderer.image { _ in
+            self.draw(in: CGRect(origin: .zero, size: targetSize))
+        }
+    }
 }
 
 private func decodeDC(_ value: Int) -> (Float, Float, Float) {
@@ -130,6 +290,46 @@ private func decodeAC(_ value: Int, maximumValue: Float) -> (Float, Float, Float
     )
 }
 
+private func encodeDC(_ value: (Float, Float, Float)) -> Int {
+    let roundedR = linearTosRGB(value.0)
+    let roundedG = linearTosRGB(value.1)
+    let roundedB = linearTosRGB(value.2)
+
+    return (roundedR << 16) + (roundedG << 8) + roundedB
+}
+
+private func encodeAC(_ value: (Float, Float, Float), maximumValue: Float) -> Int {
+    guard maximumValue > 0 else {
+        return 0
+    }
+
+    let quantR = Int(max(0, min(18, floor(signPow(value.0 / maximumValue, 0.5) * 9 + 9.5))))
+    let quantG = Int(max(0, min(18, floor(signPow(value.1 / maximumValue, 0.5) * 9 + 9.5))))
+    let quantB = Int(max(0, min(18, floor(signPow(value.2 / maximumValue, 0.5) * 9 + 9.5))))
+
+    return quantR * 19 * 19 + quantG * 19 + quantB
+}
+
+private func encode83(_ value: Int, length: Int) -> String {
+    var result = ""
+    var divisor = 1
+
+    if length > 1 {
+        for _ in 1..<length {
+            divisor *= 83
+        }
+    }
+
+    var currentDivisor = divisor
+    while currentDivisor > 0 {
+        let digit = (value / currentDivisor) % 83
+        result += blurHashEncodeCharacters[digit]
+        currentDivisor /= 83
+    }
+
+    return result
+}
+
 private func signPow(_ value: Float, _ exp: Float) -> Float {
     copysign(pow(abs(value), exp), value)
 }
@@ -149,5 +349,34 @@ private func sRGBToLinear<Type: BinaryInteger>(_ value: Type) -> Float {
         return floatV / 12.92
     } else {
         return pow((floatV + 0.055) / 1.055, 2.4)
+    }
+}
+
+private let blurHashEncodeCharacters: [String] = {
+    "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz#$%*+,-.:;=?@[]^_{|}~".map { String($0) }
+}()
+
+private extension UIImage.Orientation {
+    var exifOrientation: Int32 {
+        switch self {
+        case .up:
+            return 1
+        case .upMirrored:
+            return 2
+        case .down:
+            return 3
+        case .downMirrored:
+            return 4
+        case .leftMirrored:
+            return 5
+        case .right:
+            return 6
+        case .rightMirrored:
+            return 7
+        case .left:
+            return 8
+        @unknown default:
+            return 1
+        }
     }
 }

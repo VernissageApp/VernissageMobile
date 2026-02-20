@@ -1198,8 +1198,9 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = NO;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 10;
+				CURRENT_PROJECT_VERSION = 11;
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = VernissageMobile/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = Vernissage;
@@ -1223,8 +1224,9 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = NO;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 10;
+				CURRENT_PROJECT_VERSION = 11;
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = VernissageMobile/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = Vernissage;

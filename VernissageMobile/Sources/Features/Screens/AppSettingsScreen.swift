@@ -147,18 +147,6 @@ struct AppSettingsScreen: View {
     }
     
     private var appVersionLabel: String {
-        let shortVersion = Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String
-        let buildVersion = Bundle.main.object(forInfoDictionaryKey: "CFBundleVersion") as? String
-
-        switch (shortVersion?.nilIfEmpty, buildVersion?.nilIfEmpty) {
-        case let (.some(short), .some(build)):
-            return "\(short) (\(build))"
-        case let (.some(short), .none):
-            return short
-        case let (.none, .some(build)):
-            return build
-        default:
-            return "Unknown"
-        }
+        Bundle.main.appVersionLabel
     }
 }

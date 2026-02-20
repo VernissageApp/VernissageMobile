@@ -16,7 +16,7 @@ enum OAuthAPI {
             clientName: "Vernissage iOS",
             scope: scope,
             softwareId: "vernissage-ios-native",
-            softwareVersion: "0.1.0"
+            softwareVersion: Bundle.main.appVersionLabel
         )
 
         return try await APIClient.requestJSON(
@@ -83,4 +83,5 @@ enum OAuthAPI {
             body: bodyData
         )
     }
+
 }

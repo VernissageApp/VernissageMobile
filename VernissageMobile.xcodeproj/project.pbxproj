@@ -197,6 +197,7 @@
 		F612B7E80C635A488A1ACBAF /* NotificationRowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6C7B84C03DAE6C17C8B3B298 /* NotificationRowView.swift */; };
 		F688A8F51B3D107ABD6ACDE5 /* AttachmentMetadata.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94D783E430E9F53AC39D86C4 /* AttachmentMetadata.swift */; };
 		F795137FCF103A52DC76B534 /* FollowButtonsSectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A25A845D39846779B59F3E91 /* FollowButtonsSectionView.swift */; };
+		F88152042F4858B40060ECD5 /* Bundle+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = F88152032F4858AE0060ECD5 /* Bundle+Extensions.swift */; };
 		F884102F2F3E470E005A28A3 /* AlertToast in Frameworks */ = {isa = PBXBuildFile; productRef = F884102E2F3E470E005A28A3 /* AlertToast */; };
 		F88F26452F47308C002054F2 /* Nuke in Frameworks */ = {isa = PBXBuildFile; productRef = F88F26442F47308C002054F2 /* Nuke */; };
 		F88F26472F47308C002054F2 /* NukeUI in Frameworks */ = {isa = PBXBuildFile; productRef = F88F26462F47308C002054F2 /* NukeUI */; };
@@ -400,6 +401,7 @@
 		F48F59F790CFF102E2E65AB2 /* BusinessCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BusinessCard.swift; sourceTree = "<group>"; };
 		F547073005305885C5C92AB9 /* StatusReportSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatusReportSheet.swift; sourceTree = "<group>"; };
 		F750EABEE0B5CAC5F65D2C83 /* AttachmentCountry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AttachmentCountry.swift; sourceTree = "<group>"; };
+		F88152032F4858AE0060ECD5 /* Bundle+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Bundle+Extensions.swift"; sourceTree = "<group>"; };
 		F8A8C35B2F46FEA50004F445 /* LICENSE */ = {isa = PBXFileReference; lastKnownFileType = text; path = LICENSE; sourceTree = "<group>"; };
 		F8A8C35C2F46FEA50004F445 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		F9149D4AB441D6C77727E692 /* AddToolbarButtonView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddToolbarButtonView.swift; sourceTree = "<group>"; };
@@ -700,6 +702,7 @@
 		77C31FAEFE13696948928C16 /* Extensions */ = {
 			isa = PBXGroup;
 			children = (
+				F88152032F4858AE0060ECD5 /* Bundle+Extensions.swift */,
 				634196EDBA808665D562BB22 /* CharacterSet+Extensions.swift */,
 				BD9A408F57DD3EE82E50AEB8 /* Data+Extensions.swift */,
 				11FA7CD8D8035E1511738F67 /* Date+Extensions.swift */,
@@ -952,6 +955,7 @@
 				DB6D7EA6F5016380672E35C2 /* SharedBusinessCardDetailScreen.swift in Sources */,
 				F112AE5434556EAD2F9CC73B /* SharedBusinessCardsScreen.swift in Sources */,
 				F9890CF098024616CACB85B1 /* StatusAttachmentViewerScreen.swift in Sources */,
+				F88152042F4858B40060ECD5 /* Bundle+Extensions.swift in Sources */,
 				57ACCFD9E45431A0E109A330 /* StatusComposeScreen.swift in Sources */,
 				1EC9B29AEF4EDCC3844E8685 /* StatusDetailScreen.swift in Sources */,
 				A821C5EA8BDACCBF72FDD679 /* StatusUsersListScreen.swift in Sources */,
@@ -1191,7 +1195,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 8;
+				CURRENT_PROJECT_VERSION = 9;
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = VernissageMobile/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = Vernissage;
@@ -1216,7 +1220,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 8;
+				CURRENT_PROJECT_VERSION = 9;
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = VernissageMobile/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = Vernissage;

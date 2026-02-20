@@ -9,7 +9,7 @@ import SwiftUI
 struct TrendingStripPhotoTileView: View {
     let status: Status
     let height: CGFloat
-    @AppStorage("settings.alwaysShowNsfw") private var alwaysShowNsfw = false
+    @AppStorage(AppStorageKeys.settingsAlwaysShowNsfw) private var alwaysShowNsfw = false
 
     private var hiddenPreviewContentWarningText: String? {
         status.contentWarning?.nilIfEmpty

@@ -10,6 +10,7 @@ import PhotosUI
 struct StatusComposeScreen: View {
     @EnvironmentObject private var appState: AppState
     @Environment(\.dismiss) private var dismiss
+    @AppStorage(AppStorageKeys.composeSelectedCategoryId) private var rememberedSelectedCategoryId = ""
 
     let mode: StatusComposeMode
     var onStatusSaved: ((Status) -> Void)? = nil
@@ -166,6 +167,9 @@ struct StatusComposeScreen: View {
                 await handleSelectedPhotos(newItems)
                 selectedPhotoItems = []
             }
+        }
+        .onChange(of: selectedCategoryId, initial: false) { _, newValue in
+            rememberedSelectedCategoryId = newValue?.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
         }
         .onChange(of: isSensitive, initial: false) { _, newValue in
             if !newValue {
@@ -605,6 +609,7 @@ struct StatusComposeScreen: View {
             categories = try await fetchedCategories.sorted { $0.priority ?? 0 < $1.priority ?? 0 }
             licenses = try await fetchedLicenses.sorted { ($0.name ?? "") < ($1.name ?? "") }
             countries = try await fetchedCountries.sorted { ($0.name ?? "") < ($1.name ?? "") }
+            applyRememberedCategoryIfNeeded()
 
             let instance = try await fetchedInstance
             maxStatusCharacters = max(instance.configuration?.statuses?.maxCharacters ?? 500, 1)
@@ -637,6 +642,28 @@ struct StatusComposeScreen: View {
         contentWarning = status.contentWarning?.nilIfEmpty ?? contentWarning
         selectedCategoryId = status.category?.id?.nilIfEmpty ?? selectedCategoryId
         attachments = (status.attachments ?? []).map { ComposeStatusAttachment.existing($0) }
+    }
+
+    @MainActor
+    private func applyRememberedCategoryIfNeeded() {
+        guard mode.editingStatus == nil else {
+            return
+        }
+
+        guard selectedCategoryId?.nilIfEmpty == nil else {
+            return
+        }
+
+        guard let rememberedCategoryId = rememberedSelectedCategoryId.nilIfEmpty else {
+            return
+        }
+
+        guard categories.contains(where: { $0.id == rememberedCategoryId }) else {
+            rememberedSelectedCategoryId = ""
+            return
+        }
+
+        selectedCategoryId = rememberedCategoryId
     }
 
     @MainActor

@@ -9,7 +9,7 @@ import SwiftUI
 struct StatusDetailScreen: View {
     @EnvironmentObject private var appState: AppState
     @Environment(\.dismiss) private var dismiss
-    @AppStorage("settings.showAlternativeText") private var showAlternativeText = false
+    @AppStorage(AppStorageKeys.settingsShowAlternativeText) private var showAlternativeText = false
 
     @State private var displayedStatus: Status
     @State private var selectedAttachmentIndex = 0

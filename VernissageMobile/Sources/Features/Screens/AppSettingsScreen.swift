@@ -7,10 +7,10 @@
 import SwiftUI
 
 struct AppSettingsScreen: View {
-    @AppStorage("settings.alwaysShowNsfw") private var alwaysShowNsfw = false
-    @AppStorage("settings.showAlternativeText") private var showAlternativeText = false
-    @AppStorage("settings.showAvatarsOnTimeline") private var showAvatarsOnTimeline = false
-    @AppStorage("settings.showImageCountsOnTimeline") private var showImageCountsOnTimeline = false
+    @AppStorage(AppStorageKeys.settingsAlwaysShowNsfw) private var alwaysShowNsfw = false
+    @AppStorage(AppStorageKeys.settingsShowAlternativeText) private var showAlternativeText = false
+    @AppStorage(AppStorageKeys.settingsShowAvatarsOnTimeline) private var showAvatarsOnTimeline = false
+    @AppStorage(AppStorageKeys.settingsShowImageCountsOnTimeline) private var showImageCountsOnTimeline = false
 
     var body: some View {
         List {

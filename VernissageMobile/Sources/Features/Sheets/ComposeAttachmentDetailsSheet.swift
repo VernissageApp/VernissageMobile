@@ -15,6 +15,11 @@ struct ComposeAttachmentDetailsSheet: View {
     let generateDescription: (_ attachmentId: String) async throws -> String?
 
     @Environment(\.dismiss) private var dismiss
+    @AppStorage(AppStorageKeys.composeAttachmentDetailsLicenseId) private var rememberedLicenseId = ""
+    @AppStorage(AppStorageKeys.composeAttachmentDetailsCountryCode) private var rememberedCountryCode = ""
+    @AppStorage(AppStorageKeys.composeAttachmentDetailsCountryName) private var rememberedCountryName = ""
+    @AppStorage(AppStorageKeys.composeAttachmentDetailsCityName) private var rememberedCityName = ""
+    @AppStorage(AppStorageKeys.composeAttachmentDetailsLocationId) private var rememberedLocationId = ""
 
     @State private var cityQuery: String
     @State private var citySuggestions: [Location] = []
@@ -22,6 +27,8 @@ struct ComposeAttachmentDetailsSheet: View {
     @State private var isGeneratingDescription = false
     @State private var citySearchTask: Task<Void, Never>?
     @State private var errorMessage: String?
+    @State private var didApplyRememberedValues = false
+    @State private var shouldIgnoreNextCityQueryChange = false
 
     init(
         attachment: Binding<ComposeStatusAttachment>,
@@ -139,6 +146,18 @@ struct ComposeAttachmentDetailsSheet: View {
 
                     TextField("City", text: $cityQuery)
                         .onChange(of: cityQuery, initial: false) { _, newValue in
+                            if shouldIgnoreNextCityQueryChange {
+                                shouldIgnoreNextCityQueryChange = false
+                                return
+                            }
+
+                            let normalizedNewValue = newValue.trimmingCharacters(in: .whitespacesAndNewlines)
+                            let normalizedCurrentCity = attachment.cityName.trimmingCharacters(in: .whitespacesAndNewlines)
+                            if normalizedNewValue == normalizedCurrentCity,
+                               attachment.locationId?.nilIfEmpty != nil {
+                                return
+                            }
+
                             attachment.cityName = newValue
                             attachment.locationId = nil
                             scheduleCitySearch(query: newValue)
@@ -210,10 +229,14 @@ struct ComposeAttachmentDetailsSheet: View {
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
                     Button("Done") {
+                        saveRememberedValuesIfNeeded()
                         dismiss()
                     }
                 }
             }
+        }
+        .onAppear {
+            applyRememberedValuesIfNeeded()
         }
         .errorAlertToast($errorMessage)
     }
@@ -325,5 +348,45 @@ struct ComposeAttachmentDetailsSheet: View {
         } catch {
             errorMessage = (error as? LocalizedError)?.errorDescription ?? error.localizedDescription
         }
+    }
+
+    private func applyRememberedValuesIfNeeded() {
+        guard attachment.isExistingAttachment == false, didApplyRememberedValues == false else {
+            return
+        }
+
+        didApplyRememberedValues = true
+
+        if attachment.licenseId?.nilIfEmpty == nil {
+            attachment.licenseId = rememberedLicenseId.nilIfEmpty
+        }
+
+        if attachment.countryCode?.nilIfEmpty == nil {
+            attachment.countryCode = rememberedCountryCode.nilIfEmpty
+            attachment.countryName = rememberedCountryName.nilIfEmpty
+        }
+
+        if attachment.cityName.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty,
+           let rememberedCity = rememberedCityName.nilIfEmpty {
+            attachment.cityName = rememberedCity
+            shouldIgnoreNextCityQueryChange = true
+            cityQuery = rememberedCity
+            attachment.locationId = rememberedLocationId.nilIfEmpty
+            citySearchTask?.cancel()
+            citySuggestions = []
+            isSearchingCity = false
+        }
+    }
+
+    private func saveRememberedValuesIfNeeded() {
+        guard attachment.isExistingAttachment == false else {
+            return
+        }
+
+        rememberedLicenseId = attachment.licenseId?.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
+        rememberedCountryCode = attachment.countryCode?.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
+        rememberedCountryName = attachment.countryName?.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
+        rememberedCityName = attachment.cityName.trimmingCharacters(in: .whitespacesAndNewlines)
+        rememberedLocationId = attachment.locationId?.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
     }
 }

@@ -50,6 +50,12 @@ struct ComposeAttachmentDetailsSheet: View {
     var body: some View {
         NavigationStack {
             Form {
+                Section {
+                    attachmentPreviewHeader
+                } footer: {
+                    Text("For maximum compatibility across platforms, this photo will be uploaded in 4K.")
+                }
+
                 if isOpenAIEnabled {
                     Section {
                         VStack(alignment: .leading, spacing: 8) {
@@ -243,6 +249,159 @@ struct ComposeAttachmentDetailsSheet: View {
 
     private var sortedCountries: [Country] {
         countries.sorted { ($0.name ?? "") < ($1.name ?? "") }
+    }
+
+    private var attachmentPreviewHeader: some View {
+        HStack(alignment: .top, spacing: 14) {
+            attachmentPreviewThumbnail
+
+            VStack(alignment: .leading, spacing: 10) {
+                detailRow(title: "Size", value: attachmentFileSizeLabel)
+                detailRow(title: "Width", value: attachmentWidthLabel)
+                detailRow(title: "Height", value: attachmentHeightLabel)
+                detailRow(title: "Megapixels", value: attachmentMegapixelsLabel)
+                detailRow(title: "Color space", value: attachmentColorSpaceLabel)
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
+        }
+        .padding(.vertical, 4)
+    }
+
+    @ViewBuilder
+    private var attachmentPreviewThumbnail: some View {
+        if let image = attachment.localImage {
+            Image(uiImage: image)
+                .resizable()
+                .scaledToFill()
+                .frame(width: 120, height: 120)
+                .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
+        } else {
+            RoundedRectangle(cornerRadius: 12, style: .continuous)
+                .fill(Color.secondary.opacity(0.15))
+                .frame(width: 120, height: 120)
+                .overlay {
+                    Image(systemName: "photo")
+                        .font(.title3)
+                        .foregroundStyle(.secondary)
+                }
+        }
+    }
+
+    private var attachmentFileSizeLabel: String {
+        guard let data = attachment.resizedImageData else {
+            return "Unknown"
+        }
+
+        return formatMebibytes(bytes: data.count)
+    }
+
+    private var attachmentWidthLabel: String {
+        guard let size = attachmentPixelSize else {
+            return "Unknown"
+        }
+
+        return "\(size.width) px"
+    }
+
+    private var attachmentHeightLabel: String {
+        guard let size = attachmentPixelSize else {
+            return "Unknown"
+        }
+
+        return "\(size.height) px"
+    }
+
+    private var attachmentMegapixelsLabel: String {
+        guard let size = attachmentPixelSize else {
+            return "Unknown"
+        }
+
+        let megapixels = Double(size.width * size.height) / 1_000_000.0
+        if megapixels >= 10 {
+            return String(format: "%.1f MP", megapixels)
+        }
+
+        return String(format: "%.2f MP", megapixels)
+    }
+
+    private var attachmentColorSpaceLabel: String {
+        guard let colorSpace = attachment.localImage?.cgImage?.colorSpace else {
+            return "Unknown"
+        }
+
+        return colorSpaceDisplayName(colorSpace)
+    }
+
+    private var attachmentPixelSize: (width: Int, height: Int)? {
+        guard let image = attachment.localImage else {
+            return nil
+        }
+
+        if let cgImage = image.cgImage {
+            return (cgImage.width, cgImage.height)
+        }
+
+        let width = Int((image.size.width * image.scale).rounded())
+        let height = Int((image.size.height * image.scale).rounded())
+        guard width > 0, height > 0 else {
+            return nil
+        }
+
+        return (width, height)
+    }
+
+    private func detailRow(title: String, value: String) -> some View {
+        HStack(alignment: .firstTextBaseline, spacing: 6) {
+            Text(title)
+                .font(.caption)
+                .foregroundStyle(.secondary)
+
+            Text(value)
+                .font(.subheadline.weight(.medium))
+                .foregroundStyle(.primary)
+        }
+    }
+
+    private func formatMebibytes(bytes: Int) -> String {
+        let mebibytes = Double(bytes) / (1024.0 * 1024.0)
+        return String(format: "%.2f MiB", mebibytes)
+    }
+
+    private func colorSpaceDisplayName(_ colorSpace: CGColorSpace) -> String {
+        let rawName = (colorSpace.name as String?)?.lowercased() ?? ""
+        if rawName.contains("extended") && rawName.contains("srgb") {
+            return "Extended sRGB"
+        }
+        if rawName.contains("srgb") {
+            return "sRGB"
+        }
+        if rawName.contains("display") && rawName.contains("p3") {
+            return "Display P3"
+        }
+        if rawName.contains("adobe") && rawName.contains("rgb") {
+            return "Adobe RGB"
+        }
+
+        switch colorSpace.model {
+        case .rgb:
+            return "RGB"
+        case .monochrome:
+            return "Monochrome"
+        case .cmyk:
+            return "CMYK"
+        case .lab:
+            return "Lab"
+        case .deviceN:
+            return "DeviceN"
+        case .indexed:
+            return "Indexed"
+        case .pattern:
+            return "Pattern"
+        case .unknown:
+            return "Unknown"
+        @unknown default:
+            return "Unknown"
+        }
     }
 
     private var countryValueLabel: String {

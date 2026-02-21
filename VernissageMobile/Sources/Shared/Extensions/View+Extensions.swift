@@ -20,15 +20,18 @@ extension View {
                     message.wrappedValue = nil
                 }
             }
-        )) {
+        ), duration: 5) {
             AlertToast(
                 displayMode: .alert,
-                type: .error(.white.opacity(0.8)),
-                title: message.wrappedValue?.toastPresentableMessage ?? "Error",
+                type: .regular,
+                title: nil,
+                subTitle: message.wrappedValue?.toastPresentableMessage ?? "",
                 style: .style(
                     backgroundColor: .red.opacity(0.8),
                     titleColor: .white.opacity(0.8),
-                    subTitleColor: .white.opacity(0.8)
+                    subTitleColor: .white.opacity(0.8),
+                    titleFont: .headline.weight(.semibold),
+                    subTitleFont: .body
                 )
             )
         }

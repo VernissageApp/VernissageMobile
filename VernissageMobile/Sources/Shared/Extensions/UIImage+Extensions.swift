@@ -8,6 +8,37 @@ import SwiftUI
 import CoreImage
 
 extension UIImage {
+    
+    func resized(to targetSize: CGSize) -> UIImage {
+        guard let sourceImage = CIImage(image: self, options: [.applyOrientationProperty: true]) else {
+            return self
+        }
+
+        // We have to store correct image orientation.
+        let orientedImage = sourceImage.oriented(forExifOrientation: self.imageOrientation.exifOrientation)
+
+        // Filter.
+        let resizeFilter = CIFilter(name: "CILanczosScaleTransform")!
+
+        // Compute scale.
+        let scale = targetSize.width / orientedImage.extent.width
+
+        // Apply resizing
+        resizeFilter.setValue(orientedImage, forKey: kCIInputImageKey)
+        resizeFilter.setValue(scale, forKey: kCIInputScaleKey)
+        resizeFilter.setValue(1.0, forKey: kCIInputAspectRatioKey)
+
+        guard let result = resizeFilter.value(forKey: kCIOutputImageKey) as? CIImage else {
+            return self
+        }
+
+        guard let resizedCGImage = CIContext(options: nil).createCGImage(result, from: result.extent) else {
+            return self
+        }
+
+        return UIImage(cgImage: resizedCGImage)
+    }
+    
     var averageColor: UIColor? {
         guard let cgImage else {
             return nil

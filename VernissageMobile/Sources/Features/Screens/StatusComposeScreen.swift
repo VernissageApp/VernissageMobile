@@ -31,6 +31,7 @@ struct StatusComposeScreen: View {
     @State private var countries: [Country] = []
     @State private var maxStatusCharacters: Int = 500
     @State private var maxMediaAttachments: Int = 4
+    @State private var maxAttachmentImageSizeLimitBytes: Int?
     @State private var isOpenAIEnabled = false
     @State private var statusTextTemplate = ""
 
@@ -613,6 +614,12 @@ struct StatusComposeScreen: View {
             let instance = try await fetchedInstance
             maxStatusCharacters = max(instance.configuration?.statuses?.maxCharacters ?? 500, 1)
             maxMediaAttachments = max(instance.configuration?.statuses?.maxMediaAttachments ?? 4, 1)
+            if let imageSizeLimit = instance.configuration?.attachments?.imageSizeLimit,
+               imageSizeLimit > 0 {
+                maxAttachmentImageSizeLimitBytes = imageSizeLimit
+            } else {
+                maxAttachmentImageSizeLimitBytes = nil
+            }
             isOpenAIEnabled = (try? await fetchedPublicSettings)?.isOpenAIEnabled ?? false
             statusTextTemplate = (try? await fetchedStatusTextTemplate)?.value ?? ""
 
@@ -687,6 +694,10 @@ struct StatusComposeScreen: View {
                     continue
                 }
 
+                guard validatePreparedAttachmentSizeLimit(prepared.data) else {
+                    continue
+                }
+
                 let parsedExif = ComposeParsedExifParser.parse(from: originalData)
                 let localAttachment = ComposeStatusAttachment.local(
                     image: prepared.image,
@@ -719,6 +730,11 @@ struct StatusComposeScreen: View {
             errorMessage = "Unable to prepare selected photo."
             return
         }
+
+        guard validatePreparedAttachmentSizeLimit(prepared.data) else {
+            return
+        }
+
         let attachment = ComposeStatusAttachment.local(
             image: prepared.image,
             imageData: prepared.data,
@@ -771,6 +787,10 @@ struct StatusComposeScreen: View {
             do {
                 let originalData = try Data(contentsOf: url)
                 guard let prepared = preparedAttachmentPayload(from: originalData) else {
+                    continue
+                }
+
+                guard validatePreparedAttachmentSizeLimit(prepared.data) else {
                     continue
                 }
 
@@ -1060,11 +1080,8 @@ struct StatusComposeScreen: View {
 
         let scale = maxDimension / maxOriginal
         let targetSize = CGSize(width: originalSize.width * scale, height: originalSize.height * scale)
-        let renderer = UIGraphicsImageRenderer(size: targetSize)
 
-        return renderer.image { _ in
-            image.draw(in: CGRect(origin: .zero, size: targetSize))
-        }
+        return image.resized(to: targetSize)
     }
 
     private func preparedAttachmentPayload(from sourceData: Data) -> (image: UIImage, data: Data)? {
@@ -1083,5 +1100,28 @@ struct StatusComposeScreen: View {
         }
 
         return (convertedImage, convertedData)
+    }
+
+    @MainActor
+    private func validatePreparedAttachmentSizeLimit(_ preparedData: Data) -> Bool {
+        guard let limit = maxAttachmentImageSizeLimitBytes, limit > 0 else {
+            return true
+        }
+
+        guard preparedData.count <= limit else {
+            errorMessage = "Selected photo is too large. Maximum allowed size is \(imageSizeLimitLabel(bytes: limit))."
+            return false
+        }
+
+        return true
+    }
+
+    private func imageSizeLimitLabel(bytes: Int) -> String {
+        let mebibytes = Double(bytes) / (1024.0 * 1024.0)
+        if mebibytes.rounded() == mebibytes {
+            return "\(Int(mebibytes)) MiB"
+        }
+
+        return String(format: "%.1f MiB", mebibytes)
     }
 }

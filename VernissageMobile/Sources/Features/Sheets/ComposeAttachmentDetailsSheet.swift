@@ -399,6 +399,8 @@ struct ComposeAttachmentDetailsSheet: View {
             return "Pattern"
         case .unknown:
             return "Unknown"
+        case .XYZ:
+            return "XYZ"
         @unknown default:
             return "Unknown"
         }

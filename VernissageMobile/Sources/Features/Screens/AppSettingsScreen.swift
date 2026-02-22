@@ -120,17 +120,25 @@ struct AppSettingsScreen: View {
                     .font(.footnote)
             }
 
-            HStack {
-                VStack(alignment: .leading) {
-                    Text("Follow me", comment: "Follow me")
-                    Text("Vernissage account", comment: "Vernissage account")
+            NavigationLink {
+                UserProfileScreen(
+                    userName: "mczachurski@vernissage.photos",
+                    preferredDisplayName: "Marcin Czachurski"
+                )
+            } label: {
+                HStack {
+                    VStack(alignment: .leading) {
+                        Text("Follow me", comment: "Follow me")
+                        Text("Vernissage account", comment: "Vernissage account")
+                            .font(.footnote)
+                            .foregroundStyle(.secondary)
+                    }
+
+                    Spacer()
+                    Text("@mczachurski")
                         .font(.footnote)
                         .foregroundStyle(.secondary)
                 }
-
-                Spacer()
-                Link("@mczachurski", destination: URL(string: "https://vernissage.photos/@mczachurski")!)
-                    .font(.footnote)
             }
         }
     }

@@ -196,4 +196,8 @@ $RECYCLE.BIN/
 /*.gcno
 **/xcshareddata/WorkspaceSettings.xcsettings
 
+## Other
+references/
+
+
 # End of https://www.toptal.com/developers/gitignore/api/xcode,macos,swift,swiftpm,swiftpackagemanager,linux,windows,git

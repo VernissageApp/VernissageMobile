@@ -94,13 +94,12 @@ struct StatusDetailScreen: View {
                 .presentationDragIndicator(.visible)
             }
             .sheet(item: $statusForEditing) { editableStatus in
-                StatusComposeScreen(mode: .edit(status: editableStatus)) { savedStatus in
+                StatusComposeScreen(mode: .edit(status: editableStatus), onStatusSaved: { savedStatus in
                     displayedStatus = savedStatus
-
                     Task {
                         await loadComments()
                     }
-                }
+                })
                 .presentationDetents([.large])
                 .presentationDragIndicator(.visible)
             }

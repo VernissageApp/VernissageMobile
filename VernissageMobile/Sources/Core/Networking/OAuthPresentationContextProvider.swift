@@ -10,6 +10,9 @@ import AuthenticationServices
 @MainActor
 final class OAuthPresentationContextProvider: NSObject, ASWebAuthenticationPresentationContextProviding {
     func presentationAnchor(for session: ASWebAuthenticationSession) -> ASPresentationAnchor {
+#if SHARE_EXTENSION
+        preconditionFailure("OAuth presentation is unavailable in share extension.")
+#else
         let windowScenes = UIApplication.shared.connectedScenes
             .compactMap { $0 as? UIWindowScene }
 
@@ -28,5 +31,6 @@ final class OAuthPresentationContextProvider: NSObject, ASWebAuthenticationPrese
         }
 
         preconditionFailure("No UIWindowScene available for ASWebAuthenticationSession presentation.")
+#endif
     }
 }

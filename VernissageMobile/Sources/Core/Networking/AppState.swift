@@ -36,6 +36,8 @@ final class AppState: ObservableObject {
     private let keychain = KeychainStore(service: "org.joinvernissage.mobile")
     private let accountsKey = "accounts-json"
     private let activeAccountDefaultsKey = "active-account-id"
+    private static let appGroupIdentifier = "group.photos.vernissage.ios"
+    private let sharedDefaults = UserDefaults(suiteName: AppState.appGroupIdentifier)
 
     private let oauthCoordinator = OAuthCoordinator()
     private static let iso8601Formatter: ISO8601DateFormatter = {
@@ -1601,9 +1603,14 @@ final class AppState: ObservableObject {
         if let raw = UserDefaults.standard.string(forKey: activeAccountDefaultsKey),
            let id = UUID(uuidString: raw) {
             activeAccountID = id
+        } else if let raw = sharedDefaults?.string(forKey: activeAccountDefaultsKey),
+                  let id = UUID(uuidString: raw) {
+            activeAccountID = id
         }
 
-        guard let data = try? keychain.load(account: accountsKey) else {
+        let keychainData = (try? keychain.load(account: accountsKey)) ?? nil
+        let sharedData = sharedDefaults?.data(forKey: accountsKey)
+        guard let data = keychainData ?? sharedData else {
             accounts = []
             return
         }
@@ -1621,17 +1628,28 @@ final class AppState: ObservableObject {
     }
 
     private func saveToStorage() {
+        let encoded: Data
         do {
-            let encoded = try JSONEncoder().encode(accounts)
+            encoded = try JSONEncoder().encode(accounts)
+        } catch {
+            globalErrorMessage = "Cannot encode accounts."
+            return
+        }
+
+        do {
             try keychain.save(encoded, account: accountsKey)
         } catch {
             globalErrorMessage = "Cannot save accounts to Keychain."
         }
 
+        sharedDefaults?.set(encoded, forKey: accountsKey)
+
         if let activeAccountID {
             UserDefaults.standard.set(activeAccountID.uuidString, forKey: activeAccountDefaultsKey)
+            sharedDefaults?.set(activeAccountID.uuidString, forKey: activeAccountDefaultsKey)
         } else {
             UserDefaults.standard.removeObject(forKey: activeAccountDefaultsKey)
+            sharedDefaults?.removeObject(forKey: activeAccountDefaultsKey)
         }
     }
 

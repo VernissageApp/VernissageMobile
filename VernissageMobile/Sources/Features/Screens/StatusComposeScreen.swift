@@ -13,6 +13,8 @@ struct StatusComposeScreen: View {
     @AppStorage(AppStorageKeys.composeSelectedCategoryId) private var rememberedSelectedCategoryId = ""
 
     let mode: StatusComposeMode
+    let initialAttachmentURLs: [URL]
+    let onDismissRequested: (() -> Void)?
     var onStatusSaved: ((Status) -> Void)? = nil
 
     private static let statusTextTemplateKey = "status-text-template"
@@ -49,12 +51,20 @@ struct StatusComposeScreen: View {
 
     @State private var isLoadingInitialData = false
     @State private var didLoadInitialData = false
+    @State private var importedInitialAttachmentURLKeys: Set<String> = []
     @State private var isPublishing = false
     @State private var errorMessage: String?
     @FocusState private var isTextFocused: Bool
 
-    init(mode: StatusComposeMode, onStatusSaved: ((Status) -> Void)? = nil) {
+    init(
+        mode: StatusComposeMode,
+        initialAttachmentURLs: [URL] = [],
+        onDismissRequested: (() -> Void)? = nil,
+        onStatusSaved: ((Status) -> Void)? = nil
+    ) {
         self.mode = mode
+        self.initialAttachmentURLs = initialAttachmentURLs
+        self.onDismissRequested = onDismissRequested
         self.onStatusSaved = onStatusSaved
 
         if let status = mode.editingStatus {
@@ -146,6 +156,7 @@ struct StatusComposeScreen: View {
         }
         .onFirstAppear {
             await loadInitialDataIfNeeded()
+            await importInitialAttachmentURLsIfNeeded(initialAttachmentURLs)
         }
         .onAppear {
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
@@ -166,6 +177,11 @@ struct StatusComposeScreen: View {
             Task {
                 await handleSelectedPhotos(newItems)
                 selectedPhotoItems = []
+            }
+        }
+        .onChange(of: initialAttachmentURLs, initial: false) { _, newURLs in
+            Task {
+                await importInitialAttachmentURLsIfNeeded(newURLs)
             }
         }
         .onChange(of: selectedCategoryId, initial: false) { _, newValue in
@@ -761,7 +777,7 @@ struct StatusComposeScreen: View {
     }
 
     @MainActor
-    private func handleSelectedFileURLs(_ urls: [URL]) async {
+    private func handleSelectedFileURLs(_ urls: [URL], removeImportedFilesAtSource: Bool = false) async {
         guard !urls.isEmpty else {
             return
         }
@@ -781,6 +797,12 @@ struct StatusComposeScreen: View {
             defer {
                 if hasAccess {
                     url.stopAccessingSecurityScopedResource()
+                }
+            }
+
+            defer {
+                if removeImportedFilesAtSource {
+                    try? FileManager.default.removeItem(at: url)
                 }
             }
 
@@ -809,6 +831,27 @@ struct StatusComposeScreen: View {
                 errorMessage = (error as? LocalizedError)?.errorDescription ?? error.localizedDescription
             }
         }
+    }
+
+    @MainActor
+    private func importInitialAttachmentURLsIfNeeded(_ urls: [URL]) async {
+        guard mode.editingStatus == nil else {
+            return
+        }
+
+        let urlsToImport = urls.filter { url in
+            importedInitialAttachmentURLKeys.insert(urlImportKey(for: url)).inserted
+        }
+
+        guard urlsToImport.isEmpty == false else {
+            return
+        }
+
+        await handleSelectedFileURLs(urlsToImport, removeImportedFilesAtSource: true)
+    }
+
+    private func urlImportKey(for url: URL) -> String {
+        url.standardizedFileURL.absoluteString
     }
 
     @MainActor
@@ -876,7 +919,11 @@ struct StatusComposeScreen: View {
     @MainActor
     private func cancelCompose() async {
         await cleanupTemporaryAttachments()
-        dismiss()
+        if let onDismissRequested {
+            onDismissRequested()
+        } else {
+            dismiss()
+        }
     }
 
     @MainActor
@@ -944,7 +991,11 @@ struct StatusComposeScreen: View {
 
             onStatusSaved?(savedStatus)
             errorMessage = nil
-            dismiss()
+            if let onDismissRequested {
+                onDismissRequested()
+            } else {
+                dismiss()
+            }
         } catch {
             errorMessage = (error as? LocalizedError)?.errorDescription ?? error.localizedDescription
         }

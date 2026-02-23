@@ -7,7 +7,14 @@
 import SwiftUI
 
 struct AddStatusPlaceholderSheet: View {
+    var initialAttachmentURLs: [URL] = []
+    var onDismissRequested: (() -> Void)? = nil
+
     var body: some View {
-        StatusComposeScreen(mode: .create)
+        StatusComposeScreen(
+            mode: .create,
+            initialAttachmentURLs: initialAttachmentURLs,
+            onDismissRequested: onDismissRequested
+        )
     }
 }

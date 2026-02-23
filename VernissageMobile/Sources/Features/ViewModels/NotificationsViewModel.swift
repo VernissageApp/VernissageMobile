@@ -14,14 +14,26 @@ final class NotificationsViewModel: ObservableObject {
 
     private var nextMaxId: String?
     private var canLoadMore = true
+    private var isFetchingFirstPage = false
 
     @MainActor
-    func load(using appState: AppState) async {
-        isLoading = true
-        defer { isLoading = false }
+    func load(using appState: AppState) async -> Bool {
+        guard !isFetchingFirstPage, !isLoadingMore else {
+            return false
+        }
 
-        nextMaxId = nil
-        canLoadMore = true
+        isFetchingFirstPage = true
+        defer { isFetchingFirstPage = false }
+
+        let shouldShowInitialLoader = notifications.isEmpty
+        if shouldShowInitialLoader {
+            isLoading = true
+        }
+        defer {
+            if shouldShowInitialLoader {
+                isLoading = false
+            }
+        }
 
         do {
             let page = try await appState.fetchNotifications(maxId: nil)
@@ -29,14 +41,20 @@ final class NotificationsViewModel: ObservableObject {
             nextMaxId = page.maxId
             canLoadMore = page.maxId != nil && !page.data.isEmpty
             errorMessage = nil
+            return true
         } catch {
+            if error.isCancellationLike {
+                return false
+            }
+
             errorMessage = (error as? LocalizedError)?.errorDescription ?? error.localizedDescription
+            return false
         }
     }
 
     @MainActor
     func loadMoreIfNeeded(using appState: AppState, currentIndex: Int) async {
-        guard !isLoading, !isLoadingMore, canLoadMore else {
+        guard !isFetchingFirstPage, !isLoadingMore, canLoadMore else {
             return
         }
 
@@ -59,6 +77,10 @@ final class NotificationsViewModel: ObservableObject {
             canLoadMore = page.maxId != nil && !page.data.isEmpty
             errorMessage = nil
         } catch {
+            if error.isCancellationLike {
+                return
+            }
+
             errorMessage = (error as? LocalizedError)?.errorDescription ?? error.localizedDescription
         }
     }

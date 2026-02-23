@@ -50,11 +50,19 @@ struct NotificationsScreen: View {
         .navigationTitle("Notifications")
         .navigationBarTitleDisplayMode(.inline)
         .onFirstAppear {
-            await viewModel.load(using: appState)
+            let didLoad = await viewModel.load(using: appState)
+            guard didLoad else {
+                return
+            }
+
             await updateMarkerAndRefreshCounter()
         }
         .refreshable {
-            await viewModel.load(using: appState)
+            let didLoad = await viewModel.load(using: appState)
+            guard didLoad else {
+                return
+            }
+
             await updateMarkerAndRefreshCounter()
         }
         .errorAlertToast(Binding(

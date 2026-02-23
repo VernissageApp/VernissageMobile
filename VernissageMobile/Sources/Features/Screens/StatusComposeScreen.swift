@@ -90,6 +90,10 @@ struct StatusComposeScreen: View {
         NavigationStack {
             ScrollView {
                 VStack(alignment: .leading, spacing: 14) {
+                    if let composeAccountIdentity {
+                        composeAccountIdentitySection(composeAccountIdentity)
+                    }
+
                     if commentsDisabled {
                         Text("COMMENTS WILL BE DISABLED")
                             .font(.footnote.weight(.semibold))
@@ -266,6 +270,73 @@ struct StatusComposeScreen: View {
             }
             .buttonStyle(.bordered)
         }
+    }
+
+    private struct ComposeAccountIdentity {
+        let displayName: String
+        let userNameLabel: String
+        let avatarURL: String?
+    }
+
+    private var composeAccountIdentity: ComposeAccountIdentity? {
+        let normalizedUserName = profile?.userName?.trimmingPrefix("@").nilIfEmpty
+            ?? appState.activeAccount?.userName.trimmingPrefix("@").nilIfEmpty
+        let displayName = profile?.name?.nilIfEmpty
+            ?? appState.activeAccount?.displayName?.nilIfEmpty
+            ?? normalizedUserName
+
+        guard let displayName = displayName?.nilIfEmpty else {
+            return nil
+        }
+
+        let userNameLabel = normalizedUserName.map { "@\($0)" } ?? "Signed account"
+        let avatarURL = profile?.avatarUrl?.nilIfEmpty ?? appState.activeAccount?.avatarURL?.nilIfEmpty
+
+        return ComposeAccountIdentity(
+            displayName: displayName,
+            userNameLabel: userNameLabel,
+            avatarURL: avatarURL
+        )
+    }
+
+    private func composeAccountIdentitySection(_ identity: ComposeAccountIdentity) -> some View {
+        HStack(spacing: 10) {
+            AsyncAvatarView(urlString: identity.avatarURL, size: 34)
+
+            VStack(alignment: .leading, spacing: 2) {
+                Text(identity.displayName)
+                    .font(.subheadline.weight(.semibold))
+                    .foregroundStyle(.primary)
+                    .lineLimit(1)
+
+                Text(identity.userNameLabel)
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                    .lineLimit(1)
+            }
+
+            Spacer(minLength: 8)
+
+            Text("Posting as")
+                .font(.caption2.weight(.medium))
+                .foregroundStyle(.secondary)
+                .padding(.horizontal, 8)
+                .padding(.vertical, 5)
+                .background(
+                    Capsule(style: .continuous)
+                        .fill(.secondary.opacity(0.14))
+                )
+        }
+        .padding(.horizontal, 12)
+        .padding(.vertical, 10)
+        .background(
+            RoundedRectangle(cornerRadius: 12, style: .continuous)
+                .fill(.secondary.opacity(0.08))
+        )
+        .overlay(
+            RoundedRectangle(cornerRadius: 12, style: .continuous)
+                .stroke(.secondary.opacity(0.18), lineWidth: 1)
+        )
     }
 
     private var visibilitySection: some View {

@@ -13,6 +13,20 @@ enum ComposeParsedExifParser {
             return ComposeParsedExif()
         }
 
+        return parse(properties: properties)
+    }
+
+    static func parse(from url: URL) -> ComposeParsedExif {
+        let sourceOptions = [kCGImageSourceShouldCache: false] as CFDictionary
+        guard let source = CGImageSourceCreateWithURL(url as CFURL, sourceOptions),
+              let properties = CGImageSourceCopyPropertiesAtIndex(source, 0, nil) as? [CFString: Any] else {
+            return ComposeParsedExif()
+        }
+
+        return parse(properties: properties)
+    }
+
+    private static func parse(properties: [CFString: Any]) -> ComposeParsedExif {
         let tiff = properties[kCGImagePropertyTIFFDictionary] as? [CFString: Any]
         let exif = properties[kCGImagePropertyExifDictionary] as? [CFString: Any]
         let gps = properties[kCGImagePropertyGPSDictionary] as? [CFString: Any]

@@ -18,6 +18,7 @@ struct StatusComposeScreen: View {
     var onStatusSaved: ((Status) -> Void)? = nil
 
     private static let statusTextTemplateKey = "status-text-template"
+    private let maxAttachmentLongestEdge: CGFloat = 4096
 
     @State private var profile: User?
     @State private var statusText: String
@@ -116,7 +117,6 @@ struct StatusComposeScreen: View {
                     
                     attachmentsSection
                     textSection
-                    templateActionsSection
                     visibilitySection
                 }
                 .padding(16)
@@ -251,27 +251,6 @@ struct StatusComposeScreen: View {
         .errorAlertToast($errorMessage)
     }
 
-    private var templateActionsSection: some View {
-        HStack(spacing: 10) {
-            Button {
-                insertStatusTemplate()
-            } label: {
-                Label("Use template", systemImage: "text.badge.plus")
-                    .frame(maxWidth: .infinity)
-            }
-            .buttonStyle(.bordered)
-            .disabled(statusTextTemplate.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
-
-            Button {
-                isEditingTemplate = true
-            } label: {
-                Label("Edit template", systemImage: "pencil")
-                    .frame(maxWidth: .infinity)
-            }
-            .buttonStyle(.bordered)
-        }
-    }
-
     private struct ComposeAccountIdentity {
         let displayName: String
         let userNameLabel: String
@@ -301,60 +280,24 @@ struct StatusComposeScreen: View {
 
     private func composeAccountIdentitySection(_ identity: ComposeAccountIdentity) -> some View {
         HStack(spacing: 10) {
-            AsyncAvatarView(urlString: identity.avatarURL, size: 34)
+            AsyncAvatarView(urlString: identity.avatarURL, size: 30)
 
             VStack(alignment: .leading, spacing: 2) {
                 Text(identity.displayName)
-                    .font(.subheadline.weight(.semibold))
+                    .font(.caption.weight(.semibold))
                     .foregroundStyle(.primary)
                     .lineLimit(1)
 
                 Text(identity.userNameLabel)
-                    .font(.caption)
+                    .font(.caption2)
                     .foregroundStyle(.secondary)
                     .lineLimit(1)
             }
-
-            Spacer(minLength: 8)
-
-            Text("Posting as")
-                .font(.caption2.weight(.medium))
-                .foregroundStyle(.secondary)
-                .padding(.horizontal, 8)
-                .padding(.vertical, 5)
-                .background(
-                    Capsule(style: .continuous)
-                        .fill(.secondary.opacity(0.14))
-                )
         }
-        .padding(.horizontal, 12)
-        .padding(.vertical, 10)
-        .background(
-            RoundedRectangle(cornerRadius: 12, style: .continuous)
-                .fill(.secondary.opacity(0.08))
-        )
-        .overlay(
-            RoundedRectangle(cornerRadius: 12, style: .continuous)
-                .stroke(.secondary.opacity(0.18), lineWidth: 1)
-        )
     }
 
     private var visibilitySection: some View {
         VStack(alignment: .leading, spacing: 10) {
-            composeMenuField(title: "Visibility", value: selectedVisibility.title) {
-                ForEach(StatusVisibility.allCases, id: \.rawValue) { item in
-                    Button {
-                        selectedVisibility = item
-                    } label: {
-                        if selectedVisibility == item {
-                            Label(item.title, systemImage: "checkmark")
-                        } else {
-                            Text(item.title)
-                        }
-                    }
-                }
-            }
-
             if !categories.isEmpty {
                 composeMenuField(title: "Category", value: selectedCategoryName) {
                     Button {
@@ -378,6 +321,20 @@ struct StatusComposeScreen: View {
                             } else {
                                 Text(category.name)
                             }
+                        }
+                    }
+                }
+            }
+            
+            composeMenuField(title: "Visibility", value: selectedVisibility.title) {
+                ForEach(StatusVisibility.allCases, id: \.rawValue) { item in
+                    Button {
+                        selectedVisibility = item
+                    } label: {
+                        if selectedVisibility == item {
+                            Label(item.title, systemImage: "checkmark")
+                        } else {
+                            Text(item.title)
                         }
                     }
                 }
@@ -411,8 +368,8 @@ struct StatusComposeScreen: View {
                     .font(.caption.weight(.semibold))
                     .foregroundStyle(.secondary)
             }
-            .padding(.horizontal, 14)
-            .padding(.vertical, 13)
+            .padding(.horizontal, 12)
+            .padding(.vertical, 8)
             .background(
                 RoundedRectangle(cornerRadius: 12, style: .continuous)
                     .fill(.secondary.opacity(0.10))
@@ -429,7 +386,7 @@ struct StatusComposeScreen: View {
             TextEditor(text: $statusText)
                 .focused($isTextFocused)
                 .scrollContentBackground(.hidden)
-                .frame(minHeight: 100)
+                .frame(minHeight: 40)
 
             if statusText.isEmpty {
                 Text("Attach a photo and type what's on your mind")
@@ -498,7 +455,7 @@ struct StatusComposeScreen: View {
     }
 
     private var composerToolbar: some View {
-        HStack(spacing: 18) {
+        HStack(spacing: 14) {
             Menu {
                 photoSourceMenuContent()
             } label: {
@@ -534,13 +491,26 @@ struct StatusComposeScreen: View {
                 Image(systemName: "at")
             }
 
+            Button {
+                insertStatusTemplate()
+            } label: {
+                Image(systemName: "text.badge.plus")
+            }
+            .disabled(statusTextTemplate.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
+
+            Button {
+                isEditingTemplate = true
+            } label: {
+                Image(systemName: "pencil")
+            }
+
             Spacer(minLength: 0)
 
             Text("\(remainingCharacters)")
                 .font(.system(size: 18, weight: .regular, design: .rounded))
                 .foregroundStyle(remainingCharacters < 0 ? .red : .secondary)
         }
-        .font(.system(size: 24))
+        .font(.system(size: 22))
         .padding(.horizontal, 16)
         .padding(.vertical, 10)
     }
@@ -878,8 +848,7 @@ struct StatusComposeScreen: View {
             }
 
             do {
-                let originalData = try Data(contentsOf: url)
-                guard let prepared = preparedAttachmentPayload(from: originalData) else {
+                guard let prepared = autoreleasepool(invoking: { preparedAttachmentPayload(fromFileURL: url) }) else {
                     continue
                 }
 
@@ -887,7 +856,7 @@ struct StatusComposeScreen: View {
                     continue
                 }
 
-                let parsedExif = ComposeParsedExifParser.parse(from: originalData)
+                let parsedExif = autoreleasepool(invoking: { ComposeParsedExifParser.parse(from: url) })
                 let localAttachment = ComposeStatusAttachment.local(
                     image: prepared.image,
                     imageData: prepared.data,
@@ -1192,18 +1161,32 @@ struct StatusComposeScreen: View {
     }
 
     private func resizedImageForAttachmentSelection(_ image: UIImage) -> UIImage {
-        let maxDimension: CGFloat = 4096
         let originalSize = image.size
         let maxOriginal = max(originalSize.width, originalSize.height)
 
-        guard maxOriginal > maxDimension, maxOriginal > 0 else {
+        guard maxOriginal > maxAttachmentLongestEdge, maxOriginal > 0 else {
             return image
         }
 
-        let scale = maxDimension / maxOriginal
+        let scale = maxAttachmentLongestEdge / maxOriginal
         let targetSize = CGSize(width: originalSize.width * scale, height: originalSize.height * scale)
 
         return image.resized(to: targetSize)
+    }
+
+    private func preparedAttachmentPayload(fromFileURL fileURL: URL) -> (image: UIImage, data: Data)? {
+        let pixelLimit = max(1, Int(maxAttachmentLongestEdge.rounded()))
+        guard let downsampledData = UIImage.downsampledJpegData(from: fileURL, maxPixelSize: pixelLimit),
+              let downsampledImage = UIImage(data: downsampledData) else {
+            return nil
+        }
+
+        guard let convertedData = downsampledImage.convertToExtendedSRGBJpeg(),
+              let convertedImage = UIImage(data: convertedData) else {
+            return (downsampledImage, downsampledData)
+        }
+
+        return (convertedImage, convertedData)
     }
 
     private func preparedAttachmentPayload(from sourceData: Data) -> (image: UIImage, data: Data)? {

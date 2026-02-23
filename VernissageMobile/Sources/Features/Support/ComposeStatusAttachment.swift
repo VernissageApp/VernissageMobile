@@ -132,6 +132,8 @@ struct ComposeStatusAttachment: Identifiable, Equatable {
 
     static func local(image: UIImage, imageData: Data?, parsedExif: ComposeParsedExif) -> ComposeStatusAttachment {
         let createDate = normalizedCreateDateString(parsedExif.createDate)
+        let focalLength = normalizedFocalLengthString(parsedExif.focalLength)
+        let focalLenIn35mmFilm = normalizedFocalLengthString(parsedExif.focalLenIn35mmFilm)
         let exposureTime = normalizedExposureTimeString(parsedExif.exposureTime)
         let flash = normalizedFlashString(parsedExif.flash)
 
@@ -162,9 +164,9 @@ struct ComposeStatusAttachment: Identifiable, Equatable {
             lens: parsedExif.lens?.nilIfEmpty ?? "",
             showCreateDate: createDate.isEmpty == false,
             createDate: createDate,
-            showFocalLenIn35mmFilm: parsedExif.focalLength?.nilIfEmpty != nil || parsedExif.focalLenIn35mmFilm?.nilIfEmpty != nil,
-            focalLength: parsedExif.focalLength?.nilIfEmpty ?? "",
-            focalLenIn35mmFilm: parsedExif.focalLenIn35mmFilm?.nilIfEmpty ?? "",
+            showFocalLenIn35mmFilm: focalLength.isEmpty == false || focalLenIn35mmFilm.isEmpty == false,
+            focalLength: focalLength,
+            focalLenIn35mmFilm: focalLenIn35mmFilm,
             showFNumber: parsedExif.fNumber?.nilIfEmpty != nil,
             fNumber: parsedExif.fNumber?.nilIfEmpty ?? "",
             showExposureTime: exposureTime.isEmpty == false,
@@ -253,69 +255,83 @@ struct ComposeStatusAttachment: Identifiable, Equatable {
             return ""
         }
 
-        if trimmed.contains("/") {
-            return trimmed
-        }
-
         let normalizedSeparator = trimmed.replacingOccurrences(of: ",", with: ".")
-        guard normalizedSeparator.contains(".") else {
-            return trimmed
+        if let seconds = secondsFromExposureString(normalizedSeparator) {
+            return photographerExposureLabel(seconds).nilIfEmpty ?? trimmed
         }
 
-        let parts = normalizedSeparator.split(separator: ".", maxSplits: 1).map(String.init)
-        guard parts.count == 2 else {
-            return trimmed
-        }
-
-        let integerPart = parts[0]
-        var fractionPart = parts[1]
-            .trimmingCharacters(in: .whitespacesAndNewlines)
-            .replacingOccurrences(of: "_", with: "")
-
-        while fractionPart.last == "0" {
-            fractionPart.removeLast()
-        }
-
-        guard fractionPart.isEmpty == false else {
-            return integerPart
-        }
-
-        guard integerPart == "0" || integerPart == "-0" else {
-            return normalizedSeparator
-        }
-
-        let maxFractionDigits = 6
-        if fractionPart.count > maxFractionDigits {
-            fractionPart = String(fractionPart.prefix(maxFractionDigits))
-        }
-
-        guard let numeratorValue = Int(fractionPart), numeratorValue > 0 else {
-            return trimmed
-        }
-
-        var numerator = numeratorValue
-        var denominator = 1
-        for _ in 0..<fractionPart.count {
-            denominator *= 10
-        }
-        let divisor = greatestCommonDivisor(numerator, denominator)
-        numerator /= divisor
-        denominator /= divisor
-
-        return "\(numerator)/\(denominator)"
+        return trimmed
     }
 
-    private static func greatestCommonDivisor(_ a: Int, _ b: Int) -> Int {
-        var x = abs(a)
-        var y = abs(b)
-
-        while y != 0 {
-            let remainder = x % y
-            x = y
-            y = remainder
+    private static func normalizedFocalLengthString(_ value: String?) -> String {
+        guard let trimmed = value?.trimmingCharacters(in: .whitespacesAndNewlines).nilIfEmpty else {
+            return ""
         }
 
-        return max(x, 1)
+        let withoutUnit = trimmed
+            .replacingOccurrences(of: "mm", with: "", options: [.caseInsensitive])
+            .trimmingCharacters(in: .whitespacesAndNewlines)
+            .replacingOccurrences(of: ",", with: ".")
+
+        guard let numericValue = Double(withoutUnit), numericValue.isFinite else {
+            return trimmed
+        }
+
+        return decimalLabel(numericValue, maxFractionDigits: 2)
+    }
+
+    private static func secondsFromExposureString(_ value: String) -> Double? {
+        if value.contains("/") {
+            let parts = value.split(separator: "/", maxSplits: 1).map {
+                $0.trimmingCharacters(in: .whitespacesAndNewlines)
+            }
+            guard parts.count == 2,
+                  let numerator = Double(parts[0]),
+                  let denominator = Double(parts[1]),
+                  denominator != 0 else {
+                return nil
+            }
+
+            return numerator / denominator
+        }
+
+        guard let numericValue = Double(value), numericValue.isFinite else {
+            return nil
+        }
+
+        return numericValue
+    }
+
+    private static func photographerExposureLabel(_ seconds: Double) -> String {
+        guard seconds > 0 else {
+            return ""
+        }
+
+        if seconds >= 1 {
+            let rounded = Int(seconds.rounded())
+            if abs(seconds - Double(rounded)) < 0.01 {
+                return String(rounded)
+            }
+
+            return decimalLabel(seconds, maxFractionDigits: 2)
+        }
+
+        let reciprocal = 1.0 / seconds
+        guard reciprocal.isFinite, reciprocal > 0 else {
+            return decimalLabel(seconds, maxFractionDigits: 4)
+        }
+
+        return "1/\(Int(reciprocal.rounded()))"
+    }
+
+    private static func decimalLabel(_ value: Double, maxFractionDigits: Int) -> String {
+        let formatter = NumberFormatter()
+        formatter.locale = Locale(identifier: "en_US_POSIX")
+        formatter.numberStyle = .decimal
+        formatter.minimumFractionDigits = 0
+        formatter.maximumFractionDigits = maxFractionDigits
+
+        return formatter.string(from: NSNumber(value: value)) ?? String(value)
     }
 
     private static func normalizedFlashString(_ value: String?) -> String {

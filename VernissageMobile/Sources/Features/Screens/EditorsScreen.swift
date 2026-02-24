@@ -11,6 +11,7 @@ struct EditorsScreen: View {
     @StateObject private var photosViewModel = TimelineViewModel(kind: .editorsChoice)
     @StateObject private var artistsViewModel = FeaturedUsersViewModel()
     @State private var selectedContent: EditorsContentSelection = .photos
+    @State private var hasCompletedInitialPhotosLoad = false
     @State private var isShowingProfile = false
     @State private var showAddSheet = false
     @Binding private var showAccountSwitcher: Bool
@@ -101,7 +102,7 @@ struct EditorsScreen: View {
 
     @ViewBuilder
     private var photosSection: some View {
-        if photosViewModel.isLoading && photosViewModel.statuses.isEmpty {
+        if photosViewModel.statuses.isEmpty && (!hasCompletedInitialPhotosLoad || photosViewModel.isLoading) {
             ProgressView()
                 .tint(.primary)
         } else if photosViewModel.errorMessage != nil, photosViewModel.statuses.isEmpty {
@@ -195,6 +196,7 @@ struct EditorsScreen: View {
         switch selectedContent {
         case .photos:
             await photosViewModel.load(using: appState, forceRefresh: force)
+            hasCompletedInitialPhotosLoad = true
         case .artists:
             await artistsViewModel.load(using: appState, forceRefresh: force)
         }

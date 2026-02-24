@@ -10,6 +10,8 @@ struct OtherTimelineScreen: View {
     @EnvironmentObject private var appState: AppState
     @StateObject private var localViewModel = TimelineViewModel(kind: .local)
     @StateObject private var globalViewModel = TimelineViewModel(kind: .global)
+    @State private var hasCompletedInitialLocalLoad = false
+    @State private var hasCompletedInitialGlobalLoad = false
     @State private var isShowingProfile = false
     @State private var showAddSheet = false
 
@@ -42,7 +44,7 @@ struct OtherTimelineScreen: View {
                         .frame(maxWidth: .infinity, alignment: .leading)
                         .padding(.horizontal, 16)
 
-                    if activeViewModel.isLoading && activeViewModel.statuses.isEmpty {
+                    if activeViewModel.statuses.isEmpty && (!activeHasCompletedInitialLoad || activeViewModel.isLoading) {
                         ProgressView()
                             .tint(.primary)
                     } else if activeViewModel.errorMessage != nil, activeViewModel.statuses.isEmpty {
@@ -113,11 +115,13 @@ struct OtherTimelineScreen: View {
                 ProfileScreen(showAccountSwitcher: $showAccountSwitcher)
             }
             .onFirstAppear(id: selectedTimeline) {
-                await activeViewModel.load(using: appState, forceRefresh: true)
+                await activeViewModel.load(using: appState)
+                markInitialLoadCompleted(for: selectedTimeline)
             }
             .refreshable {
                 HapticFeedbackHelper.timelineRefreshStarted()
                 await activeViewModel.load(using: appState, forceRefresh: true)
+                markInitialLoadCompleted(for: selectedTimeline)
             }
             .errorAlertToast(Binding(
                 get: { localViewModel.errorMessage },
@@ -136,5 +140,18 @@ struct OtherTimelineScreen: View {
 
     private var activeViewModel: TimelineViewModel {
         selectedTimeline == .local ? localViewModel : globalViewModel
+    }
+
+    private var activeHasCompletedInitialLoad: Bool {
+        selectedTimeline == .local ? hasCompletedInitialLocalLoad : hasCompletedInitialGlobalLoad
+    }
+
+    private func markInitialLoadCompleted(for timeline: OtherTimelineSelection) {
+        switch timeline {
+        case .local:
+            hasCompletedInitialLocalLoad = true
+        case .global:
+            hasCompletedInitialGlobalLoad = true
+        }
     }
 }

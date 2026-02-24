@@ -9,6 +9,7 @@ import SwiftUI
 struct TimelineScreen: View {
     @EnvironmentObject private var appState: AppState
     @StateObject private var viewModel: TimelineViewModel
+    @State private var hasCompletedInitialLoad = false
     @State private var isShowingProfile = false
     @State private var showAddSheet = false
 
@@ -38,7 +39,7 @@ struct TimelineScreen: View {
                         .padding(.horizontal, 16)
                         .padding(.top, 2)
 
-                    if viewModel.isLoading && viewModel.statuses.isEmpty {
+                    if viewModel.statuses.isEmpty && (!hasCompletedInitialLoad || viewModel.isLoading) {
                         ProgressView()
                             .tint(.primary)
                     } else if viewModel.errorMessage != nil, viewModel.statuses.isEmpty {
@@ -107,10 +108,12 @@ struct TimelineScreen: View {
             }
             .onFirstAppear {
                 await viewModel.load(using: appState)
+                hasCompletedInitialLoad = true
             }
             .refreshable {
                 HapticFeedbackHelper.timelineRefreshStarted()
                 await viewModel.load(using: appState, forceRefresh: true)
+                hasCompletedInitialLoad = true
             }
             .errorAlertToast(Binding(
                 get: { viewModel.errorMessage },

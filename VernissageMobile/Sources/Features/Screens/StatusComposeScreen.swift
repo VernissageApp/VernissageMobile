@@ -496,7 +496,6 @@ struct StatusComposeScreen: View {
             } label: {
                 Image(systemName: "text.badge.plus")
             }
-            .disabled(statusTextTemplate.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
 
             Button {
                 isEditingTemplate = true
@@ -1051,6 +1050,7 @@ struct StatusComposeScreen: View {
     private func insertStatusTemplate() {
         let template = statusTextTemplate.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !template.isEmpty else {
+            errorMessage = "Before using template, define it first in Edit template."
             return
         }
 

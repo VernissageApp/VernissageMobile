@@ -37,6 +37,7 @@ final class AppState: ObservableObject {
     private let accountsKey = "accounts-json"
     private let activeAccountDefaultsKey = "active-account-id"
     private static let appGroupIdentifier = "group.photos.vernissage.ios"
+    private static let proactiveAccessTokenRefreshThreshold: TimeInterval = 2 * 24 * 60 * 60
     private let sharedDefaults = UserDefaults(suiteName: AppState.appGroupIdentifier)
 
     private let oauthCoordinator = OAuthCoordinator()
@@ -45,6 +46,9 @@ final class AppState: ObservableObject {
         formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
         return formatter
     }()
+    private struct APIErrorBody: Decodable {
+        let code: String
+    }
 
     init() {
         loadFromStorage()
@@ -129,7 +133,7 @@ final class AppState: ObservableObject {
 
         if !force,
            let expiration = account.accessTokenExpiration,
-           expiration.timeIntervalSinceNow > 120 {
+           expiration.timeIntervalSinceNow > Self.proactiveAccessTokenRefreshThreshold {
             return
         }
 
@@ -151,6 +155,10 @@ final class AppState: ObservableObject {
 
             upsertAccount(account)
         } catch {
+            if handleRefreshFailureForReauthenticationIfNeeded(error, accountID: account.id) {
+                return
+            }
+
             globalErrorMessage = (error as? LocalizedError)?.errorDescription ?? error.localizedDescription
         }
     }
@@ -1583,12 +1591,21 @@ final class AppState: ObservableObject {
             return nil
         }
 
-        let refreshed = try await OAuthAPI.refreshToken(
-            at: URLSanitizer.sanitizeBaseURL(account.instanceURL),
-            refreshToken: refreshToken,
-            clientID: account.clientID,
-            clientSecret: account.clientSecret
-        )
+        let refreshed: OAuthTokenResponse
+        do {
+            refreshed = try await OAuthAPI.refreshToken(
+                at: URLSanitizer.sanitizeBaseURL(account.instanceURL),
+                refreshToken: refreshToken,
+                clientID: account.clientID,
+                clientSecret: account.clientSecret
+            )
+        } catch {
+            if handleRefreshFailureForReauthenticationIfNeeded(error, accountID: account.id) {
+                return nil
+            }
+
+            throw error
+        }
 
         var updated = account
         updated.accessToken = refreshed.accessToken
@@ -1597,6 +1614,54 @@ final class AppState: ObservableObject {
 
         upsertAccount(updated)
         return updated
+    }
+
+    @discardableResult
+    private func handleRefreshFailureForReauthenticationIfNeeded(_ error: Error, accountID: UUID) -> Bool {
+        guard shouldForceReauthentication(for: error) else {
+            return false
+        }
+
+        invalidateSessionAndRequireReauthentication(for: accountID)
+        showErrorToast("Session expired. Sign in again.")
+        return true
+    }
+
+    private func shouldForceReauthentication(for error: Error) -> Bool {
+        guard case let APIError.http(statusCode, body) = error,
+              let errorCode = extractAPIErrorCode(from: body)?.lowercased() else {
+            return false
+        }
+
+        if statusCode == 404 {
+            return errorCode == "refreshtokennotfound"
+        }
+
+        if statusCode == 403 {
+            return errorCode == "refreshtokenrevoked" || errorCode == "refreshtokenexpired"
+        }
+
+        return false
+    }
+
+    private func extractAPIErrorCode(from body: String) -> String? {
+        guard let data = body.data(using: .utf8),
+              let errorBody = try? JSONDecoder().decode(APIErrorBody.self, from: data) else {
+            return nil
+        }
+
+        return errorBody.code.nilIfEmpty
+    }
+
+    private func invalidateSessionAndRequireReauthentication(for accountID: UUID) {
+        accounts.removeAll(where: { $0.id == accountID })
+
+        if activeAccountID == accountID {
+            activeAccountID = nil
+            unreadNotificationsCount = 0
+        }
+
+        saveToStorage()
     }
 
     private func loadFromStorage() {

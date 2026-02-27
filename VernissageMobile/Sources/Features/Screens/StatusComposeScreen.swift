@@ -37,6 +37,7 @@ struct StatusComposeScreen: View {
     @State private var maxAttachmentImageSizeLimitBytes: Int?
     @State private var isOpenAIEnabled = false
     @State private var statusTextTemplate = ""
+    @State private var isEmailVerified: Bool?
 
     @State private var selectedPhotoItems: [PhotosPickerItem] = []
     @State private var isPhotoPickerPresented = false
@@ -95,29 +96,33 @@ struct StatusComposeScreen: View {
                         composeAccountIdentitySection(composeAccountIdentity)
                     }
 
-                    if commentsDisabled {
-                        Text("COMMENTS WILL BE DISABLED")
-                            .font(.footnote.weight(.semibold))
-                            .foregroundStyle(.red)
-                    }
+                    if shouldRestrictComposeForUnverifiedEmail {
+                        emailVerificationWarningSection
+                    } else {
+                        if commentsDisabled {
+                            Text("COMMENTS WILL BE DISABLED")
+                                .font(.footnote.weight(.semibold))
+                                .foregroundStyle(.red)
+                        }
 
-                    if isSensitive {
-                        TextField("Content warning", text: $contentWarning, axis: .vertical)
-                            .lineLimit(1...3)
-                            .padding(10)
-                            .background(
-                                RoundedRectangle(cornerRadius: 10, style: .continuous)
-                                    .fill(.red.opacity(0.12))
-                            )
-                            .overlay(
-                                RoundedRectangle(cornerRadius: 10, style: .continuous)
-                                    .stroke(.red.opacity(0.35), lineWidth: 1)
-                            )
+                        if isSensitive {
+                            TextField("Content warning", text: $contentWarning, axis: .vertical)
+                                .lineLimit(1...3)
+                                .padding(10)
+                                .background(
+                                    RoundedRectangle(cornerRadius: 10, style: .continuous)
+                                        .fill(.red.opacity(0.12))
+                                )
+                                .overlay(
+                                    RoundedRectangle(cornerRadius: 10, style: .continuous)
+                                        .stroke(.red.opacity(0.35), lineWidth: 1)
+                                )
+                        }
+
+                        attachmentsSection
+                        textSection
+                        visibilitySection
                     }
-                    
-                    attachmentsSection
-                    textSection
-                    visibilitySection
                 }
                 .padding(16)
                 .padding(.bottom, 20)
@@ -147,15 +152,17 @@ struct StatusComposeScreen: View {
                 }
             }
             .safeAreaInset(edge: .bottom, spacing: 0) {
-                VStack(spacing: 0) {
-                    if hasAutocompleteSuggestions {
-                        autocompleteSuggestionsBar
-                            .padding(.vertical, 6)
-                    }
+                if !shouldRestrictComposeForUnverifiedEmail {
+                    VStack(spacing: 0) {
+                        if hasAutocompleteSuggestions {
+                            autocompleteSuggestionsBar
+                                .padding(.vertical, 6)
+                        }
 
-                    composerToolbar
+                        composerToolbar
+                    }
+                    .background(.ultraThinMaterial)
                 }
-                .background(.ultraThinMaterial)
             }
         }
         .onFirstAppear {
@@ -163,8 +170,15 @@ struct StatusComposeScreen: View {
             await importInitialAttachmentURLsIfNeeded(initialAttachmentURLs)
         }
         .onAppear {
+            guard !shouldRestrictComposeForUnverifiedEmail else {
+                isTextFocused = false
+                return
+            }
+
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
-                isTextFocused = true
+                if !shouldRestrictComposeForUnverifiedEmail {
+                    isTextFocused = true
+                }
             }
         }
         .onDisappear {
@@ -181,6 +195,11 @@ struct StatusComposeScreen: View {
             Task {
                 await handleSelectedPhotos(newItems)
                 selectedPhotoItems = []
+            }
+        }
+        .onChange(of: isEmailVerified, initial: false) { _, newValue in
+            if newValue == false {
+                isTextFocused = false
             }
         }
         .onChange(of: initialAttachmentURLs, initial: false) { _, newURLs in
@@ -294,6 +313,35 @@ struct StatusComposeScreen: View {
                     .lineLimit(1)
             }
         }
+    }
+
+    private var emailVerificationWarningSection: some View {
+        HStack(alignment: .top, spacing: 10) {
+            Image(systemName: "exclamationmark.triangle.fill")
+                .font(.title3)
+                .foregroundStyle(.orange)
+                .padding(.top, 2)
+
+            Text(
+                """
+                To upload photos, verify your email address first.
+                If you didn't receive the confirmation email, resend it from the Account page on the web version.
+                This helps keep uploads secure and trustworthy.
+                """
+            )
+            .font(.footnote)
+            .foregroundStyle(.primary)
+            .fixedSize(horizontal: false, vertical: true)
+        }
+        .padding(12)
+        .background(
+            RoundedRectangle(cornerRadius: 12, style: .continuous)
+                .fill(.orange.opacity(0.12))
+        )
+        .overlay(
+            RoundedRectangle(cornerRadius: 12, style: .continuous)
+                .stroke(.orange.opacity(0.5), lineWidth: 1)
+        )
     }
 
     private var visibilitySection: some View {
@@ -615,6 +663,10 @@ struct StatusComposeScreen: View {
     }
 
     private var canPublish: Bool {
+        if shouldRestrictComposeForUnverifiedEmail {
+            return false
+        }
+
         if isPublishing || isLoadingInitialData {
             return false
         }
@@ -660,6 +712,7 @@ struct StatusComposeScreen: View {
             async let fetchedInstance = appState.fetchInstanceDetails()
             async let fetchedPublicSettings = appState.fetchPublicSettings()
             async let fetchedStatusTextTemplate = appState.fetchUserSetting(key: Self.statusTextTemplateKey)
+            async let fetchedEmailVerified = appState.fetchEmailVerified()
 
             profile = try await fetchedProfile
             categories = try await fetchedCategories.sorted { $0.priority ?? 0 < $1.priority ?? 0 }
@@ -678,6 +731,7 @@ struct StatusComposeScreen: View {
             }
             isOpenAIEnabled = (try? await fetchedPublicSettings)?.isOpenAIEnabled ?? false
             statusTextTemplate = (try? await fetchedStatusTextTemplate)?.value ?? ""
+            isEmailVerified = (try? await fetchedEmailVerified) ?? true
 
             if let editingStatusId {
                 do {
@@ -729,6 +783,10 @@ struct StatusComposeScreen: View {
 
     @MainActor
     private func handleSelectedPhotos(_ items: [PhotosPickerItem]) async {
+        guard !shouldRestrictComposeForUnverifiedEmail else {
+            return
+        }
+
         guard !items.isEmpty else {
             return
         }
@@ -773,6 +831,10 @@ struct StatusComposeScreen: View {
 
     @MainActor
     private func handleCameraImage(_ image: UIImage?) async {
+        guard !shouldRestrictComposeForUnverifiedEmail else {
+            return
+        }
+
         guard let image else {
             return
         }
@@ -818,6 +880,10 @@ struct StatusComposeScreen: View {
 
     @MainActor
     private func handleSelectedFileURLs(_ urls: [URL], removeImportedFilesAtSource: Bool = false) async {
+        guard !shouldRestrictComposeForUnverifiedEmail else {
+            return
+        }
+
         guard !urls.isEmpty else {
             return
         }
@@ -875,6 +941,10 @@ struct StatusComposeScreen: View {
     @MainActor
     private func importInitialAttachmentURLsIfNeeded(_ urls: [URL]) async {
         guard mode.editingStatus == nil else {
+            return
+        }
+
+        guard !shouldRestrictComposeForUnverifiedEmail else {
             return
         }
 
@@ -1057,6 +1127,10 @@ struct StatusComposeScreen: View {
         statusText += statusTextTemplate
         isTextFocused = true
         scheduleAutocomplete()
+    }
+
+    private var shouldRestrictComposeForUnverifiedEmail: Bool {
+        mode.editingStatus == nil && isEmailVerified == false
     }
 
     private func scheduleAutocomplete() {

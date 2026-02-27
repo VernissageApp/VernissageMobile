@@ -49,6 +49,9 @@ final class AppState: ObservableObject {
     private struct APIErrorBody: Decodable {
         let code: String
     }
+    private struct BooleanResponse: Decodable {
+        let result: Bool
+    }
 
     init() {
         loadFromStorage()
@@ -646,6 +649,21 @@ final class AppState: ObservableObject {
             queryItems: [],
             showToastOnError: false
         )
+    }
+
+    func fetchEmailVerified() async throws -> Bool {
+        guard let account = activeAccount else {
+            throw APIError.noActiveAccount
+        }
+
+        let response: BooleanResponse = try await authorizedRequest(
+            account: account,
+            path: "/api/v1/account/email/verified",
+            queryItems: [],
+            showToastOnError: false
+        )
+
+        return response.result
     }
 
     func fetchUserSetting(key: String) async throws -> UserSetting? {

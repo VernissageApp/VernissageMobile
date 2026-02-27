@@ -354,6 +354,13 @@ struct StatusComposeScreen: View {
             }
             .buttonStyle(.borderedProminent)
             .disabled(isResendingConfirmationEmail)
+
+            if let currentEmail = profile?.email?.nilIfEmpty {
+                Divider()
+                Text("Your current email: \(currentEmail)")
+                    .font(.footnote)
+                    .foregroundStyle(.secondary)
+            }
         }
         .padding(12)
         .background(

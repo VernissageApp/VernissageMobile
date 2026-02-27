@@ -52,6 +52,9 @@ final class AppState: ObservableObject {
     private struct BooleanResponse: Decodable {
         let result: Bool
     }
+    private struct ResendEmailConfirmationRequest: Encodable {
+        let redirectBaseUrl: String
+    }
 
     init() {
         loadFromStorage()
@@ -664,6 +667,25 @@ final class AppState: ObservableObject {
         )
 
         return response.result
+    }
+
+    func resendEmailConfirmation() async throws {
+        guard let account = activeAccount else {
+            throw APIError.noActiveAccount
+        }
+
+        let redirectBaseUrl = try URLSanitizer.sanitizeBaseURL(account.instanceURL).absoluteString
+        let payload = ResendEmailConfirmationRequest(redirectBaseUrl: redirectBaseUrl)
+
+        try await authorizedRequestNoContent(
+            account: account,
+            path: "/api/v1/account/email/resend",
+            method: "POST",
+            queryItems: [],
+            additionalHeaders: ["Content-Type": "application/json"],
+            body: try JSONEncoder().encode(payload),
+            showToastOnError: false
+        )
     }
 
     func fetchUserSetting(key: String) async throws -> UserSetting? {

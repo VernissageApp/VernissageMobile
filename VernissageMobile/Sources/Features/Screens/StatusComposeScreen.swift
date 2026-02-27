@@ -56,6 +56,8 @@ struct StatusComposeScreen: View {
     @State private var importedInitialAttachmentURLKeys: Set<String> = []
     @State private var isPublishing = false
     @State private var errorMessage: String?
+    @State private var successMessage: String?
+    @State private var isResendingConfirmationEmail = false
     @FocusState private var isTextFocused: Bool
 
     init(
@@ -267,6 +269,7 @@ struct StatusComposeScreen: View {
             }
             .presentationDetents([.medium])
         }
+        .successAlertToast($successMessage)
         .errorAlertToast($errorMessage)
     }
 
@@ -316,22 +319,41 @@ struct StatusComposeScreen: View {
     }
 
     private var emailVerificationWarningSection: some View {
-        HStack(alignment: .top, spacing: 10) {
-            Image(systemName: "exclamationmark.triangle.fill")
-                .font(.title3)
-                .foregroundStyle(.orange)
-                .padding(.top, 2)
+        VStack(alignment: .leading, spacing: 12) {
+            HStack(alignment: .top, spacing: 10) {
+                Image(systemName: "exclamationmark.triangle.fill")
+                    .font(.title3)
+                    .foregroundStyle(.orange)
+                    .padding(.top, 2)
 
-            Text(
-                """
-                To upload photos, verify your email address first.
-                If you didn't receive the confirmation email, resend it from the Account page on the web version.
-                This helps keep uploads secure and trustworthy.
-                """
-            )
-            .font(.footnote)
-            .foregroundStyle(.primary)
-            .fixedSize(horizontal: false, vertical: true)
+                Text(
+                    """
+                    To upload photos, verify your email address first.
+                    If you didn't receive the confirmation email, tap the button below to send it again.
+                    This helps keep uploads secure and trustworthy.
+                    """
+                )
+                .font(.footnote)
+                .foregroundStyle(.primary)
+                .fixedSize(horizontal: false, vertical: true)
+            }
+
+            Button {
+                Task { await resendConfirmationEmail() }
+            } label: {
+                HStack(spacing: 8) {
+                    if isResendingConfirmationEmail {
+                        ProgressView()
+                            .controlSize(.small)
+                    }
+
+                    Text("Resend confirmation email")
+                        .fontWeight(.semibold)
+                }
+                .frame(maxWidth: .infinity)
+            }
+            .buttonStyle(.borderedProminent)
+            .disabled(isResendingConfirmationEmail)
         }
         .padding(12)
         .background(
@@ -1131,6 +1153,23 @@ struct StatusComposeScreen: View {
 
     private var shouldRestrictComposeForUnverifiedEmail: Bool {
         mode.editingStatus == nil && isEmailVerified == false
+    }
+
+    @MainActor
+    private func resendConfirmationEmail() async {
+        guard !isResendingConfirmationEmail else {
+            return
+        }
+
+        isResendingConfirmationEmail = true
+        defer { isResendingConfirmationEmail = false }
+
+        do {
+            try await appState.resendEmailConfirmation()
+            successMessage = "The email has been sent and should arrive in your inbox shortly."
+        } catch {
+            errorMessage = (error as? LocalizedError)?.errorDescription ?? error.localizedDescription
+        }
     }
 
     private func scheduleAutocomplete() {

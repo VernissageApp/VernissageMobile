@@ -36,7 +36,30 @@ extension View {
             )
         }
     }
-
+    func successAlertToast(_ message: Binding<String?>) -> some View {
+        toast(isPresenting: Binding(
+            get: { message.wrappedValue?.toastPresentableMessage != nil },
+            set: { isPresented in
+                if !isPresented {
+                    message.wrappedValue = nil
+                }
+            }
+        ), duration: 5) {
+            AlertToast(
+                displayMode: .alert,
+                type: .regular,
+                title: nil,
+                subTitle: message.wrappedValue?.toastPresentableMessage ?? "",
+                style: .style(
+                    backgroundColor: Color(red: 0.10, green: 0.58, blue: 0.21).opacity(0.92),
+                    titleColor: .white,
+                    subTitleColor: .white,
+                    titleFont: .headline.weight(.semibold),
+                    subTitleFont: .body.weight(.semibold)
+                )
+            )
+        }
+    }
     @ViewBuilder
     func applyIfLet<T, Content: View>(_ value: T?, transform: (Self, T) -> Content) -> some View {
         if let value {

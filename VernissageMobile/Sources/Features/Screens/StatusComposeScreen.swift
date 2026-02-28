@@ -536,8 +536,9 @@ struct StatusComposeScreen: View {
             Menu {
                 photoSourceMenuContent()
             } label: {
-                Image(systemName: "photo.on.rectangle")
+                composerToolbarIconLabel(systemName: "photo.on.rectangle")
             }
+            .buttonStyle(.plain)
             .disabled(remainingAttachmentSlots <= 0)
 
             Button {
@@ -545,50 +546,66 @@ struct StatusComposeScreen: View {
                     isSensitive.toggle()
                 }
             } label: {
-                Image(systemName: isSensitive ? "exclamationmark.square.fill" : "exclamationmark.square")
+                composerToolbarIconLabel(systemName: isSensitive ? "exclamationmark.square.fill" : "exclamationmark.square")
             }
+            .buttonStyle(.plain)
 
             Button {
                 withAnimation(.easeInOut(duration: 0.2)) {
                     commentsDisabled.toggle()
                 }
             } label: {
-                Image(systemName: commentsDisabled ? "person.2.slash.fill" : "person.2.fill")
+                composerToolbarIconLabel(systemName: commentsDisabled ? "person.2.slash.fill" : "person.2.fill")
             }
+            .buttonStyle(.plain)
 
             Button {
                 insertComposerToken("#")
             } label: {
-                Image(systemName: "number")
+                composerToolbarIconLabel(systemName: "number")
             }
+            .buttonStyle(.plain)
 
             Button {
                 insertComposerToken("@")
             } label: {
-                Image(systemName: "at")
+                composerToolbarIconLabel(systemName: "at")
             }
+            .buttonStyle(.plain)
 
             Button {
                 insertStatusTemplate()
             } label: {
-                Image(systemName: "text.badge.plus")
+                composerToolbarIconLabel(systemName: "text.badge.plus")
             }
+            .buttonStyle(.plain)
 
             Button {
                 isEditingTemplate = true
             } label: {
-                Image(systemName: "pencil")
+                composerToolbarIconLabel(systemName: "pencil")
             }
+            .buttonStyle(.plain)
 
             Spacer(minLength: 0)
 
             Text("\(remainingCharacters)")
                 .font(.system(size: 18, weight: .regular, design: .rounded))
                 .foregroundStyle(remainingCharacters < 0 ? .red : .secondary)
+                .monospacedDigit()
         }
-        .font(.system(size: 22))
+        .font(.system(size: 20, weight: .regular))
         .padding(.horizontal, 16)
         .padding(.vertical, 10)
+        .frame(maxWidth: .infinity)
+        // Keep compose toolbar dimensions stable with Accessibility text sizing.
+        .dynamicTypeSize(.xSmall ... .large)
+    }
+
+    private func composerToolbarIconLabel(systemName: String) -> some View {
+        Image(systemName: systemName)
+            .frame(width: 28, height: 28)
+            .contentShape(Rectangle())
     }
 
     @ViewBuilder

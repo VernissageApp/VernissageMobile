@@ -11,7 +11,16 @@ struct SearchStatusRowView: View {
 
     var body: some View {
         if status.hasAttachment {
-            TimelinePhotoTileView(status: status)
+            VStack(alignment: .leading, spacing: 8) {
+                TimelinePhotoTileView(status: status)
+                    .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
+
+                if let markdown = status.markdownNote?.nilIfEmpty {
+                    MarkdownFormattedTextView(markdown)
+                        .font(.body)
+                        .foregroundStyle(.primary)
+                }
+            }
         } else {
             VStack(alignment: .leading, spacing: 8) {
                 HStack(spacing: 10) {
@@ -47,8 +56,6 @@ struct SearchStatusRowView: View {
                         .foregroundStyle(.secondary)
                 }
             }
-            .padding(12)
-            .liquidGlassCard()
         }
     }
 }

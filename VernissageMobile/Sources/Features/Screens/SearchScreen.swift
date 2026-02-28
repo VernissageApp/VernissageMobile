@@ -17,7 +17,14 @@ struct SearchScreen: View {
     @State private var users: [User] = []
     @State private var hashtags: [Hashtag] = []
     @State private var statuses: [Status] = []
+    @State private var userStatusesByKey: [String: [Status]] = [:]
+    @State private var loadingUserKeys: Set<String> = []
+    @State private var userStatusesRefreshToken = UUID()
+    @State private var hashtagStatusesByName: [String: [Status]] = [:]
+    @State private var loadingHashtagNames: Set<String> = []
+    @State private var hashtagStatusesRefreshToken = UUID()
     @State private var isShowingProfile = false
+    @State private var hashtagTimelineRoute: HashtagTimelineRoute?
     @State private var showAddSheet = false
 
     @Binding private var showAccountSwitcher: Bool
@@ -88,6 +95,9 @@ struct SearchScreen: View {
             .navigationDestination(isPresented: $isShowingProfile) {
                 ProfileScreen(showAccountSwitcher: $showAccountSwitcher)
             }
+            .navigationDestination(item: $hashtagTimelineRoute) { route in
+                HashtagTimelineScreen(hashtagName: route.hashtagName)
+            }
             .searchable(text: $query, prompt: "Enter query...")
             .textInputAutocapitalization(.never)
             .autocorrectionDisabled()
@@ -101,6 +111,12 @@ struct SearchScreen: View {
                     users = []
                     hashtags = []
                     statuses = []
+                    userStatusesByKey = [:]
+                    loadingUserKeys = []
+                    userStatusesRefreshToken = UUID()
+                    hashtagStatusesByName = [:]
+                    loadingHashtagNames = []
+                    hashtagStatusesRefreshToken = UUID()
                 }
             }
         }
@@ -122,19 +138,25 @@ struct SearchScreen: View {
             } else {
                 LazyVStack(spacing: 0) {
                     ForEach(Array(users.enumerated()), id: \.offset) { index, user in
-                        ProfileUserRowView(user: user)
-                            .padding(.horizontal, 6)
+                        TrendingArtistRowView(
+                            user: user,
+                            statuses: userStatusesByKey[user.uniquenessKey],
+                            isLoadingStatuses: loadingUserKeys.contains(user.uniquenessKey)
+                        )
+                            .id(user.uniquenessKey)
                             .padding(.vertical, 10)
+                            .onFirstAppear(id: "\(user.uniquenessKey)-\(userStatusesRefreshToken.uuidString)") {
+                                await loadUserStatusesIfNeeded(
+                                    user: user,
+                                    searchToken: userStatusesRefreshToken
+                                )
+                            }
 
                         if index < users.count - 1 {
                             Divider()
-                                .padding(.leading, 84)
-                                .padding(.trailing, 8)
                         }
                     }
                 }
-                .padding(.horizontal, 10)
-                .liquidGlassCard()
             }
         case .hashtags:
             if hashtags.isEmpty {
@@ -145,18 +167,27 @@ struct SearchScreen: View {
             } else {
                 LazyVStack(spacing: 0) {
                     ForEach(Array(hashtags.enumerated()), id: \.offset) { index, hashtag in
-                        HashtagSearchRowView(hashtag: hashtag)
-                            .padding(.horizontal, 14)
+                        let hashtagNameKey = hashtag.name.lowercased()
+                        TrendingTagRowView(
+                            hashtag: hashtag,
+                            statuses: hashtagStatusesByName[hashtagNameKey],
+                            isLoadingStatuses: loadingHashtagNames.contains(hashtagNameKey)
+                        ) {
+                            hashtagTimelineRoute = HashtagTimelineRoute(hashtagName: hashtag.name)
+                        }
                             .padding(.vertical, 10)
+                            .onFirstAppear(id: "\(hashtagNameKey)-\(hashtagStatusesRefreshToken.uuidString)") {
+                                await loadHashtagStatusesIfNeeded(
+                                    hashtag: hashtag,
+                                    searchToken: hashtagStatusesRefreshToken
+                                )
+                            }
 
                         if index < hashtags.count - 1 {
                             Divider()
-                                .padding(.leading, 14)
-                                .padding(.trailing, 14)
                         }
                     }
                 }
-                .liquidGlassCard()
             }
         case .statuses:
             if statuses.isEmpty {
@@ -165,7 +196,7 @@ struct SearchScreen: View {
                                        description: Text("Try a different query."))
                     .foregroundStyle(.secondary)
             } else {
-                LazyVStack(spacing: 8) {
+                LazyVStack(spacing: 16) {
                     ForEach(statuses, id: \.id) { status in
                         NavigationLink {
                             StatusDetailScreen(status: status)
@@ -173,6 +204,8 @@ struct SearchScreen: View {
                             SearchStatusRowView(status: status)
                         }
                         .buttonStyle(.plain)
+                        .padding(12)
+                        .liquidGlassCard()
                     }
                 }
             }
@@ -188,6 +221,12 @@ struct SearchScreen: View {
             users = []
             hashtags = []
             statuses = []
+            userStatusesByKey = [:]
+            loadingUserKeys = []
+            userStatusesRefreshToken = UUID()
+            hashtagStatusesByName = [:]
+            loadingHashtagNames = []
+            hashtagStatusesRefreshToken = UUID()
             return
         }
 
@@ -195,6 +234,13 @@ struct SearchScreen: View {
             searchExecuted = false
             selectedScope = SearchScopeSelection.fromQuery(trimmedQuery)
         }
+
+        userStatusesByKey = [:]
+        loadingUserKeys = []
+        userStatusesRefreshToken = UUID()
+        hashtagStatusesByName = [:]
+        loadingHashtagNames = []
+        hashtagStatusesRefreshToken = UUID()
 
         isSearching = true
         defer { isSearching = false }
@@ -211,7 +257,94 @@ struct SearchScreen: View {
             users = []
             hashtags = []
             statuses = []
+            userStatusesByKey = [:]
+            loadingUserKeys = []
+            userStatusesRefreshToken = UUID()
+            hashtagStatusesByName = [:]
+            loadingHashtagNames = []
+            hashtagStatusesRefreshToken = UUID()
             searchExecuted = true
         }
+    }
+
+    @MainActor
+    private func loadUserStatusesIfNeeded(user: User, searchToken: UUID) async {
+        guard searchToken == userStatusesRefreshToken else {
+            return
+        }
+
+        let key = user.uniquenessKey
+        guard !loadingUserKeys.contains(key), userStatusesByKey[key] == nil else {
+            return
+        }
+
+        guard let userName = user.userName?.trimmingPrefix("@").nilIfEmpty else {
+            userStatusesByKey[key] = []
+            return
+        }
+
+        loadingUserKeys.insert(key)
+        defer { loadingUserKeys.remove(key) }
+
+        do {
+            let page = try await appState.fetchUserStatuses(userName: userName, maxId: nil, limit: 10)
+            guard searchToken == userStatusesRefreshToken else {
+                return
+            }
+
+            userStatusesByKey[key] = page.data.filter(\.hasAttachment)
+        } catch {
+            guard searchToken == userStatusesRefreshToken else {
+                return
+            }
+
+            if error.isCancellationLike {
+                return
+            }
+
+            userStatusesByKey[key] = []
+        }
+    }
+
+    @MainActor
+    private func loadHashtagStatusesIfNeeded(hashtag: Hashtag, searchToken: UUID) async {
+        guard searchToken == hashtagStatusesRefreshToken else {
+            return
+        }
+
+        let key = hashtag.name.lowercased()
+        guard !loadingHashtagNames.contains(key), hashtagStatusesByName[key] == nil else {
+            return
+        }
+
+        loadingHashtagNames.insert(key)
+        defer { loadingHashtagNames.remove(key) }
+
+        do {
+            let page = try await appState.fetchHashtagStatuses(hashtag: hashtag.name, maxId: nil, limit: 10)
+            guard searchToken == hashtagStatusesRefreshToken else {
+                return
+            }
+
+            hashtagStatusesByName[key] = page.data.filter(\.hasAttachment)
+        } catch {
+            guard searchToken == hashtagStatusesRefreshToken else {
+                return
+            }
+
+            if error.isCancellationLike {
+                return
+            }
+
+            hashtagStatusesByName[key] = []
+        }
+    }
+}
+
+private struct HashtagTimelineRoute: Identifiable, Hashable {
+    let hashtagName: String
+
+    var id: String {
+        hashtagName.lowercased()
     }
 }

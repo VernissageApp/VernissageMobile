@@ -7,13 +7,19 @@
 import SwiftUI
 
 struct LiquidGlassCardModifier: ViewModifier {
+    @Environment(\.colorScheme) private var colorScheme
+
+    private var strokeColor: Color {
+        colorScheme == .dark ? .white.opacity(0.20) : .black.opacity(0.10)
+    }
+
     func body(content: Content) -> some View {
         content
             .background(.ultraThinMaterial,
-                        in: RoundedRectangle(cornerRadius: 8, style: .continuous))
+                        in: RoundedRectangle(cornerRadius: 12, style: .continuous))
             .overlay {
-                RoundedRectangle(cornerRadius: 8, style: .continuous)
-                    .stroke(.white.opacity(0.18), lineWidth: 1)
+                RoundedRectangle(cornerRadius: 12, style: .continuous)
+                    .stroke(strokeColor, lineWidth: 1)
             }
     }
 }

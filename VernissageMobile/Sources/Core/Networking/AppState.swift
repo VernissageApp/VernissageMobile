@@ -33,7 +33,6 @@ final class AppState: ObservableObject {
         return Set((claims.roles ?? []).map { $0.lowercased() })
     }
 
-    private let keychain = KeychainStore(service: "org.joinvernissage.mobile")
     private let accountsKey = "accounts-json"
     private let activeAccountDefaultsKey = "active-account-id"
     private static let appGroupIdentifier = "group.photos.vernissage.ios"
@@ -1705,30 +1704,20 @@ final class AppState: ObservableObject {
     }
 
     private func loadFromStorage() {
-        if let raw = UserDefaults.standard.string(forKey: activeAccountDefaultsKey),
+        if let raw = sharedDefaults?.string(forKey: activeAccountDefaultsKey),
            let id = UUID(uuidString: raw) {
             activeAccountID = id
-        } else if let raw = sharedDefaults?.string(forKey: activeAccountDefaultsKey),
-                  let id = UUID(uuidString: raw) {
-            activeAccountID = id
         }
 
-        let keychainData = (try? keychain.load(account: accountsKey)) ?? nil
         let sharedData = sharedDefaults?.data(forKey: accountsKey)
-        guard let data = keychainData ?? sharedData else {
+        if let decoded = decodeAccounts(from: sharedData) {
+            accounts = decoded
+        } else {
             accounts = []
-            return
         }
 
-        do {
-            let decoded = try JSONDecoder().decode([StoredAccount].self, from: data)
-            accounts = decoded
-
-            if activeAccountID == nil || !decoded.contains(where: { $0.id == activeAccountID }) {
-                activeAccountID = decoded.first?.id
-            }
-        } catch {
-            accounts = []
+        if activeAccountID == nil || !accounts.contains(where: { $0.id == activeAccountID }) {
+            activeAccountID = accounts.first?.id
         }
     }
 
@@ -1741,21 +1730,21 @@ final class AppState: ObservableObject {
             return
         }
 
-        do {
-            try keychain.save(encoded, account: accountsKey)
-        } catch {
-            globalErrorMessage = "Cannot save accounts to Keychain."
-        }
-
         sharedDefaults?.set(encoded, forKey: accountsKey)
 
         if let activeAccountID {
-            UserDefaults.standard.set(activeAccountID.uuidString, forKey: activeAccountDefaultsKey)
             sharedDefaults?.set(activeAccountID.uuidString, forKey: activeAccountDefaultsKey)
         } else {
-            UserDefaults.standard.removeObject(forKey: activeAccountDefaultsKey)
             sharedDefaults?.removeObject(forKey: activeAccountDefaultsKey)
         }
+    }
+
+    private func decodeAccounts(from data: Data?) -> [StoredAccount]? {
+        guard let data else {
+            return nil
+        }
+
+        return try? JSONDecoder().decode([StoredAccount].self, from: data)
     }
 
     private func existingAccountID(instanceURL: String, userName: String) -> UUID? {

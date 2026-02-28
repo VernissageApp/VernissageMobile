@@ -36,6 +36,32 @@ extension View {
             )
         }
     }
+
+    func warningAlertToast(_ message: Binding<String?>) -> some View {
+        toast(isPresenting: Binding(
+            get: { message.wrappedValue?.toastPresentableMessage != nil },
+            set: { isPresented in
+                if !isPresented {
+                    message.wrappedValue = nil
+                }
+            }
+        ), duration: 5) {
+            AlertToast(
+                displayMode: .alert,
+                type: .regular,
+                title: nil,
+                subTitle: message.wrappedValue?.toastPresentableMessage ?? "",
+                style: .style(
+                    backgroundColor: Color.orange.opacity(0.92),
+                    titleColor: .white,
+                    subTitleColor: .white,
+                    titleFont: .headline.weight(.semibold),
+                    subTitleFont: .body.weight(.semibold)
+                )
+            )
+        }
+    }
+
     func successAlertToast(_ message: Binding<String?>) -> some View {
         toast(isPresenting: Binding(
             get: { message.wrappedValue?.toastPresentableMessage != nil },

@@ -13,8 +13,10 @@ final class AppState: ObservableObject {
     @Published private(set) var unreadNotificationsCount = 0
     @Published var globalErrorMessage: String?
     @Published var toastMessage: String?
+    @Published var warningToastMessage: String?
 
     private var toastDismissTask: Task<Void, Never>?
+    private var warningToastDismissTask: Task<Void, Never>?
 
     var activeAccount: StoredAccount? {
         guard let activeAccountID else {
@@ -160,7 +162,7 @@ final class AppState: ObservableObject {
 
             upsertAccount(account)
         } catch {
-            if handleRefreshFailureForReauthenticationIfNeeded(error, accountID: account.id) {
+            if handleRefreshFailureForReauthenticationIfNeeded(error, account: account) {
                 return
             }
 
@@ -376,6 +378,24 @@ final class AppState: ObservableObject {
             }
 
             self?.toastMessage = nil
+        }
+    }
+
+    func showWarningToast(_ message: String) {
+        guard let presentableMessage = message.toastPresentableMessage else {
+            return
+        }
+
+        warningToastDismissTask?.cancel()
+        warningToastMessage = presentableMessage
+
+        warningToastDismissTask = Task { [weak self] in
+            try? await Task.sleep(nanoseconds: 5_000_000_000)
+            guard !Task.isCancelled else {
+                return
+            }
+
+            self?.warningToastMessage = nil
         }
     }
 
@@ -1639,7 +1659,7 @@ final class AppState: ObservableObject {
                 clientSecret: account.clientSecret
             )
         } catch {
-            if handleRefreshFailureForReauthenticationIfNeeded(error, accountID: account.id) {
+            if handleRefreshFailureForReauthenticationIfNeeded(error, account: account) {
                 return nil
             }
 
@@ -1656,13 +1676,13 @@ final class AppState: ObservableObject {
     }
 
     @discardableResult
-    private func handleRefreshFailureForReauthenticationIfNeeded(_ error: Error, accountID: UUID) -> Bool {
+    private func handleRefreshFailureForReauthenticationIfNeeded(_ error: Error, account: StoredAccount) -> Bool {
         guard shouldForceReauthentication(for: error) else {
             return false
         }
 
-        invalidateSessionAndRequireReauthentication(for: accountID)
-        showErrorToast("Session expired. Sign in again.")
+        invalidateSessionAndRequireReauthentication(for: account.id)
+        showWarningToast("The session for @\(account.userName) has expired. Please sign in to this account again.")
         return true
     }
 
@@ -1696,8 +1716,10 @@ final class AppState: ObservableObject {
         accounts.removeAll(where: { $0.id == accountID })
 
         if activeAccountID == accountID {
-            activeAccountID = nil
-            unreadNotificationsCount = 0
+            activeAccountID = accounts.first?.id
+            if activeAccountID == nil {
+                unreadNotificationsCount = 0
+            }
         }
 
         saveToStorage()

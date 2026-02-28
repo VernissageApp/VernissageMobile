@@ -26,6 +26,7 @@ struct RootScreen: View {
                 MainTabScreen()
             }
         }
+        .warningAlertToast($appState.warningToastMessage)
         .errorAlertToast($appState.toastMessage)
         .errorAlertToast($appState.globalErrorMessage)
         .task(id: appState.activeAccountID) {

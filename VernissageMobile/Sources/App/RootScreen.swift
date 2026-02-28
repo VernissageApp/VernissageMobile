@@ -32,6 +32,7 @@ struct RootScreen: View {
         .task(id: appState.activeAccountID) {
             await appState.refreshActiveTokenIfNeeded(force: false)
             await appState.refreshUnreadNotificationsCount()
+            appState.scheduleInactiveAccountsTokenRefreshIfNeeded()
         }
         .onChange(of: scenePhase, initial: false) { _, newPhase in
             guard newPhase == .active else {

@@ -17,6 +17,7 @@ final class AppState: ObservableObject {
 
     private var toastDismissTask: Task<Void, Never>?
     private var warningToastDismissTask: Task<Void, Never>?
+    private var inactiveAccountsRefreshTask: Task<Void, Never>?
 
     var activeAccount: StoredAccount? {
         guard let activeAccountID else {
@@ -167,6 +168,13 @@ final class AppState: ObservableObject {
             }
 
             globalErrorMessage = (error as? LocalizedError)?.errorDescription ?? error.localizedDescription
+        }
+    }
+
+    func scheduleInactiveAccountsTokenRefreshIfNeeded() {
+        inactiveAccountsRefreshTask?.cancel()
+        inactiveAccountsRefreshTask = Task(priority: .background) { [weak self] in
+            await self?.refreshInactiveAccountsTokensIfNeeded()
         }
     }
 
@@ -1673,6 +1681,47 @@ final class AppState: ObservableObject {
 
         upsertAccount(updated)
         return updated
+    }
+
+    private func refreshInactiveAccountsTokensIfNeeded() async {
+        let accountIds = accounts.map(\.id)
+
+        for accountId in accountIds {
+            guard !Task.isCancelled else {
+                return
+            }
+
+            guard accountId != activeAccountID,
+                  var account = accounts.first(where: { $0.id == accountId }) else {
+                continue
+            }
+
+            if let expiration = account.accessTokenExpiration,
+               expiration.timeIntervalSinceNow > Self.proactiveAccessTokenRefreshThreshold {
+                continue
+            }
+
+            guard let refreshToken = account.refreshToken else {
+                continue
+            }
+
+            do {
+                let refreshed = try await OAuthAPI.refreshToken(
+                    at: URLSanitizer.sanitizeBaseURL(account.instanceURL),
+                    refreshToken: refreshToken,
+                    clientID: account.clientID,
+                    clientSecret: account.clientSecret
+                )
+
+                account.accessToken = refreshed.accessToken
+                account.refreshToken = refreshed.refreshToken ?? account.refreshToken
+                account.accessTokenExpiration = refreshed.expirationDate ?? account.accessTokenExpiration
+                upsertAccount(account)
+            } catch {
+                // Keep this refresh silent for inactive accounts.
+                continue
+            }
+        }
     }
 
     @discardableResult

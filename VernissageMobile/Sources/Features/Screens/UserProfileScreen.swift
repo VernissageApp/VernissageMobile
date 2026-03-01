@@ -293,9 +293,6 @@ struct UserProfileScreen: View {
         .onFirstAppear {
             await loadProfile()
         }
-        .refreshable {
-            await loadProfile()
-        }
         .errorAlertToast($errorMessage)
         .errorAlertToast($statusesErrorMessage)
         .errorAlertToast($followingErrorMessage)

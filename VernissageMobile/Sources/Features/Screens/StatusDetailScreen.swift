@@ -6,6 +6,10 @@
 
 import SwiftUI
 
+#if canImport(Translation)
+import Translation
+#endif
+
 struct StatusDetailScreen: View {
     @EnvironmentObject private var appState: AppState
     @Environment(\.dismiss) private var dismiss
@@ -32,6 +36,7 @@ struct StatusDetailScreen: View {
     @State private var showDeleteStatusConfirmation = false
     @State private var isShowingReportSheet = false
     @State private var isShowingApplyContentWarningSheet = false
+    @State private var isShowingTranslateSheet = false
     @State private var statusForEditing: Status?
     @State private var isAttachmentViewerPresented = false
     @State private var attachmentViewerInitialIndex = 0
@@ -135,6 +140,7 @@ struct StatusDetailScreen: View {
             }
             .errorAlertToast($actionErrorMessage)
             .errorAlertToast($commentsErrorMessage)
+            .translationPresentation(isPresented: $isShowingTranslateSheet, text: statusPlainTextForTranslation ?? "")
     }
 
     private var statusDetailContent: some View {
@@ -518,6 +524,13 @@ struct StatusDetailScreen: View {
         }
 
         Button {
+            isShowingTranslateSheet = true
+        } label: {
+            Label("Translate", systemImage: "translate")
+        }
+        .disabled(statusPlainTextForTranslation?.nilIfEmpty == nil)
+
+        Button {
             isShowingReportSheet = true
         } label: {
             Label("Report", systemImage: "flag")
@@ -642,6 +655,18 @@ struct StatusDetailScreen: View {
         }
 
         UIPasteboard.general.string = link
+    }
+
+    private var statusPlainTextForTranslation: String? {
+        guard let note = displayedStatus.noteForDisplay?.nilIfEmpty else {
+            return nil
+        }
+
+        let plainText = note.decodingHTMLEntities
+            .replacingOccurrences(of: "\u{00A0}", with: " ")
+            .trimmingCharacters(in: .whitespacesAndNewlines)
+
+        return plainText.nilIfEmpty
     }
 
     private func openAttachmentViewer(at index: Int) {

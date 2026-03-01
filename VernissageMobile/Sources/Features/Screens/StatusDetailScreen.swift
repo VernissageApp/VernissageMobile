@@ -37,6 +37,7 @@ struct StatusDetailScreen: View {
     @State private var isShowingReportSheet = false
     @State private var isShowingApplyContentWarningSheet = false
     @State private var isShowingTranslateSheet = false
+    @State private var translationSourceText = ""
     @State private var statusForEditing: Status?
     @State private var isAttachmentViewerPresented = false
     @State private var attachmentViewerInitialIndex = 0
@@ -140,7 +141,7 @@ struct StatusDetailScreen: View {
             }
             .errorAlertToast($actionErrorMessage)
             .errorAlertToast($commentsErrorMessage)
-            .translationPresentation(isPresented: $isShowingTranslateSheet, text: statusPlainTextForTranslation ?? "")
+            .translationPresentation(isPresented: $isShowingTranslateSheet, text: translationSourceText)
     }
 
     private var statusDetailContent: some View {
@@ -524,11 +525,16 @@ struct StatusDetailScreen: View {
         }
 
         Button {
+            guard let plainText = prepareStatusTextForTranslation() else {
+                return
+            }
+
+            translationSourceText = plainText
             isShowingTranslateSheet = true
         } label: {
             Label("Translate", systemImage: "translate")
         }
-        .disabled(statusPlainTextForTranslation?.nilIfEmpty == nil)
+        .disabled(!canTranslateStatusText)
 
         Button {
             isShowingReportSheet = true
@@ -657,7 +663,11 @@ struct StatusDetailScreen: View {
         UIPasteboard.general.string = link
     }
 
-    private var statusPlainTextForTranslation: String? {
+    private var canTranslateStatusText: Bool {
+        displayedStatus.noteForDisplay?.nilIfEmpty != nil
+    }
+
+    private func prepareStatusTextForTranslation() -> String? {
         guard let note = displayedStatus.noteForDisplay?.nilIfEmpty else {
             return nil
         }

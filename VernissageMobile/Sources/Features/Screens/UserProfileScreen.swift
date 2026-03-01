@@ -181,7 +181,6 @@ struct UserProfileScreen: View {
                                                     })
                             }
                         }
-                        .padding(.horizontal, 16)
 
                         ProfileContentTabsView(selectedTab: $selectedContentTab)
                             .padding(.horizontal, 16)
@@ -196,6 +195,7 @@ struct UserProfileScreen: View {
                     }
                 }
             }
+            .ignoresSafeArea(edges: .top)
         }
         .id(currentContextKey)
         .navigationTitle(profileNavigationTitle)

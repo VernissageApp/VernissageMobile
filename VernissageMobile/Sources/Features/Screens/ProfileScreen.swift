@@ -97,7 +97,6 @@ struct ProfileScreen: View {
                                                     isAdministrator: isAdministratorBadgeVisible)
                             }
                         }
-                        .padding(.horizontal, 16)
 
                         ProfileContentTabsView(selectedTab: $selectedContentTab)
                             .padding(.horizontal, 16)
@@ -112,6 +111,7 @@ struct ProfileScreen: View {
                     }
                 }
             }
+            .ignoresSafeArea(edges: .top)
         }
         .id(appState.activeAccountID)
         .navigationTitle("")

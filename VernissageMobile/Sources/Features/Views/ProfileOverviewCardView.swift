@@ -7,6 +7,8 @@
 import SwiftUI
 
 struct ProfileOverviewCardView: View {
+    @Environment(\.colorScheme) private var colorScheme
+
     let profile: User
     let latestFollowers: [User]
     let isAdministrator: Bool
@@ -72,25 +74,18 @@ struct ProfileOverviewCardView: View {
         Color(uiColor: .separator).opacity(0.22)
     }
 
+    private var avatarBorderColor: Color {
+        colorScheme == .dark ? .black : .white
+    }
+
+    private let avatarSize: CGFloat = 140
+    private let headerHeight: CGFloat = 220
+    private let avatarOverlap: CGFloat = 68
+
     var body: some View {
         VStack(spacing: 16) {
-            if let headerURL = profile.headerUrl?.nilIfEmpty {
-                ZStack(alignment: .bottom) {
-                    ProfileHeaderImageView(urlString: headerURL)
-                        .frame(maxWidth: .infinity)
-                        .frame(height: 188)
-                        .clipShape(RoundedRectangle(cornerRadius: 18, style: .continuous))
+            headerSection
 
-                    AsyncAvatarView(urlString: profile.avatarUrl, size: 140)
-                        .overlay(Circle().stroke(.white.opacity(0.92), lineWidth: 4))
-                        .offset(y: 68)
-                }
-                .padding(.bottom, 68)
-            } else {
-                AsyncAvatarView(urlString: profile.avatarUrl, size: 140)
-                    .overlay(Circle().stroke(.white.opacity(0.92), lineWidth: 4))
-            }
-            
             VStack(spacing: 0) {
                 Text(displayName)
                     .font(.title.weight(.bold))
@@ -212,6 +207,29 @@ struct ProfileOverviewCardView: View {
                 )
                 .frame(maxWidth: .infinity, alignment: .leading)
             }
+        }
+        .padding(.horizontal, 16)
+    }
+
+    @ViewBuilder
+    private var headerSection: some View {
+        if let headerURL = profile.headerUrl?.nilIfEmpty {
+            ZStack(alignment: .bottom) {
+                ProfileHeaderImageView(urlString: headerURL)
+                    .frame(maxWidth: .infinity)
+                    .frame(height: headerHeight)
+                    .clipped()
+
+                AsyncAvatarView(urlString: profile.avatarUrl, size: avatarSize)
+                    .overlay(Circle().stroke(avatarBorderColor, lineWidth: 4))
+                    .offset(y: avatarOverlap)
+            }
+            .padding(.horizontal, -16)
+            .padding(.bottom, avatarOverlap)
+        } else {
+            AsyncAvatarView(urlString: profile.avatarUrl, size: avatarSize)
+                .overlay(Circle().stroke(avatarBorderColor, lineWidth: 4))
+                .padding(.top, headerHeight - avatarSize + avatarOverlap)
         }
     }
 }

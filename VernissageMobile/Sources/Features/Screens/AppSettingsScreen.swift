@@ -5,12 +5,29 @@
 //
 
 import SwiftUI
+import UIKit
 
 struct AppSettingsScreen: View {
     @AppStorage(AppStorageKeys.settingsAlwaysShowNsfw) private var alwaysShowNsfw = false
     @AppStorage(AppStorageKeys.settingsShowAlternativeText) private var showAlternativeText = false
     @AppStorage(AppStorageKeys.settingsShowAvatarsOnTimeline) private var showAvatarsOnTimeline = false
     @AppStorage(AppStorageKeys.settingsShowImageCountsOnTimeline) private var showImageCountsOnTimeline = false
+    @AppStorage(AppStorageKeys.settingsAppIconName) private var selectedAppIconName = AppIconOption.appIcon01.rawValue
+
+    @State private var appIconErrorMessage: String?
+
+    private enum AppIconOption: String, CaseIterable, Identifiable {
+        case appIcon01 = "AppIcon01"
+        case appIcon02 = "AppIcon02"
+
+        var id: String { rawValue }
+
+        var previewAssetName: String {
+            "\(rawValue)Preview"
+        }
+    }
+    
+    private static let primaryAppIconName = AppIconOption.appIcon01.rawValue
 
     var body: some View {
         List {
@@ -51,6 +68,8 @@ struct AppSettingsScreen: View {
                     }
                 }
             }
+
+            appIconSection
             
             otherSection
             socialSection
@@ -58,6 +77,61 @@ struct AppSettingsScreen: View {
         }
         .navigationTitle("Preferences")
         .navigationBarTitleDisplayMode(.inline)
+        .onAppear {
+            selectedAppIconName = currentAppIconName
+        }
+        .errorAlertToast($appIconErrorMessage)
+    }
+
+    @ViewBuilder
+    private var appIconSection: some View {
+        Section("Application icon") {
+            ScrollView(.horizontal, showsIndicators: false) {
+                HStack(spacing: 12) {
+                    ForEach(AppIconOption.allCases) { iconOption in
+                        Button {
+                            selectedAppIconName = iconOption.rawValue
+                            applyAppIconSelection(iconOption.rawValue)
+                        } label: {
+                            appIconPreview(for: iconOption)
+                                .frame(width: 90)
+                        }
+                        .buttonStyle(.plain)
+                    }
+                }
+                .padding(.vertical, 4)
+            }
+        }
+    }
+
+    @ViewBuilder
+    private func appIconPreview(for iconOption: AppIconOption) -> some View {
+        ZStack(alignment: .topTrailing) {
+            if let image = UIImage(named: iconOption.previewAssetName) {
+                Image(uiImage: image)
+                    .resizable()
+                    .scaledToFill()
+            } else {
+                Image(systemName: "app.fill")
+                    .font(.system(size: 24, weight: .semibold))
+                    .foregroundStyle(.secondary)
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    .background(.secondary.opacity(0.12))
+            }
+
+            if selectedAppIconName == iconOption.rawValue {
+                Image(systemName: "checkmark.circle.fill")
+                    .foregroundStyle(.blue, .white)
+                    .font(.system(size: 18))
+                    .padding(4)
+            }
+        }
+        .frame(width: 72, height: 72)
+        .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
+        .overlay(
+            RoundedRectangle(cornerRadius: 16, style: .continuous)
+                .stroke(selectedAppIconName == iconOption.rawValue ? .blue : .secondary.opacity(0.22), lineWidth: 1)
+        )
     }
     
     @ViewBuilder
@@ -156,5 +230,33 @@ struct AppSettingsScreen: View {
     
     private var appVersionLabel: String {
         Bundle.main.appVersionLabel
+    }
+
+    private var currentAppIconName: String {
+        UIApplication.shared.alternateIconName ?? Self.primaryAppIconName
+    }
+
+    private func applyAppIconSelection(_ iconName: String) {
+        guard UIApplication.shared.supportsAlternateIcons else {
+            appIconErrorMessage = "Application icon switching is not supported on this device."
+            return
+        }
+
+        let targetIconName = iconName == Self.primaryAppIconName ? nil : iconName
+        guard UIApplication.shared.alternateIconName != targetIconName else {
+            return
+        }
+
+        let previousSelection = currentAppIconName
+        UIApplication.shared.setAlternateIconName(targetIconName) { error in
+            guard let error else {
+                return
+            }
+
+            Task { @MainActor in
+                selectedAppIconName = previousSelection
+                appIconErrorMessage = (error as? LocalizedError)?.errorDescription ?? error.localizedDescription
+            }
+        }
     }
 }

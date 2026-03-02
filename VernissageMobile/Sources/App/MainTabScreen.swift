@@ -29,7 +29,7 @@ struct MainTabScreen: View {
                                 showAccountSwitcher: $showAccountSwitcher)
             }
 
-            Tab("Editors", systemImage: "star.circle", value: .editors) {
+            Tab("Featured", systemImage: "star.circle", value: .editors) {
                 EditorsScreen(showAccountSwitcher: $showAccountSwitcher)
             }
 

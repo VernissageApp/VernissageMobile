@@ -9,6 +9,7 @@ enum AppStorageKeys {
     static let settingsShowAlternativeText = "settings.showAlternativeText"
     static let settingsShowAvatarsOnTimeline = "settings.showAvatarsOnTimeline"
     static let settingsShowImageCountsOnTimeline = "settings.showImageCountsOnTimeline"
+    static let settingsAppIconName = "settings.appIconName"
 
     static let composeAttachmentDetailsLicenseId = "compose.attachmentDetails.licenseId"
     static let composeAttachmentDetailsCountryCode = "compose.attachmentDetails.countryCode"

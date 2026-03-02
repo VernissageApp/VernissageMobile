@@ -281,7 +281,7 @@ struct ProfileScreen: View {
                     NavigationLink {
                         StatusDetailScreen(status: status)
                     } label: {
-                        TimelinePhotoTileView(status: status)
+                        TimelinePhotoTileView(status: status, showsImageCountOverlay: true)
                     }
                     .buttonStyle(.plain)
                     .onAppear {

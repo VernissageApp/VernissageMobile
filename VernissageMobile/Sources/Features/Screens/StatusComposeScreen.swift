@@ -761,7 +761,9 @@ struct StatusComposeScreen: View {
             async let fetchedEmailVerified = appState.fetchEmailVerified()
 
             profile = try await fetchedProfile
-            categories = try await fetchedCategories.sorted { $0.priority ?? 0 < $1.priority ?? 0 }
+            categories = try await fetchedCategories.sorted {
+                $0.name.localizedCaseInsensitiveCompare($1.name) == .orderedAscending
+            }
             licenses = try await fetchedLicenses.sorted { ($0.name ?? "") < ($1.name ?? "") }
             countries = try await fetchedCountries.sorted { ($0.name ?? "") < ($1.name ?? "") }
             applyRememberedCategoryIfNeeded()

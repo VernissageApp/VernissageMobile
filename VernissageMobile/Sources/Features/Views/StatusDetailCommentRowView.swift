@@ -9,6 +9,7 @@ import SwiftUI
 struct StatusDetailCommentRowView: View {
     let comment: Status
     let isIndented: Bool
+    let onOpenMarkdownURL: (URL) -> OpenURLAction.Result
     let onReply: () -> Void
 
     private var displayName: String {
@@ -60,6 +61,9 @@ struct StatusDetailCommentRowView: View {
                     MarkdownFormattedTextView(markdown)
                         .font(.body)
                         .foregroundStyle(.primary)
+                        .environment(\.openURL, OpenURLAction { url in
+                            onOpenMarkdownURL(url)
+                        })
                 } else if let noteForDisplay = comment.noteForDisplay, noteForDisplay.isEmpty == false {
                     Text("Cannot render text comment.")
                         .font(.body)

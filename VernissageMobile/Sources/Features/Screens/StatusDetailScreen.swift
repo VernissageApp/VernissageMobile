@@ -13,6 +13,7 @@ import Translation
 struct StatusDetailScreen: View {
     @EnvironmentObject private var appState: AppState
     @Environment(\.dismiss) private var dismiss
+    @Environment(\.openURL) private var openURL
     @AppStorage(AppStorageKeys.settingsShowAlternativeText) private var showAlternativeText = false
 
     @State private var displayedStatus: Status
@@ -33,6 +34,8 @@ struct StatusDetailScreen: View {
     @FocusState private var isReplyFieldFocused: Bool
     @State private var presentedUsersListKind: StatusUsersListKind?
     @State private var categoryTimelineRoute: CategoryTimelineRoute?
+    @State private var hashtagTimelineRoute: HashtagTimelineRoute?
+    @State private var mentionedUserRoute: MentionedUserRoute?
     @State private var showDeleteStatusConfirmation = false
     @State private var isShowingReportSheet = false
     @State private var isShowingApplyContentWarningSheet = false
@@ -124,6 +127,12 @@ struct StatusDetailScreen: View {
             }
             .navigationDestination(item: $categoryTimelineRoute) { route in
                 CategoryTimelineScreen(categoryName: route.categoryName)
+            }
+            .navigationDestination(item: $hashtagTimelineRoute) { route in
+                HashtagTimelineScreen(hashtagName: route.hashtagName)
+            }
+            .navigationDestination(item: $mentionedUserRoute) { route in
+                UserProfileScreen(userName: route.userName, preferredDisplayName: route.preferredDisplayName)
             }
     }
 
@@ -273,6 +282,9 @@ struct StatusDetailScreen: View {
                 MarkdownFormattedTextView(markdown)
                     .font(.body)
                     .foregroundStyle(.primary)
+                    .environment(\.openURL, OpenURLAction { url in
+                        handleStatusMarkdownURL(url)
+                    })
             } else if let noteForDisplay = displayedStatus.noteForDisplay, noteForDisplay.isEmpty == false {
                 Text("Cannot render text status.")
                     .font(.body)
@@ -447,7 +459,11 @@ struct StatusDetailScreen: View {
             } else {
                 LazyVStack(alignment: .leading, spacing: 12) {
                     ForEach(comments) { item in
-                        StatusDetailCommentRowView(comment: item.status, isIndented: item.isIndented) {
+                        StatusDetailCommentRowView(
+                            comment: item.status,
+                            isIndented: item.isIndented,
+                            onOpenMarkdownURL: handleStatusMarkdownURL
+                        ) {
                             presentReplySheet(for: item.status)
                         }
                     }
@@ -931,6 +947,111 @@ struct StatusDetailScreen: View {
         }
         .frame(maxWidth: .infinity, alignment: .leading)
     }
+
+    private func handleStatusMarkdownURL(_ url: URL) -> OpenURLAction.Result {
+        if let hashtag = hashtagName(from: url) {
+            hashtagTimelineRoute = HashtagTimelineRoute(hashtagName: hashtag)
+            return .handled
+        }
+
+        if let userName = userName(from: url) {
+            openMentionedUserOrFallback(userName: userName, fallbackURL: url)
+            return .handled
+        }
+
+        return .systemAction
+    }
+
+    private func openMentionedUserOrFallback(userName: String, fallbackURL: URL) {
+        Task {
+            do {
+                let result = try await appState.search(query: userName, type: SearchScopeSelection.users.rawValue)
+                if let matchedUser = preferredMentionSearchUser(in: result.users ?? [], query: userName),
+                   let routeUserName = routeUserName(from: matchedUser) {
+                    mentionedUserRoute = MentionedUserRoute(
+                        userName: routeUserName,
+                        preferredDisplayName: matchedUser.name?.nilIfEmpty
+                    )
+                    return
+                }
+            } catch {
+                // If account search fails, fallback to opening URL in browser.
+            }
+
+            openURL(fallbackURL)
+        }
+    }
+
+    private func hashtagName(from url: URL) -> String? {
+        if let fragment = url.fragment?.nilIfEmpty {
+            let normalizedFragment = fragment.trimmingPrefix("#")
+            if !normalizedFragment.isEmpty {
+                return normalizedFragment
+            }
+        }
+
+        let pathComponents = url.pathComponents
+        if pathComponents.contains(where: { $0.caseInsensitiveCompare("tags") == .orderedSame }),
+           let lastComponent = pathComponents.last?.nilIfEmpty {
+            let normalizedTag = lastComponent.trimmingPrefix("#")
+            return normalizedTag.nilIfEmpty
+        }
+
+        return nil
+    }
+
+    private func userName(from url: URL) -> String? {
+        userNameFromAtPath(url)
+    }
+
+    private func userNameFromAtPath(_ url: URL) -> String? {
+        guard let lastPathComponent = url.lastPathComponent.nilIfEmpty,
+              lastPathComponent.first == "@",
+              let host = url.host?.nilIfEmpty else {
+            return nil
+        }
+
+        let userPart = lastPathComponent
+            .trimmingPrefix("@")
+            .split(separator: "@", maxSplits: 1, omittingEmptySubsequences: true)
+            .first
+            .map(String.init)
+
+        guard let normalizedUserPart = userPart?.nilIfEmpty else {
+            return nil
+        }
+
+        return "\(normalizedUserPart)@\(host)"
+    }
+
+    private func preferredMentionSearchUser(in users: [User], query: String) -> User? {
+        let normalizedQuery = query.trimmingPrefix("@").lowercased()
+        guard !users.isEmpty else {
+            return nil
+        }
+
+        if let exactMatch = users.first(where: { user in
+            let userName = user.userName?.trimmingPrefix("@").lowercased()
+            let account = user.account?.trimmingPrefix("@").lowercased()
+            return userName == normalizedQuery || account == normalizedQuery
+        }) {
+            return exactMatch
+        }
+
+        return users.first
+    }
+
+    private func routeUserName(from user: User) -> String? {
+        if let userName = user.userName?.trimmingPrefix("@").nilIfEmpty {
+            return userName
+        }
+
+        if let account = user.account?.trimmingPrefix("@").nilIfEmpty {
+            return account
+        }
+
+        return nil
+    }
 }
 
 private struct CategoryTimelineRoute: Identifiable, Hashable {
@@ -938,5 +1059,22 @@ private struct CategoryTimelineRoute: Identifiable, Hashable {
 
     var id: String {
         categoryName.lowercased()
+    }
+}
+
+private struct HashtagTimelineRoute: Identifiable, Hashable {
+    let hashtagName: String
+
+    var id: String {
+        hashtagName.lowercased()
+    }
+}
+
+private struct MentionedUserRoute: Identifiable, Hashable {
+    let userName: String
+    let preferredDisplayName: String?
+
+    var id: String {
+        userName.lowercased()
     }
 }

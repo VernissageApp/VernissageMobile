@@ -6,13 +6,6 @@
 
 import SwiftUI
 
-@MainActor
-final class ShareComposeSession: ObservableObject {
-    @Published var attachmentURLs: [URL] = []
-    @Published var isPreparingAttachments = true
-    @Published var preparationErrorMessage: String?
-}
-
 struct ShareComposeRootView: View {
     @StateObject private var appState = AppState()
     @ObservedObject var session: ShareComposeSession

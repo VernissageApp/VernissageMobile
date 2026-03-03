@@ -1053,28 +1053,3 @@ struct StatusDetailScreen: View {
         return nil
     }
 }
-
-private struct CategoryTimelineRoute: Identifiable, Hashable {
-    let categoryName: String
-
-    var id: String {
-        categoryName.lowercased()
-    }
-}
-
-private struct HashtagTimelineRoute: Identifiable, Hashable {
-    let hashtagName: String
-
-    var id: String {
-        hashtagName.lowercased()
-    }
-}
-
-private struct MentionedUserRoute: Identifiable, Hashable {
-    let userName: String
-    let preferredDisplayName: String?
-
-    var id: String {
-        userName.lowercased()
-    }
-}

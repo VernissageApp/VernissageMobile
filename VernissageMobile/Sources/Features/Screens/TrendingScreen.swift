@@ -272,11 +272,3 @@ struct TrendingScreen: View {
         }
     }
 }
-
-private struct HashtagTimelineRoute: Identifiable, Hashable {
-    let hashtagName: String
-
-    var id: String {
-        hashtagName.lowercased()
-    }
-}

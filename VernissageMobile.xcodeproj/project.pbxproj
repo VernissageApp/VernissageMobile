@@ -83,12 +83,16 @@
 		B10020000000000000000001 /* ShareViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10010000000000000000002 /* ShareViewController.swift */; };
 		B10020000000000000000003 /* VernissageShareExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = B10010000000000000000001 /* VernissageShareExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		B10020000000000000000005 /* ShareComposeRootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10010000000000000000008 /* ShareComposeRootView.swift */; };
+		B10020000000000000000006 /* ShareComposeSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10010000000000000000009 /* ShareComposeSession.swift */; };
 		B27AA97C634E22C9B6A074A4 /* TrendingPeriodSelection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 86B5FADCF470A7339FE9F1DA /* TrendingPeriodSelection.swift */; };
 		B2F0A6B7F4DC8FEEF0A09467 /* KeychainStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = EA5AA0D27374ED6BB712ADED /* KeychainStore.swift */; };
 		B3C5F63B7405EEB3165D9E07 /* ComposeAttachmentThumbnailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37F56260AE7AF57F78F91276 /* ComposeAttachmentThumbnailView.swift */; };
 		B8659C04F3DAF0901B3DDC25 /* CharacterSet+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 634196EDBA808665D562BB22 /* CharacterSet+Extensions.swift */; };
 		BAEBF0162DB55FC4BC24A6BC /* UserBlockedDomainRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 655A95BF2F7CC1F7F45A07B2 /* UserBlockedDomainRequest.swift */; };
 		C046FED922803446C4266A9C /* AttachmentBlurHashPlaceholderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC3DAEA7229BBF69DDFC3B56 /* AttachmentBlurHashPlaceholderView.swift */; };
+		C1A200000000000000000001 /* CategoryTimelineRoute.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1A100000000000000000001 /* CategoryTimelineRoute.swift */; };
+		C1A200000000000000000002 /* HashtagTimelineRoute.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1A100000000000000000002 /* HashtagTimelineRoute.swift */; };
+		C1A200000000000000000003 /* MentionedUserRoute.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1A100000000000000000003 /* MentionedUserRoute.swift */; };
 		C2CDEE17C3DA49B9FAA9A2BF /* View+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = B175FDF1F0E742558BF76A88 /* View+Extensions.swift */; };
 		C7A386C38D7875820A58BB00 /* License.swift in Sources */ = {isa = PBXBuildFile; fileRef = A44F880501089BCBAC355807 /* License.swift */; };
 		CA3C20874DEE4549424615EE /* ComposeAttachmentSheetSelection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61EB62E8425A718C109D5ABC /* ComposeAttachmentSheetSelection.swift */; };
@@ -482,6 +486,7 @@
 		B10010000000000000000004 /* VernissageShareExtension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = VernissageShareExtension.entitlements; sourceTree = "<group>"; };
 		B10010000000000000000006 /* VernissageMobile.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = VernissageMobile.entitlements; sourceTree = "<group>"; };
 		B10010000000000000000008 /* ShareComposeRootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareComposeRootView.swift; sourceTree = "<group>"; };
+		B10010000000000000000009 /* ShareComposeSession.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareComposeSession.swift; sourceTree = "<group>"; };
 		B11C22D33E44F55A66B77C88 /* AppStorageKeys.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppStorageKeys.swift; sourceTree = "<group>"; };
 		B175FDF1F0E742558BF76A88 /* View+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "View+Extensions.swift"; sourceTree = "<group>"; };
 		B1C2D3E4F5A60718293A4B5C /* HashtagTimelineViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HashtagTimelineViewModel.swift; sourceTree = "<group>"; };
@@ -500,6 +505,9 @@
 		BE834B71F189045EB10A1EC7 /* InstanceRule.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InstanceRule.swift; sourceTree = "<group>"; };
 		BEC269DE710BF249F468BF6F /* UpdateProfileRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpdateProfileRequest.swift; sourceTree = "<group>"; };
 		BF3543AEA1C6CB7BEE20701A /* APIClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIClient.swift; sourceTree = "<group>"; };
+		C1A100000000000000000001 /* CategoryTimelineRoute.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CategoryTimelineRoute.swift; sourceTree = "<group>"; };
+		C1A100000000000000000002 /* HashtagTimelineRoute.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HashtagTimelineRoute.swift; sourceTree = "<group>"; };
+		C1A100000000000000000003 /* MentionedUserRoute.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MentionedUserRoute.swift; sourceTree = "<group>"; };
 		C2EB5AC5BBC465732E97A88C /* PublicSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PublicSettings.swift; sourceTree = "<group>"; };
 		C2F80484378DAEDC016320B5 /* StatusBoostedByView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatusBoostedByView.swift; sourceTree = "<group>"; };
 		C3E3BBAD070DCBF9869BE9BE /* InstanceConfiguration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InstanceConfiguration.swift; sourceTree = "<group>"; };
@@ -761,10 +769,13 @@
 			isa = PBXGroup;
 			children = (
 				A2FB2AFF179E17E9B14FA887 /* AddAccountMode.swift */,
+				C1A100000000000000000001 /* CategoryTimelineRoute.swift */,
 				61EB62E8425A718C109D5ABC /* ComposeAttachmentSheetSelection.swift */,
 				FE6EDAA3BB1C0D28907A00C9 /* ComposeAutocompleteMode.swift */,
 				9D4AFA294FAA3C39ABCEBBD4 /* ComposeParsedExifParser.swift */,
 				5965248E0EBA29FD72A723E9 /* EditorsContentSelection.swift */,
+				C1A100000000000000000002 /* HashtagTimelineRoute.swift */,
+				C1A100000000000000000003 /* MentionedUserRoute.swift */,
 				DF34D8994882AD1F70A38AE1 /* OtherTimelineSelection.swift */,
 				99322C4BF56D3F36433F6893 /* ProfileCollectionKind.swift */,
 				771109C3F74A6B4D42AD07A5 /* ProfileContentTab.swift */,
@@ -941,6 +952,7 @@
 			children = (
 				B10010000000000000000002 /* ShareViewController.swift */,
 				B10010000000000000000008 /* ShareComposeRootView.swift */,
+				B10010000000000000000009 /* ShareComposeSession.swift */,
 				B10010000000000000000003 /* Info.plist */,
 				B10010000000000000000004 /* VernissageShareExtension.entitlements */,
 			);
@@ -1189,7 +1201,10 @@
 				F86185722F4B900F00C3AFB8 /* ComposeAttachmentSheetSelection.swift in Sources */,
 				F86185732F4B900F00C3AFB8 /* ComposeAutocompleteMode.swift in Sources */,
 				F86185742F4B900F00C3AFB8 /* ComposeParsedExifParser.swift in Sources */,
+				C1A200000000000000000001 /* CategoryTimelineRoute.swift in Sources */,
 				F86185752F4B900F00C3AFB8 /* EditorsContentSelection.swift in Sources */,
+				C1A200000000000000000002 /* HashtagTimelineRoute.swift in Sources */,
+				C1A200000000000000000003 /* MentionedUserRoute.swift in Sources */,
 				F86185762F4B900F00C3AFB8 /* OtherTimelineSelection.swift in Sources */,
 				F86185772F4B900F00C3AFB8 /* ProfileCollectionKind.swift in Sources */,
 				F86185782F4B900F00C3AFB8 /* ProfileContentTab.swift in Sources */,
@@ -1381,6 +1396,7 @@
 				F1C59A8228A1AA4BC4EF80CC /* LiquidGlassCardModifier.swift in Sources */,
 				B10020000000000000000001 /* ShareViewController.swift in Sources */,
 				B10020000000000000000005 /* ShareComposeRootView.swift in Sources */,
+				B10020000000000000000006 /* ShareComposeSession.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1513,12 +1529,12 @@
 		A10000171000000100000017 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ASSETCATALOG_COMPILER_ALTERNATE_APPICON_NAMES = AppIcon02;
+				ASSETCATALOG_COMPILER_ALTERNATE_APPICON_NAMES = "AppIcon02 AppIcon03";
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon01;
 				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
 				CODE_SIGN_ENTITLEMENTS = VernissageMobile/VernissageMobile.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 27;
+				CURRENT_PROJECT_VERSION = 28;
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = VernissageMobile/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = Vernissage;
@@ -1541,12 +1557,12 @@
 		A10000181000000100000018 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ASSETCATALOG_COMPILER_ALTERNATE_APPICON_NAMES = AppIcon02;
+				ASSETCATALOG_COMPILER_ALTERNATE_APPICON_NAMES = "AppIcon02 AppIcon03";
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon01;
 				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
 				CODE_SIGN_ENTITLEMENTS = VernissageMobile/VernissageMobile.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 27;
+				CURRENT_PROJECT_VERSION = 28;
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = VernissageMobile/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = Vernissage;
@@ -1572,7 +1588,7 @@
 				APPLICATION_EXTENSION_API_ONLY = YES;
 				CODE_SIGN_ENTITLEMENTS = VernissageShareExtension/VernissageShareExtension.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 27;
+				CURRENT_PROJECT_VERSION = 28;
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = VernissageShareExtension/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = VernissageShareExtension;
@@ -1600,7 +1616,7 @@
 				APPLICATION_EXTENSION_API_ONLY = YES;
 				CODE_SIGN_ENTITLEMENTS = VernissageShareExtension/VernissageShareExtension.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 27;
+				CURRENT_PROJECT_VERSION = 28;
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = VernissageShareExtension/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = VernissageShareExtension;

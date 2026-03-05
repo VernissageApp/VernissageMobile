@@ -19,6 +19,8 @@ struct AppSettingsScreen: View {
     private enum AppIconOption: String, CaseIterable, Identifiable {
         case appIcon01 = "AppIcon01"
         case appIcon02 = "AppIcon02"
+        case appIcon03 = "AppIcon03"
+        case appIcon04 = "AppIcon04"
 
         var id: String { rawValue }
 
@@ -87,14 +89,14 @@ struct AppSettingsScreen: View {
     private var appIconSection: some View {
         Section("Application icon") {
             ScrollView(.horizontal, showsIndicators: false) {
-                HStack(spacing: 12) {
+                HStack(spacing: 14) {
                     ForEach(AppIconOption.allCases) { iconOption in
                         Button {
                             selectedAppIconName = iconOption.rawValue
                             applyAppIconSelection(iconOption.rawValue)
                         } label: {
                             appIconPreview(for: iconOption)
-                                .frame(width: 90)
+                                .frame(width: 72)
                         }
                         .buttonStyle(.plain)
                     }

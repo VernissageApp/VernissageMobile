@@ -53,7 +53,9 @@ struct ComposeAttachmentDetailsSheet: View {
                 Section {
                     attachmentPreviewHeader
                 } footer: {
-                    Text("For maximum compatibility across platforms, this photo will be uploaded in 4K.")
+                    if let uploadResolutionFootnoteText {
+                        Text(uploadResolutionFootnoteText)
+                    }
                 }
 
                 if isOpenAIEnabled {
@@ -249,6 +251,37 @@ struct ComposeAttachmentDetailsSheet: View {
 
     private var sortedCountries: [Country] {
         countries.sorted { ($0.name ?? "") < ($1.name ?? "") }
+    }
+
+    private let uploadLongestEdge4K: CGFloat = 4096
+    private let uploadLongestEdge2K: CGFloat = 2048
+
+    private var uploadResolutionFootnoteText: String? {
+        guard let longestEdge = preparedAttachmentLongestEdge else {
+            return nil
+        }
+
+#if SHARE_EXTENSION
+        guard longestEdge >= (uploadLongestEdge2K - 1) else {
+            return nil
+        }
+
+        return "Due to sharing limitations, this photo may be uploaded in 2K. If you need higher resolution, upload it directly in the app."
+#else
+        guard longestEdge >= (uploadLongestEdge4K - 1) else {
+            return nil
+        }
+
+        return "For maximum compatibility across platforms, this photo will be uploaded in 4K."
+#endif
+    }
+
+    private var preparedAttachmentLongestEdge: CGFloat? {
+        guard let image = attachment.localImage else {
+            return nil
+        }
+
+        return max(image.size.width, image.size.height)
     }
 
     private var attachmentPreviewHeader: some View {

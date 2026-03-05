@@ -19,6 +19,7 @@ struct StatusComposeScreen: View {
 
     private static let statusTextTemplateKey = "status-text-template"
     private let maxAttachmentLongestEdge: CGFloat = 4096
+    private let maxAttachmentLongestEdgeForShare: CGFloat = 2048
 
     @State private var profile: User?
     @State private var statusText: String
@@ -1302,19 +1303,20 @@ struct StatusComposeScreen: View {
     private func resizedImageForAttachmentSelection(_ image: UIImage) -> UIImage {
         let originalSize = image.size
         let maxOriginal = max(originalSize.width, originalSize.height)
+        let maxAttachmentEdge = selectedMaxAttachmentLongestEdge
 
-        guard maxOriginal > maxAttachmentLongestEdge, maxOriginal > 0 else {
+        guard maxOriginal > maxAttachmentEdge, maxOriginal > 0 else {
             return image
         }
 
-        let scale = maxAttachmentLongestEdge / maxOriginal
+        let scale = maxAttachmentEdge / maxOriginal
         let targetSize = CGSize(width: originalSize.width * scale, height: originalSize.height * scale)
 
         return image.resized(to: targetSize)
     }
 
     private func preparedAttachmentPayload(fromFileURL fileURL: URL) -> (image: UIImage, data: Data)? {
-        let pixelLimit = max(1, Int(maxAttachmentLongestEdge.rounded()))
+        let pixelLimit = max(1, Int(selectedMaxAttachmentLongestEdge.rounded()))
         guard let downsampledData = UIImage.downsampledJpegData(from: fileURL, maxPixelSize: pixelLimit),
               let downsampledImage = UIImage(data: downsampledData) else {
             return nil
@@ -1367,5 +1369,13 @@ struct StatusComposeScreen: View {
         }
 
         return String(format: "%.1f MiB", mebibytes)
+    }
+
+    private var selectedMaxAttachmentLongestEdge: CGFloat {
+#if SHARE_EXTENSION
+        maxAttachmentLongestEdgeForShare
+#else
+        maxAttachmentLongestEdge
+#endif
     }
 }

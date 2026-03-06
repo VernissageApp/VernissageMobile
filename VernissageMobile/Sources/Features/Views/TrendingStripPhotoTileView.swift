@@ -76,5 +76,7 @@ struct TrendingStripPhotoTileView: View {
                     .frame(width: tileWidth, height: height)
             }
         }
+        .contentShape(Rectangle())
+        .imageContextMenu(status: status.mainStatus)
     }
 }

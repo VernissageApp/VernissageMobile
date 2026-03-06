@@ -37,7 +37,7 @@ struct StatusDetailScreen: View {
     @State private var hashtagTimelineRoute: HashtagTimelineRoute?
     @State private var mentionedUserRoute: MentionedUserRoute?
     @State private var showDeleteStatusConfirmation = false
-    @State private var isShowingReportSheet = false
+    @State private var reportSheetStatus: Status?
     @State private var isShowingApplyContentWarningSheet = false
     @State private var isShowingTranslateSheet = false
     @State private var translationSourceText = ""
@@ -89,8 +89,8 @@ struct StatusDetailScreen: View {
                     .presentationDetents([.medium, .large])
                     .presentationDragIndicator(.visible)
             }
-            .sheet(isPresented: $isShowingReportSheet) {
-                StatusReportSheet(status: displayedStatus)
+            .sheet(item: $reportSheetStatus) { reportStatus in
+                StatusReportSheet(status: reportStatus)
                     .presentationDetents([.fraction(0.58), .large])
                     .presentationDragIndicator(.visible)
             }
@@ -462,10 +462,25 @@ struct StatusDetailScreen: View {
                         StatusDetailCommentRowView(
                             comment: item.status,
                             isIndented: item.isIndented,
-                            onOpenMarkdownURL: handleStatusMarkdownURL
-                        ) {
-                            presentReplySheet(for: item.status)
-                        }
+                            onOpenMarkdownURL: handleStatusMarkdownURL,
+                            onToggleFavourite: {
+                                Task {
+                                    await toggleFavourite(for: item.status)
+                                }
+                            },
+                            onReply: {
+                                presentReplySheet(for: item.status)
+                            },
+                            onTranslate: {
+                                presentTranslation(for: item.status)
+                            },
+                            onCopyText: {
+                                copyTextForStatus(item.status)
+                            },
+                            onReport: {
+                                presentReportSheet(for: item.status)
+                            }
+                        )
                     }
                 }
             }
@@ -553,7 +568,7 @@ struct StatusDetailScreen: View {
         .disabled(!canTranslateStatusText)
 
         Button {
-            isShowingReportSheet = true
+            presentReportSheet(for: displayedStatus)
         } label: {
             Label("Report", systemImage: "flag")
         }
@@ -684,7 +699,11 @@ struct StatusDetailScreen: View {
     }
 
     private func prepareStatusTextForTranslation() -> String? {
-        guard let note = displayedStatus.noteForDisplay?.nilIfEmpty else {
+        statusPlainText(from: displayedStatus)
+    }
+
+    private func statusPlainText(from status: Status) -> String? {
+        guard let note = status.noteForDisplay?.nilIfEmpty else {
             return nil
         }
 
@@ -693,6 +712,23 @@ struct StatusDetailScreen: View {
             .trimmingCharacters(in: .whitespacesAndNewlines)
 
         return plainText.nilIfEmpty
+    }
+
+    private func presentTranslation(for status: Status) {
+        guard let plainText = statusPlainText(from: status) else {
+            return
+        }
+
+        translationSourceText = plainText
+        isShowingTranslateSheet = true
+    }
+
+    private func copyTextForStatus(_ status: Status) {
+        guard let plainText = statusPlainText(from: status) else {
+            return
+        }
+
+        UIPasteboard.general.string = plainText
     }
 
     private func openAttachmentViewer(at index: Int) {
@@ -757,6 +793,21 @@ struct StatusDetailScreen: View {
 
         let action: StatusInteractionAction = displayedStatus.favourited == true ? .unfavourite : .favourite
         await performAction(action)
+    }
+
+    @MainActor
+    private func toggleFavourite(for status: Status) async {
+        let action: StatusInteractionAction = status.favourited == true ? .unfavourite : .favourite
+
+        do {
+            let updatedStatus = try await appState.updateStatusInteraction(statusId: status.id, action: action)
+            if let index = comments.firstIndex(where: { $0.status.id == status.id }) {
+                comments[index] = StatusCommentItem(status: updatedStatus, isIndented: comments[index].isIndented)
+            }
+            actionErrorMessage = nil
+        } catch {
+            actionErrorMessage = (error as? LocalizedError)?.errorDescription ?? error.localizedDescription
+        }
     }
 
     @MainActor
@@ -842,6 +893,11 @@ struct StatusDetailScreen: View {
         let target = ReplySheetTarget(status: status, mode: .reply)
         replySheetTarget = target
         fillReplyMention(for: target.status, force: true)
+    }
+
+    @MainActor
+    private func presentReportSheet(for status: Status) {
+        reportSheetStatus = status.mainStatus
     }
 
     @MainActor

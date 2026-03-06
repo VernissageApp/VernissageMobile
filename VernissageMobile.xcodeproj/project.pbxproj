@@ -75,7 +75,7 @@
 		A05345745752D2DF17AF5127 /* AttachmentLocation.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD3942B570B026C993549A26 /* AttachmentLocation.swift */; };
 		A10000191000000100000019 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A10000201000000100000020 /* Assets.xcassets */; };
 		A10000211000000100000021 /* HTML2Markdown in Frameworks */ = {isa = PBXBuildFile; productRef = A10000221000000100000022 /* HTML2Markdown */; };
-		C6D1E2F3A4B5061728394A5B /* AppConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8F1A2B3C4D5061728394A5B /* AppConstants.swift */; };
+		A1B2C3D4E5F60718293A4B5C /* ImageContextMenu.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1D2E3F40516273849A5B6C7 /* ImageContextMenu.swift */; };
 		A31EAF2C765024FB2ECBFBD3 /* AppState.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB5A20D9A0EC4B1B7F8540F0 /* AppState.swift */; };
 		A491D889E2BE1CC8A1BC0328 /* Relationship.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0870DA50088C9CF6E4CF05D1 /* Relationship.swift */; };
 		A80491967C87FEEDAFC1A232 /* SearchResult.swift in Sources */ = {isa = PBXBuildFile; fileRef = 72B8E09C009044CA1F6E62CD /* SearchResult.swift */; };
@@ -94,6 +94,7 @@
 		C1A200000000000000000002 /* HashtagTimelineRoute.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1A100000000000000000002 /* HashtagTimelineRoute.swift */; };
 		C1A200000000000000000003 /* MentionedUserRoute.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1A100000000000000000003 /* MentionedUserRoute.swift */; };
 		C2CDEE17C3DA49B9FAA9A2BF /* View+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = B175FDF1F0E742558BF76A88 /* View+Extensions.swift */; };
+		C6D1E2F3A4B5061728394A5B /* AppConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8F1A2B3C4D5061728394A5B /* AppConstants.swift */; };
 		C7A386C38D7875820A58BB00 /* License.swift in Sources */ = {isa = PBXBuildFile; fileRef = A44F880501089BCBAC355807 /* License.swift */; };
 		CA3C20874DEE4549424615EE /* ComposeAttachmentSheetSelection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61EB62E8425A718C109D5ABC /* ComposeAttachmentSheetSelection.swift */; };
 		D1353FA9A58AA33915D78B1B /* Status.swift in Sources */ = {isa = PBXBuildFile; fileRef = A027E40035C83A69E0A654E1 /* Status.swift */; };
@@ -101,6 +102,7 @@
 		D520EC3483A61CA119907983 /* OAuthDynamicClientRegistrationRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = FE5F86FA93A009171A2CF82C /* OAuthDynamicClientRegistrationRequest.swift */; };
 		D52F13E40EC3ED9342CF1F1E /* InstanceAttachmentsConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB20F2FF8C84EBB75E11CD3F /* InstanceAttachmentsConfiguration.swift */; };
 		D6F46F3F84B917F98482E992 /* InstanceRule.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE834B71F189045EB10A1EC7 /* InstanceRule.swift */; };
+		D7E1F2A3B4C5061728394A5B /* AppConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8F1A2B3C4D5061728394A5B /* AppConstants.swift */; };
 		D89041B3411DF3CC4F2BECBA /* OAuthDynamicClientRegistrationResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37B1ECFCCEBF741D0ABA535C /* OAuthDynamicClientRegistrationResponse.swift */; };
 		E2232224B3324500E4B68E3A /* Optional+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = CDD0233EE2F086CC7AD84322 /* Optional+Extensions.swift */; };
 		E565A69D5B2E82C47C875D54 /* Data+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD9A408F57DD3EE82E50AEB8 /* Data+Extensions.swift */; };
@@ -287,7 +289,6 @@
 		F86185B02F4B900F00C3AFB8 /* TrendingTagRowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E56E5471AD09476697A797A0 /* TrendingTagRowView.swift */; };
 		F86185B12F4B900F00C3AFB8 /* ZoomableAttachmentScrollView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 996A161C116C4AEAAC83BD30 /* ZoomableAttachmentScrollView.swift */; };
 		F86185B22F4B900F00C3AFB8 /* ZoomableStatusAttachmentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6926FB14A7C94EF01AEACED8 /* ZoomableStatusAttachmentView.swift */; };
-		D7E1F2A3B4C5061728394A5B /* AppConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8F1A2B3C4D5061728394A5B /* AppConstants.swift */; };
 		F86185B52F4B900F00C3AFB8 /* CharacterSet+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 634196EDBA808665D562BB22 /* CharacterSet+Extensions.swift */; };
 		F86185B62F4B900F00C3AFB8 /* Data+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD9A408F57DD3EE82E50AEB8 /* Data+Extensions.swift */; };
 		F86185B72F4B900F00C3AFB8 /* Date+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11FA7CD8D8035E1511738F67 /* Date+Extensions.swift */; };
@@ -487,7 +488,6 @@
 		B10010000000000000000006 /* VernissageMobile.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = VernissageMobile.entitlements; sourceTree = "<group>"; };
 		B10010000000000000000008 /* ShareComposeRootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareComposeRootView.swift; sourceTree = "<group>"; };
 		B10010000000000000000009 /* ShareComposeSession.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareComposeSession.swift; sourceTree = "<group>"; };
-		E8F1A2B3C4D5061728394A5B /* AppConstants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppConstants.swift; sourceTree = "<group>"; };
 		B175FDF1F0E742558BF76A88 /* View+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "View+Extensions.swift"; sourceTree = "<group>"; };
 		B1C2D3E4F5A60718293A4B5C /* HashtagTimelineViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HashtagTimelineViewModel.swift; sourceTree = "<group>"; };
 		B31953BA22EB5727CE00099A /* NotificationsCount.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationsCount.swift; sourceTree = "<group>"; };
@@ -508,6 +508,7 @@
 		C1A100000000000000000001 /* CategoryTimelineRoute.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CategoryTimelineRoute.swift; sourceTree = "<group>"; };
 		C1A100000000000000000002 /* HashtagTimelineRoute.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HashtagTimelineRoute.swift; sourceTree = "<group>"; };
 		C1A100000000000000000003 /* MentionedUserRoute.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MentionedUserRoute.swift; sourceTree = "<group>"; };
+		C1D2E3F40516273849A5B6C7 /* ImageContextMenu.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageContextMenu.swift; sourceTree = "<group>"; };
 		C2EB5AC5BBC465732E97A88C /* PublicSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PublicSettings.swift; sourceTree = "<group>"; };
 		C2F80484378DAEDC016320B5 /* StatusBoostedByView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatusBoostedByView.swift; sourceTree = "<group>"; };
 		C3E3BBAD070DCBF9869BE9BE /* InstanceConfiguration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InstanceConfiguration.swift; sourceTree = "<group>"; };
@@ -532,6 +533,7 @@
 		E680A07A68D557A0973A7EA7 /* ProfileLoadingSkeletonView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileLoadingSkeletonView.swift; sourceTree = "<group>"; };
 		E808926E6797E4F5162219F2 /* TimelineImageCountOverlayView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimelineImageCountOverlayView.swift; sourceTree = "<group>"; };
 		E842E611B270FF32C1C65287 /* StatusAttachmentViewerScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatusAttachmentViewerScreen.swift; sourceTree = "<group>"; };
+		E8F1A2B3C4D5061728394A5B /* AppConstants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppConstants.swift; sourceTree = "<group>"; };
 		E94EE05605675988CA362E0F /* SettingsToolbarButtonView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsToolbarButtonView.swift; sourceTree = "<group>"; };
 		EA3FE85A36E9820EDBF100CE /* StatusComposeScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatusComposeScreen.swift; sourceTree = "<group>"; };
 		EA5AA0D27374ED6BB712ADED /* KeychainStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeychainStore.swift; sourceTree = "<group>"; };
@@ -749,6 +751,7 @@
 				11728BFD7C0524D2AE761B39 /* FirstAppear.swift */,
 				355EA70CC534A9A092ACE9B5 /* FirstAppearForId.swift */,
 				377B006649214B4B47032438 /* HapticFeedbackHelper.swift */,
+				C1D2E3F40516273849A5B6C7 /* ImageContextMenu.swift */,
 				506E5E4837BA6D9587CC833D /* LiquidGlassCardModifier.swift */,
 			);
 			path = Utilities;
@@ -1280,6 +1283,7 @@
 				F86185BF2F4B900F00C3AFB8 /* FirstAppear.swift in Sources */,
 				F86185C02F4B900F00C3AFB8 /* FirstAppearForId.swift in Sources */,
 				F86185C12F4B900F00C3AFB8 /* HapticFeedbackHelper.swift in Sources */,
+				A1B2C3D4E5F60718293A4B5C /* ImageContextMenu.swift in Sources */,
 				F86185C22F4B900F00C3AFB8 /* LiquidGlassCardModifier.swift in Sources */,
 				F86185C32F4B900F00C3AFB8 /* CuratedInstance.swift in Sources */,
 				F86185C42F4B900F00C3AFB8 /* CuratedInstancesAPI.swift in Sources */,
@@ -1534,7 +1538,7 @@
 				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
 				CODE_SIGN_ENTITLEMENTS = VernissageMobile/VernissageMobile.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 29;
+				CURRENT_PROJECT_VERSION = 30;
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = VernissageMobile/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = Vernissage;
@@ -1562,7 +1566,7 @@
 				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
 				CODE_SIGN_ENTITLEMENTS = VernissageMobile/VernissageMobile.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 29;
+				CURRENT_PROJECT_VERSION = 30;
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = VernissageMobile/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = Vernissage;
@@ -1588,7 +1592,7 @@
 				APPLICATION_EXTENSION_API_ONLY = YES;
 				CODE_SIGN_ENTITLEMENTS = VernissageShareExtension/VernissageShareExtension.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 29;
+				CURRENT_PROJECT_VERSION = 30;
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = VernissageShareExtension/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = VernissageShareExtension;
@@ -1616,7 +1620,7 @@
 				APPLICATION_EXTENSION_API_ONLY = YES;
 				CODE_SIGN_ENTITLEMENTS = VernissageShareExtension/VernissageShareExtension.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 29;
+				CURRENT_PROJECT_VERSION = 30;
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = VernissageShareExtension/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = VernissageShareExtension;

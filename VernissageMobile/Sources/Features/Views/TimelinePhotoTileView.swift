@@ -67,6 +67,7 @@ struct TimelinePhotoTileView: View {
             }
         }
         .contentShape(Rectangle())
+        .imageContextMenu(status: mainStatus)
     }
 
     @ViewBuilder

@@ -7,6 +7,8 @@
 import SwiftUI
 
 struct StatusDetailCommentRowView: View {
+    @EnvironmentObject private var appState: AppState
+
     let comment: Status
     let isIndented: Bool
     let onOpenMarkdownURL: (URL) -> OpenURLAction.Result
@@ -15,6 +17,7 @@ struct StatusDetailCommentRowView: View {
     let onTranslate: () -> Void
     let onCopyText: () -> Void
     let onReport: () -> Void
+    let onDelete: () -> Void
 
     private var displayName: String {
         comment.user?.name?.nilIfEmpty ?? comment.user?.userName ?? "Unknown"
@@ -34,6 +37,15 @@ struct StatusDetailCommentRowView: View {
 
     private var canReport: Bool {
         comment.user?.id?.nilIfEmpty != nil
+    }
+
+    private var canDelete: Bool {
+        guard let activeUserName = appState.activeAccount?.userName.trimmingPrefix("@").lowercased().nilIfEmpty,
+              let commentUserName = comment.user?.userName?.trimmingPrefix("@").lowercased().nilIfEmpty else {
+            return false
+        }
+
+        return activeUserName == commentUserName
     }
 
     var body: some View {
@@ -130,6 +142,8 @@ struct StatusDetailCommentRowView: View {
             Label("Reply", systemImage: "arrowshape.turn.up.left")
         }
 
+        Divider()
+
         Button {
             onTranslate()
         } label: {
@@ -150,6 +164,16 @@ struct StatusDetailCommentRowView: View {
             Label("Report", systemImage: "flag")
         }
         .disabled(!canReport)
+
+        if canDelete {
+            Divider()
+
+            Button(role: .destructive) {
+                onDelete()
+            } label: {
+                Label("Delete", systemImage: "trash")
+            }
+        }
     }
 
     @ViewBuilder

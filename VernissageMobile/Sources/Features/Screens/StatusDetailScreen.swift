@@ -479,6 +479,11 @@ struct StatusDetailScreen: View {
                             },
                             onReport: {
                                 presentReportSheet(for: item.status)
+                            },
+                            onDelete: {
+                                Task {
+                                    await deleteComment(item.status)
+                                }
                             }
                         )
                     }
@@ -564,6 +569,13 @@ struct StatusDetailScreen: View {
             isShowingTranslateSheet = true
         } label: {
             Label("Translate", systemImage: "translate")
+        }
+        .disabled(!canTranslateStatusText)
+
+        Button {
+            copyTextForStatus(displayedStatus)
+        } label: {
+            Label("Copy text", systemImage: "doc.on.doc")
         }
         .disabled(!canTranslateStatusText)
 
@@ -868,6 +880,22 @@ struct StatusDetailScreen: View {
     }
 
     @MainActor
+    private func deleteComment(_ status: Status) async {
+        guard isOwnedByActiveUser(status) else {
+            return
+        }
+
+        do {
+            try await appState.deleteStatus(statusId: status.id)
+            await refreshStatusFromServer()
+            await loadComments()
+            actionErrorMessage = nil
+        } catch {
+            actionErrorMessage = (error as? LocalizedError)?.errorDescription ?? error.localizedDescription
+        }
+    }
+
+    @MainActor
     private func loadComments() async {
         isCommentsLoading = true
         defer { isCommentsLoading = false }
@@ -965,6 +993,15 @@ struct StatusDetailScreen: View {
         }
 
         return true
+    }
+
+    private func isOwnedByActiveUser(_ status: Status) -> Bool {
+        guard let activeUserName = appState.activeAccount?.userName.trimmingPrefix("@").lowercased().nilIfEmpty,
+              let statusUserName = status.user?.userName?.trimmingPrefix("@").lowercased().nilIfEmpty else {
+            return false
+        }
+
+        return activeUserName == statusUserName
     }
 
     private func flattenComments(rootStatusId: String, descendants: [Status]) -> [StatusCommentItem] {

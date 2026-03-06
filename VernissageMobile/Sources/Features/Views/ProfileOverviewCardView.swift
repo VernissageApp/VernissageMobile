@@ -16,6 +16,10 @@ struct ProfileOverviewCardView: View {
     let relationship: Relationship?
     let onRelationshipChanged: ((Relationship) -> Void)?
 
+    private let avatarSize: CGFloat = 140
+    private let headerHeight: CGFloat = 220
+    private let avatarOverlap: CGFloat = 68
+
     init(
         profile: User,
         latestFollowers: [User],
@@ -77,10 +81,6 @@ struct ProfileOverviewCardView: View {
     private var avatarBorderColor: Color {
         colorScheme == .dark ? .black : .white
     }
-
-    private let avatarSize: CGFloat = 140
-    private let headerHeight: CGFloat = 220
-    private let avatarOverlap: CGFloat = 68
 
     var body: some View {
         VStack(spacing: 16) {

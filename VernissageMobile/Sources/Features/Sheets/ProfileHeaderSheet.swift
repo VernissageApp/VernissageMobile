@@ -22,8 +22,6 @@ struct ProfileHeaderSheet: View {
     @State private var isRemoving = false
     @State private var errorMessage: String?
 
-    private let maxUploadBytes = 2 * 1024 * 1024
-
     init(profile: User, onSaved: @escaping (User) -> Void) {
         self.profile = profile
         self.onSaved = onSaved
@@ -209,7 +207,7 @@ struct ProfileHeaderSheet: View {
                 return
             }
 
-            guard uploadData.count <= maxUploadBytes else {
+            guard uploadData.count <= AppConstants.MediaUpload.profileMaxUploadBytes else {
                 errorMessage = "Selected photo is too large. Choose a smaller image."
                 return
             }
@@ -259,7 +257,7 @@ struct ProfileHeaderSheet: View {
             return nil
         }
 
-        while data.count > maxUploadBytes && compressionQuality > 0.2 {
+        while data.count > AppConstants.MediaUpload.profileMaxUploadBytes && compressionQuality > 0.2 {
             compressionQuality -= 0.1
 
             guard let compressed = resizedImage.jpegData(compressionQuality: compressionQuality) else {

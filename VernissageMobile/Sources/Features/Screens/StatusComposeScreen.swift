@@ -10,7 +10,7 @@ import PhotosUI
 struct StatusComposeScreen: View {
     @EnvironmentObject private var appState: AppState
     @Environment(\.dismiss) private var dismiss
-    @AppStorage(AppStorageKeys.composeSelectedCategoryId) private var rememberedSelectedCategoryId = ""
+    @AppStorage(AppConstants.StorageKeys.composeSelectedCategoryId) private var rememberedSelectedCategoryId = ""
 
     let mode: StatusComposeMode
     let initialAttachmentURLs: [URL]
@@ -18,8 +18,6 @@ struct StatusComposeScreen: View {
     var onStatusSaved: ((Status) -> Void)? = nil
 
     private static let statusTextTemplateKey = "status-text-template"
-    private let maxAttachmentLongestEdge: CGFloat = 4096
-    private let maxAttachmentLongestEdgeForShare: CGFloat = 2048
 
     @State private var profile: User?
     @State private var statusText: String
@@ -1373,9 +1371,9 @@ struct StatusComposeScreen: View {
 
     private var selectedMaxAttachmentLongestEdge: CGFloat {
 #if SHARE_EXTENSION
-        maxAttachmentLongestEdgeForShare
+        AppConstants.MediaUpload.longestEdge2K
 #else
-        maxAttachmentLongestEdge
+        AppConstants.MediaUpload.longestEdge4K
 #endif
     }
 }

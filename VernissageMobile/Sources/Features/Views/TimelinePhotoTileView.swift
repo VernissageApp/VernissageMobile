@@ -12,9 +12,9 @@ struct TimelinePhotoTileView: View {
     var showsAuthorOverlay: Bool = false
     var showsContentWarningOverlay: Bool = false
     var showsImageCountOverlay: Bool = false
-    @AppStorage(AppStorageKeys.settingsAlwaysShowNsfw) private var alwaysShowNsfw = false
-    @AppStorage(AppStorageKeys.settingsShowAvatarsOnTimeline) private var showAvatarsOnTimeline = false
-    @AppStorage(AppStorageKeys.settingsShowImageCountsOnTimeline) private var showImageCountsOnTimeline = false
+    @AppStorage(AppConstants.StorageKeys.settingsAlwaysShowNsfw) private var alwaysShowNsfw = false
+    @AppStorage(AppConstants.StorageKeys.settingsShowAvatarsOnTimeline) private var showAvatarsOnTimeline = false
+    @AppStorage(AppConstants.StorageKeys.settingsShowImageCountsOnTimeline) private var showImageCountsOnTimeline = false
     @State private var imageOpacity: Double = 0
     @State private var animatedPreviewURL: String?
 

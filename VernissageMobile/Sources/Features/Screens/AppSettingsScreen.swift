@@ -8,11 +8,11 @@ import SwiftUI
 import UIKit
 
 struct AppSettingsScreen: View {
-    @AppStorage(AppStorageKeys.settingsAlwaysShowNsfw) private var alwaysShowNsfw = false
-    @AppStorage(AppStorageKeys.settingsShowAlternativeText) private var showAlternativeText = false
-    @AppStorage(AppStorageKeys.settingsShowAvatarsOnTimeline) private var showAvatarsOnTimeline = false
-    @AppStorage(AppStorageKeys.settingsShowImageCountsOnTimeline) private var showImageCountsOnTimeline = false
-    @AppStorage(AppStorageKeys.settingsAppIconName) private var selectedAppIconName = AppIconOption.appIcon01.rawValue
+    @AppStorage(AppConstants.StorageKeys.settingsAlwaysShowNsfw) private var alwaysShowNsfw = false
+    @AppStorage(AppConstants.StorageKeys.settingsShowAlternativeText) private var showAlternativeText = false
+    @AppStorage(AppConstants.StorageKeys.settingsShowAvatarsOnTimeline) private var showAvatarsOnTimeline = false
+    @AppStorage(AppConstants.StorageKeys.settingsShowImageCountsOnTimeline) private var showImageCountsOnTimeline = false
+    @AppStorage(AppConstants.StorageKeys.settingsAppIconName) private var selectedAppIconName = AppIconOption.appIcon01.rawValue
 
     @State private var appIconErrorMessage: String?
 

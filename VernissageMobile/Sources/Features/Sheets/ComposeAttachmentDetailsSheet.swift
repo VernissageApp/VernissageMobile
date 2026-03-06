@@ -15,11 +15,11 @@ struct ComposeAttachmentDetailsSheet: View {
     let generateDescription: (_ attachmentId: String) async throws -> String?
 
     @Environment(\.dismiss) private var dismiss
-    @AppStorage(AppStorageKeys.composeAttachmentDetailsLicenseId) private var rememberedLicenseId = ""
-    @AppStorage(AppStorageKeys.composeAttachmentDetailsCountryCode) private var rememberedCountryCode = ""
-    @AppStorage(AppStorageKeys.composeAttachmentDetailsCountryName) private var rememberedCountryName = ""
-    @AppStorage(AppStorageKeys.composeAttachmentDetailsCityName) private var rememberedCityName = ""
-    @AppStorage(AppStorageKeys.composeAttachmentDetailsLocationId) private var rememberedLocationId = ""
+    @AppStorage(AppConstants.StorageKeys.composeAttachmentDetailsLicenseId) private var rememberedLicenseId = ""
+    @AppStorage(AppConstants.StorageKeys.composeAttachmentDetailsCountryCode) private var rememberedCountryCode = ""
+    @AppStorage(AppConstants.StorageKeys.composeAttachmentDetailsCountryName) private var rememberedCountryName = ""
+    @AppStorage(AppConstants.StorageKeys.composeAttachmentDetailsCityName) private var rememberedCityName = ""
+    @AppStorage(AppConstants.StorageKeys.composeAttachmentDetailsLocationId) private var rememberedLocationId = ""
 
     @State private var cityQuery: String
     @State private var citySuggestions: [Location] = []
@@ -253,26 +253,23 @@ struct ComposeAttachmentDetailsSheet: View {
         countries.sorted { ($0.name ?? "") < ($1.name ?? "") }
     }
 
-    private let uploadLongestEdge4K: CGFloat = 4096
-    private let uploadLongestEdge2K: CGFloat = 2048
-
     private var uploadResolutionFootnoteText: String? {
         guard let longestEdge = preparedAttachmentLongestEdge else {
             return nil
         }
 
 #if SHARE_EXTENSION
-        guard longestEdge >= (uploadLongestEdge2K - 1) else {
+        guard longestEdge >= (AppConstants.MediaUpload.longestEdge2K - 1) else {
             return nil
         }
 
-        return "Due to sharing limitations, this photo may be uploaded in 2K. If you need higher resolution, upload it directly in the app."
+        return "When shared via share extension, this photo may be uploaded with the longest edge up to 2048 px. If you need higher resolution, upload it directly in the app."
 #else
-        guard longestEdge >= (uploadLongestEdge4K - 1) else {
+        guard longestEdge >= (AppConstants.MediaUpload.longestEdge4K - 1) else {
             return nil
         }
 
-        return "For maximum compatibility across platforms, this photo will be uploaded in 4K."
+        return "For maximum compatibility across platforms, this photo will be uploaded with the longest edge up to 4094 px."
 #endif
     }
 

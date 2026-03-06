@@ -66,7 +66,7 @@ struct AddAccountScreen: View {
                     curatedInstancesSection
 
                     if mode == .firstAccount {
-                        Text("OAuth redirect scheme: vernissage-mobile://oauth-callback")
+                        Text("OAuth redirect scheme: \(AppConstants.OAuth.redirectURI)")
                             .font(.caption2)
                             .foregroundStyle(.white.opacity(0.60))
                     }

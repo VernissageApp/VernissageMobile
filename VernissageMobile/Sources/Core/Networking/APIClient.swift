@@ -7,6 +7,32 @@
 import SwiftUI
 
 enum APIClient {
+
+    static let jsonDecoder: JSONDecoder = {
+        let decoder = JSONDecoder()
+        decoder.dateDecodingStrategy = .custom { decoder in
+            let container = try decoder.singleValueContainer()
+
+            if let number = try? container.decode(Double.self) {
+                return Date(timeIntervalSince1970: number)
+            }
+
+            if let string = try? container.decode(String.self) {
+                if let number = Double(string) {
+                    return Date(timeIntervalSince1970: number)
+                }
+
+                if let date = DateParser.parse(string) {
+                    return date
+                }
+            }
+
+            throw DecodingError.dataCorruptedError(in: container, debugDescription: "Cannot decode date value.")
+        }
+
+        return decoder
+    }()
+
     static func requestJSON<T: Decodable>(
         baseURL: URL,
         path: String,
@@ -100,30 +126,4 @@ enum APIClient {
 
         return request
     }
-
-    static let jsonDecoder: JSONDecoder = {
-        let decoder = JSONDecoder()
-        decoder.dateDecodingStrategy = .custom { decoder in
-            let container = try decoder.singleValueContainer()
-
-            if let number = try? container.decode(Double.self) {
-                return Date(timeIntervalSince1970: number)
-            }
-
-            if let string = try? container.decode(String.self) {
-                if let number = Double(string) {
-                    return Date(timeIntervalSince1970: number)
-                }
-
-                if let date = DateParser.parse(string) {
-                    return date
-                }
-            }
-
-            throw DecodingError.dataCorruptedError(in: container,
-                                                   debugDescription: "Cannot decode date value.")
-        }
-
-        return decoder
-    }()
 }

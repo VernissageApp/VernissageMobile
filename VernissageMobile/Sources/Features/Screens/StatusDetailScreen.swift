@@ -14,7 +14,7 @@ struct StatusDetailScreen: View {
     @EnvironmentObject private var appState: AppState
     @Environment(\.dismiss) private var dismiss
     @Environment(\.openURL) private var openURL
-    @AppStorage(AppStorageKeys.settingsShowAlternativeText) private var showAlternativeText = false
+    @AppStorage(AppConstants.StorageKeys.settingsShowAlternativeText) private var showAlternativeText = false
 
     @State private var displayedStatus: Status
     @State private var selectedAttachmentIndex = 0

@@ -66,14 +66,14 @@ final class AppState: ObservableObject {
         let instanceURL = try URLSanitizer.sanitizeBaseURL(instanceURLString)
 
         let registration = try await OAuthAPI.registerClient(at: instanceURL,
-                                                             redirectURI: Self.oauthRedirectURI,
-                                                             scope: Self.oauthScope)
+                                                             redirectURI: AppConstants.OAuth.redirectURI,
+                                                             scope: AppConstants.OAuth.scope)
 
         let code = try await oauthCoordinator.authorize(
             baseURL: instanceURL,
             clientID: registration.clientId,
-            redirectURI: Self.oauthRedirectURI,
-            scope: Self.oauthScope
+            redirectURI: AppConstants.OAuth.redirectURI,
+            scope: AppConstants.OAuth.scope
         )
 
         let token = try await OAuthAPI.exchangeCode(
@@ -81,7 +81,7 @@ final class AppState: ObservableObject {
             code: code,
             clientID: registration.clientId,
             clientSecret: registration.clientSecret,
-            redirectURI: Self.oauthRedirectURI
+            redirectURI: AppConstants.OAuth.redirectURI
         )
 
         guard let claims = JWTInspector.decodeClaims(from: token.accessToken),
@@ -1844,7 +1844,4 @@ final class AppState: ObservableObject {
         account.avatarURL = profile.avatarUrl?.nilIfEmpty
         upsertAccount(account)
     }
-
-    static let oauthRedirectURI = "vernissage-mobile://oauth-callback"
-    static let oauthScope = "read write profile"
 }

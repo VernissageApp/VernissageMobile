@@ -7,17 +7,6 @@
 import SwiftUI
 
 enum DateParser {
-    static func parse(_ input: String) -> Date? {
-        if let date = iso8601WithFractional.date(from: input) {
-            return date
-        }
-
-        if let date = iso8601.date(from: input) {
-            return date
-        }
-
-        return nil
-    }
 
     private static let iso8601WithFractional: ISO8601DateFormatter = {
         let formatter = ISO8601DateFormatter()
@@ -30,4 +19,16 @@ enum DateParser {
         formatter.formatOptions = [.withInternetDateTime]
         return formatter
     }()
+
+    static func parse(_ input: String) -> Date? {
+        if let date = iso8601WithFractional.date(from: input) {
+            return date
+        }
+
+        if let date = iso8601.date(from: input) {
+            return date
+        }
+
+        return nil
+    }
 }

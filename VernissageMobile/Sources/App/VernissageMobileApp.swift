@@ -14,21 +14,6 @@ struct VernissageMobileApp: App {
     private static let imagePipelineCacheName = "photos.vernissage.vernissage.data-cache"
     private static let imagePipelineCacheSizeLimit = 300 * 1024 * 1024
 
-    init() {
-        Self.configureImagePipelineIfNeeded()
-    }
-
-    var body: some Scene {
-        WindowGroup {
-            RootScreen()
-                .environmentObject(appState)
-        }
-    }
-
-    private static func configureImagePipelineIfNeeded() {
-        _ = imagePipelineConfigurationToken
-    }
-
     private static let imagePipelineConfigurationToken: Void = {
         let dataLoaderConfiguration = DataLoader.defaultConfiguration
         dataLoaderConfiguration.urlCache = nil
@@ -45,4 +30,19 @@ struct VernissageMobileApp: App {
 
         ImagePipeline.shared = pipeline
     }()
+
+    init() {
+        Self.configureImagePipelineIfNeeded()
+    }
+
+    var body: some Scene {
+        WindowGroup {
+            RootScreen()
+                .environmentObject(appState)
+        }
+    }
+
+    private static func configureImagePipelineIfNeeded() {
+        _ = imagePipelineConfigurationToken
+    }
 }

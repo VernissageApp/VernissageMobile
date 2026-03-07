@@ -36,6 +36,7 @@ struct ProfileUserRowView: View {
                     user: user,
                     relationship: relationship,
                     singleButton: singleButton,
+                    isCompact: true,
                     onRelationshipChanged: onRelationshipChanged
                 )
             }

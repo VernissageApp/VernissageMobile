@@ -96,6 +96,7 @@
 		C1A200000000000000000001 /* CategoryTimelineRoute.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1A100000000000000000001 /* CategoryTimelineRoute.swift */; };
 		C1A200000000000000000002 /* HashtagTimelineRoute.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1A100000000000000000002 /* HashtagTimelineRoute.swift */; };
 		C1A200000000000000000003 /* MentionedUserRoute.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1A100000000000000000003 /* MentionedUserRoute.swift */; };
+		C1D2E3F4A5B60718293A4B5C /* MuteSectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1D2E3F4A5B60718293A4B5D /* MuteSectionView.swift */; };
 		C2CDEE17C3DA49B9FAA9A2BF /* View+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = B175FDF1F0E742558BF76A88 /* View+Extensions.swift */; };
 		C6D1E2F3A4B5061728394A5B /* AppConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8F1A2B3C4D5061728394A5B /* AppConstants.swift */; };
 		C7A386C38D7875820A58BB00 /* License.swift in Sources */ = {isa = PBXBuildFile; fileRef = A44F880501089BCBAC355807 /* License.swift */; };
@@ -514,6 +515,7 @@
 		C1A100000000000000000002 /* HashtagTimelineRoute.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HashtagTimelineRoute.swift; sourceTree = "<group>"; };
 		C1A100000000000000000003 /* MentionedUserRoute.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MentionedUserRoute.swift; sourceTree = "<group>"; };
 		C1D2E3F40516273849A5B6C7 /* ImageContextMenu.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageContextMenu.swift; sourceTree = "<group>"; };
+		C1D2E3F4A5B60718293A4B5D /* MuteSectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MuteSectionView.swift; sourceTree = "<group>"; };
 		C2EB5AC5BBC465732E97A88C /* PublicSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PublicSettings.swift; sourceTree = "<group>"; };
 		C2F80484378DAEDC016320B5 /* StatusBoostedByView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatusBoostedByView.swift; sourceTree = "<group>"; };
 		C3E3BBAD070DCBF9869BE9BE /* InstanceConfiguration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InstanceConfiguration.swift; sourceTree = "<group>"; };
@@ -828,6 +830,7 @@
 				37EC62ED9627716C0B89F4B6 /* ProfileContentTabsView.swift */,
 				6B049BBAB0B8268A42B435B7 /* ProfileFieldRowView.swift */,
 				36E6A774177C9C82443F26D0 /* ProfileFlagChipView.swift */,
+				C1D2E3F4A5B60718293A4B5D /* MuteSectionView.swift */,
 				BDB4D283C07F78752D1F08C4 /* ProfileHeaderImageView.swift */,
 				E680A07A68D557A0973A7EA7 /* ProfileLoadingSkeletonView.swift */,
 				591F0A5C6D9113E90A3E3B53 /* ProfileMetricView.swift */,
@@ -1256,6 +1259,7 @@
 				F861859B2F4B900F00C3AFB8 /* ProfileContentTabsView.swift in Sources */,
 				F861859C2F4B900F00C3AFB8 /* ProfileFieldRowView.swift in Sources */,
 				F861859D2F4B900F00C3AFB8 /* ProfileFlagChipView.swift in Sources */,
+				C1D2E3F4A5B60718293A4B5C /* MuteSectionView.swift in Sources */,
 				F861859E2F4B900F00C3AFB8 /* ProfileHeaderImageView.swift in Sources */,
 				F861859F2F4B900F00C3AFB8 /* ProfileLoadingSkeletonView.swift in Sources */,
 				F86185A02F4B900F00C3AFB8 /* ProfileMetricView.swift in Sources */,
@@ -1548,7 +1552,7 @@
 				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
 				CODE_SIGN_ENTITLEMENTS = VernissageMobile/VernissageMobile.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 34;
+				CURRENT_PROJECT_VERSION = 35;
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = VernissageMobile/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = Vernissage;
@@ -1576,7 +1580,7 @@
 				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
 				CODE_SIGN_ENTITLEMENTS = VernissageMobile/VernissageMobile.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 34;
+				CURRENT_PROJECT_VERSION = 35;
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = VernissageMobile/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = Vernissage;
@@ -1602,7 +1606,7 @@
 				APPLICATION_EXTENSION_API_ONLY = YES;
 				CODE_SIGN_ENTITLEMENTS = VernissageShareExtension/VernissageShareExtension.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 34;
+				CURRENT_PROJECT_VERSION = 35;
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = VernissageShareExtension/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = VernissageShareExtension;
@@ -1630,7 +1634,7 @@
 				APPLICATION_EXTENSION_API_ONLY = YES;
 				CODE_SIGN_ENTITLEMENTS = VernissageShareExtension/VernissageShareExtension.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 34;
+				CURRENT_PROJECT_VERSION = 35;
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = VernissageShareExtension/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = VernissageShareExtension;

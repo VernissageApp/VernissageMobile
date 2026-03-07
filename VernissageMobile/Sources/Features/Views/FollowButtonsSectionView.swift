@@ -8,10 +8,12 @@ import SwiftUI
 
 struct FollowButtonsSectionView: View {
     @Environment(AppState.self) private var appState
+    @Environment(\.colorScheme) private var colorScheme
 
     let user: User
     let relationship: Relationship?
     let singleButton: Bool
+    let isCompact: Bool
     let onRelationshipChanged: ((Relationship) -> Void)?
 
     @State private var relationshipAfterAction: Relationship?
@@ -22,11 +24,13 @@ struct FollowButtonsSectionView: View {
         user: User,
         relationship: Relationship?,
         singleButton: Bool,
+        isCompact: Bool = false,
         onRelationshipChanged: ((Relationship) -> Void)?
     ) {
         self.user = user
         self.relationship = relationship
         self.singleButton = singleButton
+        self.isCompact = isCompact
         self.onRelationshipChanged = onRelationshipChanged
     }
 
@@ -73,6 +77,30 @@ struct FollowButtonsSectionView: View {
         }
 
         return "Cancel request"
+    }
+
+    private var actionButtonBackgroundColor: Color {
+        colorScheme == .dark ? .black : .white
+    }
+
+    private var actionButtonFont: Font {
+        isCompact ? .footnote : .body
+    }
+
+    private var actionButtonMinHeight: CGFloat {
+        isCompact ? 24 : 30
+    }
+
+    private var actionButtonHorizontalPadding: CGFloat {
+        isCompact ? 8 : 12
+    }
+
+    private var actionButtonCornerRadius: CGFloat {
+        isCompact ? 12 : 14
+    }
+
+    private var actionButtonBorderWidth: CGFloat {
+        isCompact ? 1 : 1.5
     }
 
     var body: some View {
@@ -123,30 +151,15 @@ struct FollowButtonsSectionView: View {
             }
             .menuStyle(.button)
             .buttonStyle(.bordered)
-            .controlSize(.small)
+            .tint(.secondary)
+            .controlSize(isCompact ? .mini : .small)
         } else if canChangeRelationship {
             if shouldShowFollowButton {
-                Button(followButtonTitle) {
-                    Task { await follow() }
-                }
-                .buttonStyle(.borderedProminent)
-                .controlSize(.small)
+                relationshipActionButton(followButtonTitle, borderColor: .blue, action: follow)
+            } else if updatedRelationship?.following == true {
+                relationshipActionButton(unfollowButtonTitle, borderColor: .red, action: unfollow)
             } else {
-                if updatedRelationship?.following == true {
-                    Button(unfollowButtonTitle) {
-                        Task { await unfollow() }
-                    }
-                    .buttonStyle(.borderedProminent)
-                    .tint(.red)
-                    .foregroundStyle(.white)
-                    .controlSize(.small)
-                } else {
-                    Button(unfollowButtonTitle) {
-                        Task { await unfollow() }
-                    }
-                    .buttonStyle(.bordered)
-                    .controlSize(.small)
-                }
+                relationshipActionButton(unfollowButtonTitle, borderColor: .orange, action: unfollow)
             }
         }
     }
@@ -155,44 +168,49 @@ struct FollowButtonsSectionView: View {
         HStack(spacing: 8) {
             if canChangeRelationship {
                 if shouldShowFollowButton {
-                    Button(followButtonTitle) {
-                        Task { await follow() }
-                    }
-                    .buttonStyle(.borderedProminent)
-                    .controlSize(.regular)
+                    relationshipActionButton(followButtonTitle, borderColor: .blue, action: follow)
+                } else if updatedRelationship?.following == true {
+                    relationshipActionButton(unfollowButtonTitle, borderColor: .red, action: unfollow)
                 } else {
-                    if updatedRelationship?.following == true {
-                        Button(unfollowButtonTitle) {
-                            Task { await unfollow() }
-                        }
-                        .buttonStyle(.borderedProminent)
-                        .tint(.red)
-                        .foregroundStyle(.white)
-                        .controlSize(.regular)
-                    } else {
-                        Button(unfollowButtonTitle) {
-                            Task { await unfollow() }
-                        }
-                        .buttonStyle(.bordered)
-                        .controlSize(.regular)
-                    }
+                    relationshipActionButton(unfollowButtonTitle, borderColor: .orange, action: unfollow)
                 }
             }
 
             if shouldShowApproveReject {
-                Button("Accept request") {
-                    Task { await approveFollow() }
-                }
-                .buttonStyle(.borderedProminent)
-                .controlSize(.regular)
-
-                Button("Reject request") {
-                    Task { await rejectFollow() }
-                }
-                .buttonStyle(.bordered)
-                .controlSize(.regular)
+                relationshipActionButton("Accept request", borderColor: .green, action: approveFollow)
+                relationshipActionButton("Reject request", borderColor: .orange, action: rejectFollow)
             }
         }
+    }
+
+    private func relationshipActionButton(
+        _ title: String,
+        borderColor: Color,
+        action: @escaping @MainActor () async -> Void
+    ) -> some View {
+        Button {
+            Task { await action() }
+        } label: {
+            Text(title)
+                .font(actionButtonFont)
+                .bold()
+                .lineLimit(1)
+                .minimumScaleFactor(0.85)
+                .frame(minHeight: actionButtonMinHeight)
+                .padding(.horizontal, actionButtonHorizontalPadding)
+        }
+        .buttonStyle(.plain)
+        .foregroundStyle(borderColor)
+        .background {
+            RoundedRectangle(cornerRadius: actionButtonCornerRadius)
+                .fill(actionButtonBackgroundColor)
+        }
+        .overlay {
+            RoundedRectangle(cornerRadius: actionButtonCornerRadius)
+                .stroke(borderColor, lineWidth: actionButtonBorderWidth)
+        }
+        .contentShape(.rect)
+        .accessibilityAddTraits(.isButton)
     }
 
     @MainActor

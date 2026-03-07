@@ -82,6 +82,14 @@ struct ProfileOverviewCardView: View {
         colorScheme == .dark ? .black : .white
     }
 
+    private var shouldShowMuteSection: Bool {
+        guard let relationship else {
+            return false
+        }
+
+        return relationship.mutedStatuses || relationship.mutedReblogs || relationship.mutedNotifications
+    }
+
     var body: some View {
         VStack(spacing: 16) {
             headerSection
@@ -222,16 +230,26 @@ struct ProfileOverviewCardView: View {
                     .frame(height: headerHeight)
                     .clipped()
 
-                AsyncAvatarView(urlString: profile.avatarUrl, size: avatarSize)
-                    .overlay(Circle().stroke(avatarBorderColor, lineWidth: 4))
+                profileAvatarView
                     .offset(y: avatarOverlap)
             }
             .padding(.horizontal, -16)
             .padding(.bottom, avatarOverlap)
         } else {
-            AsyncAvatarView(urlString: profile.avatarUrl, size: avatarSize)
-                .overlay(Circle().stroke(avatarBorderColor, lineWidth: 4))
+            profileAvatarView
                 .padding(.top, headerHeight - avatarSize + avatarOverlap)
+                .frame(maxWidth: .infinity)
         }
+    }
+
+    private var profileAvatarView: some View {
+        AsyncAvatarView(urlString: profile.avatarUrl, size: avatarSize)
+            .overlay(Circle().stroke(avatarBorderColor, lineWidth: 4))
+            .overlay(alignment: .bottomLeading) {
+                if shouldShowMuteSection, let relationship {
+                    MuteSectionView(relationship: relationship)
+                        .offset(x: 100, y: -10)
+                }
+            }
     }
 }

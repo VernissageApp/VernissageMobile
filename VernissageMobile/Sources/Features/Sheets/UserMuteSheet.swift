@@ -16,7 +16,8 @@ struct UserMuteSheet: View {
     @State private var muteStatuses: Bool
     @State private var muteReblogs: Bool
     @State private var muteNotifications: Bool
-    @State private var muteEndDate: Date?
+    @State private var isMuteEndDateEnabled: Bool
+    @State private var muteEndDate: Date
     @State private var isSubmitting = false
     @State private var errorMessage: String?
 
@@ -26,7 +27,8 @@ struct UserMuteSheet: View {
         _muteStatuses = State(initialValue: relationship?.mutedStatuses == true)
         _muteReblogs = State(initialValue: relationship?.mutedReblogs == true)
         _muteNotifications = State(initialValue: relationship?.mutedNotifications == true)
-        _muteEndDate = State(initialValue: nil)
+        _isMuteEndDateEnabled = State(initialValue: false)
+        _muteEndDate = State(initialValue: Date())
     }
 
     private var normalizedUserName: String? {
@@ -50,21 +52,22 @@ struct UserMuteSheet: View {
 
                 Divider()
 
-                DatePicker("Mute end date",
-                           selection: Binding(
-                            get: { muteEndDate ?? Date() },
-                            set: { muteEndDate = $0 }),
-                           displayedComponents: .date)
-                    .datePickerStyle(.compact)
+                Toggle("Set mute end date", isOn: $isMuteEndDateEnabled)
                     .disabled(!hasAnyMuteScopeSelected)
 
-                Text("Optional date when muting will end.")
-                    .font(.footnote)
-                    .foregroundStyle(.secondary)
+                if isMuteEndDateEnabled {
+                    DatePicker("Mute end date", selection: $muteEndDate, displayedComponents: .date)
+                        .datePickerStyle(.compact)
+                }
 
                 Spacer(minLength: 0)
             }
             .padding(16)
+            .onChange(of: hasAnyMuteScopeSelected) { _, hasAnyMuteScopeSelected in
+                if hasAnyMuteScopeSelected == false {
+                    isMuteEndDateEnabled = false
+                }
+            }
             .navigationTitle("Mute account")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
@@ -111,7 +114,7 @@ struct UserMuteSheet: View {
                     muteStatuses: muteStatuses,
                     muteReblogs: muteReblogs,
                     muteNotifications: muteNotifications,
-                    muteEnd: muteEndDate
+                    muteEnd: isMuteEndDateEnabled ? muteEndDate : nil
                 )
             } else {
                 updatedRelationship = try await appState.unmute(userName: userName)

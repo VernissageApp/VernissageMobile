@@ -7,10 +7,13 @@
 import SwiftUI
 
 struct NotificationsScreen: View {
-    @EnvironmentObject private var appState: AppState
-    @StateObject private var viewModel = NotificationsViewModel()
+    @Environment(AppState.self) private var appState
+    @State private var viewModel = NotificationsViewModel()
+    @State private var refreshFeedbackTrigger = false
 
     var body: some View {
+        @Bindable var bindableViewModel = viewModel
+
         ScrollView {
             LazyVStack(spacing: 12) {
                 if viewModel.isLoading && viewModel.notifications.isEmpty {
@@ -28,7 +31,8 @@ struct NotificationsScreen: View {
                                            description: Text("Your notifications will appear here."))
                         .foregroundStyle(.white.opacity(0.9))
                 } else {
-                    ForEach(Array(viewModel.notifications.enumerated()), id: \.offset) { index, notification in
+                    ForEach(viewModel.notifications.indices, id: \.self) { index in
+                        let notification = viewModel.notifications[index]
                         NotificationRowView(notification: notification)
                             .onAppear {
                                 Task {
@@ -64,11 +68,15 @@ struct NotificationsScreen: View {
             }
 
             await updateMarkerAndRefreshCounter()
+            
+            guard !Task.isCancelled else {
+                return
+            }
+
+            refreshFeedbackTrigger.toggle()
         }
-        .errorAlertToast(Binding(
-            get: { viewModel.errorMessage },
-            set: { viewModel.errorMessage = $0 }
-        ))
+        .errorAlertToast($bindableViewModel.errorMessage)
+        .sensoryFeedback(.impact, trigger: refreshFeedbackTrigger)
     }
 
     @MainActor

@@ -11,42 +11,57 @@ struct AccountSwitcherToolbarAvatarButtonView: View {
     let onTap: () -> Void
     let onLongPress: () -> Void
     @State private var longPressHandled = false
+    @State private var feedbackTrigger = false
 
     var body: some View {
-        ZStack {
-            Circle()
-                .fill(.white.opacity(0.15))
+        Button(action: handleTap) {
+            ZStack {
+                Circle()
+                    .fill(.white.opacity(0.15))
 
-            AsyncImage(url: URL(string: avatarURL ?? "")) { image in
-                image
-                    .resizable()
-                    .scaledToFill()
-            } placeholder: {
-                Image(systemName: "person.fill")
-                    .font(.system(size: 13, weight: .semibold))
-                    .foregroundStyle(.white.opacity(0.9))
+                AsyncImage(url: URL(string: avatarURL ?? "")) { image in
+                    image
+                        .resizable()
+                        .scaledToFill()
+                } placeholder: {
+                    Image(systemName: "person.fill")
+                        .font(.system(size: 13, weight: .semibold))
+                        .foregroundStyle(.white.opacity(0.9))
+                }
             }
+            .frame(width: 32, height: 32)
+            .clipShape(Circle())
+            .overlay(
+                Circle()
+                    .stroke(.white.opacity(0.55), lineWidth: 1)
+            )
+            .frame(width: 44, height: 44)
         }
-        .frame(width: 32, height: 32)
-        .clipShape(Circle())
-        .overlay(
-            Circle()
-                .stroke(.white.opacity(0.55), lineWidth: 1)
-        )
-        .frame(width: 44, height: 44)
+        .buttonStyle(.plain)
         .contentShape(Rectangle())
-        .onTapGesture {
-            if longPressHandled {
-                longPressHandled = false
-                return
-            }
+        .simultaneousGesture(
+            LongPressGesture(minimumDuration: 0.45, maximumDistance: 30)
+                .onEnded { _ in
+                    handleLongPress()
+                }
+        )
+        .sensoryFeedback(.impact, trigger: feedbackTrigger)
+        .accessibilityLabel("Open profile")
+        .accessibilityHint("Long press to switch accounts")
+    }
 
-            onTap()
+    private func handleTap() {
+        if longPressHandled {
+            longPressHandled = false
+            return
         }
-        .onLongPressGesture(minimumDuration: 0.45, maximumDistance: 30) {
-            longPressHandled = true
-            HapticFeedbackHelper.accountSwitcherLongPress()
-            onLongPress()
-        }
+
+        onTap()
+    }
+
+    private func handleLongPress() {
+        longPressHandled = true
+        feedbackTrigger.toggle()
+        onLongPress()
     }
 }

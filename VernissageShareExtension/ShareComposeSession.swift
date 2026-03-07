@@ -5,11 +5,12 @@
 //
 
 import Foundation
-import Combine
+import Observation
 
 @MainActor
-final class ShareComposeSession: ObservableObject {
-    @Published var attachmentURLs: [URL] = []
-    @Published var isPreparingAttachments = true
-    @Published var preparationErrorMessage: String?
+@Observable
+final class ShareComposeSession {
+    var attachmentURLs: [URL] = []
+    var isPreparingAttachments = true
+    var preparationErrorMessage: String?
 }

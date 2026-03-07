@@ -35,7 +35,8 @@ struct StatusAttachmentViewerScreen: View {
                     .foregroundStyle(.white.opacity(0.8))
             } else {
                 TabView(selection: $selectedIndex) {
-                    ForEach(Array(attachments.enumerated()), id: \.offset) { index, attachment in
+                    ForEach(attachments.indices, id: \.self) { index in
+                        let attachment = attachments[index]
                         ZoomableStatusAttachmentView(
                             attachment: attachment,
                             backgroundColor: Color(uiColor: currentBackgroundColor)

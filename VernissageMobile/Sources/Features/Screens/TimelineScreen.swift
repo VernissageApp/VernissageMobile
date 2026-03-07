@@ -7,10 +7,11 @@
 import SwiftUI
 
 struct TimelineScreen: View {
-    @EnvironmentObject private var appState: AppState
-    @StateObject private var viewModel: TimelineViewModel
+    @Environment(AppState.self) private var appState
+    @State private var viewModel: TimelineViewModel
     @State private var hasCompletedInitialLoad = false
     @State private var isShowingProfile = false
+    @State private var refreshFeedbackTrigger = false
     @State private var showAddSheet = false
 
     private let title: String
@@ -21,13 +22,15 @@ struct TimelineScreen: View {
          title: String,
          subtitle: String,
          showAccountSwitcher: Binding<Bool>) {
-        _viewModel = StateObject(wrappedValue: TimelineViewModel(kind: kind))
+        _viewModel = State(initialValue: TimelineViewModel(kind: kind))
         self.title = title
         self.subtitle = subtitle
         _showAccountSwitcher = showAccountSwitcher
     }
 
     var body: some View {
+        @Bindable var bindableViewModel = viewModel
+
         NavigationStack {
             ScrollView {
                 LazyVStack(spacing: 12) {
@@ -57,14 +60,14 @@ struct TimelineScreen: View {
                             ForEach(viewModel.photoStatuses, id: \.id) { status in
                                 NavigationLink {
                                     StatusDetailScreen(status: status)
-                                    } label: {
-                                        TimelinePhotoTileView(
-                                            status: status,
-                                            showsAuthorOverlay: true,
-                                            showsContentWarningOverlay: true,
-                                            showsImageCountOverlay: true
-                                        )
-                                    }
+                                } label: {
+                                    TimelinePhotoTileView(
+                                        status: status,
+                                        showsAuthorOverlay: true,
+                                        showsContentWarningOverlay: true,
+                                        showsImageCountOverlay: true
+                                    )
+                                }
                                 .buttonStyle(.plain)
                                 .onAppear {
                                     Task {
@@ -111,14 +114,17 @@ struct TimelineScreen: View {
                 hasCompletedInitialLoad = true
             }
             .refreshable {
-                HapticFeedbackHelper.timelineRefreshStarted()
                 await viewModel.load(using: appState, forceRefresh: true)
                 hasCompletedInitialLoad = true
+
+                guard !Task.isCancelled else {
+                    return
+                }
+
+                refreshFeedbackTrigger.toggle()
             }
-            .errorAlertToast(Binding(
-                get: { viewModel.errorMessage },
-                set: { viewModel.errorMessage = $0 }
-            ))
+            .errorAlertToast($bindableViewModel.errorMessage)
+            .sensoryFeedback(.impact, trigger: refreshFeedbackTrigger)
         }
         .id(appState.activeAccountID)
         .sheet(isPresented: $showAddSheet) {

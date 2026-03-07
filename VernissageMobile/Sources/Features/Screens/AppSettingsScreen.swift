@@ -88,7 +88,7 @@ struct AppSettingsScreen: View {
     @ViewBuilder
     private var appIconSection: some View {
         Section("Application icon") {
-            ScrollView(.horizontal, showsIndicators: false) {
+            ScrollView(.horizontal) {
                 HStack(spacing: 14) {
                     ForEach(AppIconOption.allCases) { iconOption in
                         Button {
@@ -103,6 +103,7 @@ struct AppSettingsScreen: View {
                 }
                 .padding(.vertical, 4)
             }
+            .scrollIndicators(.hidden)
         }
     }
 

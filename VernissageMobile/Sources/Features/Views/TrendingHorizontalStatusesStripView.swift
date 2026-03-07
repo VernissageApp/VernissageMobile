@@ -18,9 +18,10 @@ struct TrendingHorizontalStatusesStripView: View {
     var body: some View {
         Group {
             if isLoading || statuses == nil {
-                ScrollView(.horizontal, showsIndicators: true) {
+                ScrollView(.horizontal) {
                     LazyHStack(spacing: 6) {
-                        ForEach(Array(placeholderRatios.enumerated()), id: \.offset) { _, ratio in
+                        ForEach(placeholderRatios.indices, id: \.self) { index in
+                            let ratio = placeholderRatios[index]
                             RoundedRectangle(cornerRadius: 8, style: .continuous)
                                 .fill(.secondary.opacity(0.18))
                                 .frame(width: min(max(tileHeight * ratio, 110), 440), height: tileHeight)
@@ -29,13 +30,14 @@ struct TrendingHorizontalStatusesStripView: View {
                     }
                     .padding(.vertical, 2)
                 }
+                .scrollIndicators(.visible)
             } else if let statuses, statuses.isEmpty {
                 Text(emptyTitle)
                     .font(.caption)
                     .foregroundStyle(.secondary)
                     .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
             } else if let statuses {
-                ScrollView(.horizontal, showsIndicators: true) {
+                ScrollView(.horizontal) {
                     LazyHStack(spacing: 6) {
                         ForEach(statuses, id: \.id) { status in
                             NavigationLink {
@@ -48,6 +50,7 @@ struct TrendingHorizontalStatusesStripView: View {
                     }
                     .padding(.vertical, 2)
                 }
+                .scrollIndicators(.visible)
             }
         }
         .frame(maxWidth: .infinity, minHeight: containerHeight, maxHeight: containerHeight, alignment: .topLeading)

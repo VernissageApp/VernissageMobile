@@ -7,7 +7,7 @@
 import SwiftUI
 
 struct ProfileEditSheet: View {
-    @EnvironmentObject private var appState: AppState
+    @Environment(AppState.self) private var appState
     @Environment(\.dismiss) private var dismiss
 
     let profile: User
@@ -170,10 +170,9 @@ struct ProfileEditSheet: View {
                     .disabled(isSaving)
                 }
             }
-            .onAppear {
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.15) {
-                    isBioFocused = true
-                }
+            .task {
+                try? await Task.sleep(for: .milliseconds(150))
+                isBioFocused = true
             }
         }
         .presentationDetents([.large])

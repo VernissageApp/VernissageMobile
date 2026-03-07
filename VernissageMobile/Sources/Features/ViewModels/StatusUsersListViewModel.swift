@@ -4,19 +4,21 @@
 //  Licensed under the Apache License 2.0.
 //
 
-import SwiftUI
+import Foundation
+import Observation
 
-final class StatusUsersListViewModel: ObservableObject {
-    @Published private(set) var users: [User] = []
-    @Published private(set) var isLoading = false
-    @Published private(set) var isLoadingMore = false
-    @Published var errorMessage: String?
+@MainActor
+@Observable
+final class StatusUsersListViewModel {
+    private(set) var users: [User] = []
+    private(set) var isLoading = false
+    private(set) var isLoadingMore = false
+    var errorMessage: String?
 
     private var nextMaxId: String?
     private var canLoadMore = true
     private var loadedSignature: String?
 
-    @MainActor
     func load(using appState: AppState, statusId: String, kind: StatusUsersListKind, forceRefresh: Bool = false) async {
         let signature = "\(statusId)|\(kind.rawValue)"
         if !forceRefresh, loadedSignature == signature {
@@ -44,7 +46,6 @@ final class StatusUsersListViewModel: ObservableObject {
         }
     }
 
-    @MainActor
     func loadMoreIfNeeded(using appState: AppState, statusId: String, kind: StatusUsersListKind, currentIndex: Int) async {
         guard !isLoading, !isLoadingMore, canLoadMore else {
             return

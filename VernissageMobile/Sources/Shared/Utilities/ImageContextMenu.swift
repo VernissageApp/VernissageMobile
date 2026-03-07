@@ -8,11 +8,12 @@ import SwiftUI
 import UIKit
 
 struct ImageContextMenu: ViewModifier {
-    @EnvironmentObject private var appState: AppState
+    @Environment(AppState.self) private var appState
     @Environment(\.openURL) private var openURL
 
     @State private var currentStatus: Status
     @State private var actionErrorMessage: String?
+    @State private var actionSuccessMessage: String?
 
     init(status: Status) {
         _currentStatus = State(initialValue: status.mainStatus)
@@ -42,31 +43,61 @@ struct ImageContextMenu: ViewModifier {
                 Divider()
 
                 Button {
-                    copyLinkToPost()
-                } label: {
-                    Label("Copy link to post", systemImage: "link")
-                }
-                .disabled(currentStatus.shareURL?.nilIfEmpty == nil)
-
-                Button {
                     openInBrowser()
                 } label: {
                     Label("Open in browser", systemImage: "safari")
                 }
                 .disabled(currentStatus.shareURL?.nilIfEmpty == nil)
 
-                if let imageURL = imageShareURL {
-                    ShareLink(item: imageURL) {
-                        Label("Share image", systemImage: "square.and.arrow.up")
+                Button {
+                    copyLinkToPost()
+                } label: {
+                    Label("Copy link to post", systemImage: "link")
+                }
+                .disabled(currentStatus.shareURL?.nilIfEmpty == nil)
+
+                if let statusURL = statusShareURL {
+                    ShareLink(item: statusURL) {
+                        Label("Share status", systemImage: "square.and.arrow.up")
                     }
                 } else {
                     Button {} label: {
-                        Label("Share image", systemImage: "square.and.arrow.up")
+                        Label("Share status", systemImage: "square.and.arrow.up")
                     }
                     .disabled(true)
                 }
+
+                Divider()
+
+                if let imageURL = imageShareURL {
+                    ShareLink(item: imageURL) {
+                        Label("Share image", systemImage: "photo")
+                    }
+                } else {
+                    Button {} label: {
+                        Label("Share image", systemImage: "photo")
+                    }
+                    .disabled(true)
+                }
+
+                Button {
+                    Task { await saveImage() }
+                } label: {
+                    Label("Save image", systemImage: "square.and.arrow.down")
+                }
+                .disabled(imageShareURL == nil)
             }
             .errorAlertToast($actionErrorMessage)
+            .successAlertToast($actionSuccessMessage)
+    }
+
+    private var statusShareURL: URL? {
+        guard let shareURLString = currentStatus.shareURL?.nilIfEmpty,
+              let url = URL(string: shareURLString) else {
+            return nil
+        }
+
+        return url
     }
 
     private var imageShareURL: URL? {
@@ -89,12 +120,26 @@ struct ImageContextMenu: ViewModifier {
     }
 
     private func openInBrowser() {
-        guard let link = currentStatus.shareURL?.nilIfEmpty,
-              let url = URL(string: link) else {
+        guard let url = statusShareURL else {
             return
         }
 
         openURL(url)
+    }
+
+    @MainActor
+    private func saveImage() async {
+        guard let imageURL = imageShareURL else {
+            return
+        }
+
+        do {
+            try await RemoteImageLibrarySaver.saveImage(from: imageURL)
+            actionSuccessMessage = "The image has been saved to your photo library."
+            actionErrorMessage = nil
+        } catch {
+            actionErrorMessage = (error as? LocalizedError)?.errorDescription ?? error.localizedDescription
+        }
     }
 
     @MainActor

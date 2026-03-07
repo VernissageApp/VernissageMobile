@@ -7,13 +7,15 @@
 import SwiftUI
 
 struct StatusUsersListScreen: View {
-    @EnvironmentObject private var appState: AppState
-    @StateObject private var viewModel = StatusUsersListViewModel()
+    @Environment(AppState.self) private var appState
+    @State private var viewModel = StatusUsersListViewModel()
 
     let statusId: String
     let kind: StatusUsersListKind
 
     var body: some View {
+        @Bindable var bindableViewModel = viewModel
+
         ScrollView {
             ProfileUsersListView(users: viewModel.users,
                                  isLoading: viewModel.isLoading,
@@ -38,9 +40,6 @@ struct StatusUsersListScreen: View {
         .refreshable {
             await viewModel.load(using: appState, statusId: statusId, kind: kind, forceRefresh: true)
         }
-        .errorAlertToast(Binding(
-            get: { viewModel.errorMessage },
-            set: { viewModel.errorMessage = $0 }
-        ))
+        .errorAlertToast($bindableViewModel.errorMessage)
     }
 }

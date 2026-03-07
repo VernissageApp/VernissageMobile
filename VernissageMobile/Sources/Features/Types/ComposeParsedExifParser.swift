@@ -95,8 +95,11 @@ enum ComposeParsedExifParser {
     }
 
     private static func coordinateLabel(_ value: Double) -> String {
-        String(format: "%.6f", value)
-            .replacingOccurrences(of: "\\.?0+$", with: "", options: .regularExpression)
+        value.formatted(
+            .number
+                .locale(Locale(identifier: "en_US_POSIX"))
+                .precision(.fractionLength(0...6))
+        )
     }
 
     private static func isoValue(_ value: Any?) -> String? {

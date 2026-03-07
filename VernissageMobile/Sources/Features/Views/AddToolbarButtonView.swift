@@ -18,5 +18,6 @@ struct AddToolbarButtonView: View {
         }
         .frame(width: 44, height: 44)
         .buttonStyle(.plain)
+        .accessibilityLabel("Add status")
     }
 }

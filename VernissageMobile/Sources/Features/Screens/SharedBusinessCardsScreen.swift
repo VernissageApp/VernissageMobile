@@ -7,7 +7,7 @@
 import SwiftUI
 
 struct SharedBusinessCardsScreen: View {
-    @EnvironmentObject private var appState: AppState
+    @Environment(AppState.self) private var appState
 
     @State private var cards: [SharedBusinessCard] = []
     @State private var isLoading = false

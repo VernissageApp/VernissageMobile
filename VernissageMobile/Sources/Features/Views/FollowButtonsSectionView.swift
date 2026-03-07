@@ -7,7 +7,7 @@
 import SwiftUI
 
 struct FollowButtonsSectionView: View {
-    @EnvironmentObject private var appState: AppState
+    @Environment(AppState.self) private var appState
 
     let user: User
     let relationship: Relationship?
@@ -284,7 +284,7 @@ struct FollowButtonsSectionView: View {
 
         relationshipRefreshTask = Task {
             for _ in 0..<10 {
-                try? await Task.sleep(nanoseconds: 2_500_000_000)
+                try? await Task.sleep(for: .milliseconds(2500))
                 guard !Task.isCancelled else {
                     return
                 }

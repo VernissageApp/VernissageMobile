@@ -14,42 +14,41 @@ struct ComposeAttachmentThumbnailView: View {
     let onDelete: () -> Void
 
     var body: some View {
-        attachmentPreview
-            .frame(width: thumbnailSize, height: thumbnailSize)
-            .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
-            .overlay(
-                RoundedRectangle(cornerRadius: 12, style: .continuous)
-                    .stroke(.secondary.opacity(0.25), lineWidth: 1)
-            )
-            .overlay(alignment: .bottom) {
-                HStack(spacing: 6) {
-                    Image(systemName: attachment.isAltMissing ? "exclamationmark.circle.fill" : "checkmark.circle.fill")
-                        .font(.caption)
-                        .foregroundStyle(attachment.isAltMissing ? .red : .green)
+        Button(action: onTap) {
+            attachmentPreview
+                .frame(width: thumbnailSize, height: thumbnailSize)
+                .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
+                .overlay(
+                    RoundedRectangle(cornerRadius: 12, style: .continuous)
+                        .stroke(.secondary.opacity(0.25), lineWidth: 1)
+                )
+                .overlay(alignment: .bottom) {
+                    HStack(spacing: 6) {
+                        Image(systemName: attachment.isAltMissing ? "exclamationmark.circle.fill" : "checkmark.circle.fill")
+                            .font(.caption)
+                            .foregroundStyle(attachment.isAltMissing ? .red : .green)
 
-                    Text("ALT")
-                        .font(.caption2.weight(.semibold))
-                        .foregroundStyle(.white)
+                        Text("ALT")
+                            .font(.caption2.weight(.semibold))
+                            .foregroundStyle(.white)
+                    }
+                    .padding(.horizontal, 8)
+                    .padding(.vertical, 4)
+                    .background(.black.opacity(0.56), in: Capsule())
+                    .padding(.bottom, 7)
                 }
-                .padding(.horizontal, 8)
-                .padding(.vertical, 4)
-                .background(.black.opacity(0.56), in: Capsule())
-                .padding(.bottom, 7)
-            }
-            .overlay(alignment: .topTrailing) {
-                Button {
-                    onDelete()
-                } label: {
-                    Image(systemName: "xmark.circle.fill")
+                .overlay(alignment: .topTrailing) {
+                    Button("Delete attachment", systemImage: "xmark.circle.fill", action: onDelete)
+                        .labelStyle(.iconOnly)
                         .font(.title2)
                         .foregroundStyle(.red)
                         .background(Circle().fill(.white))
+                        .buttonStyle(.plain)
+                        .padding(4)
                 }
-                .buttonStyle(.plain)
-                .padding(4)
-            }
-            .contentShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
-            .onTapGesture(perform: onTap)
+        }
+        .buttonStyle(.plain)
+        .accessibilityLabel("Edit attachment details")
     }
 
     @ViewBuilder

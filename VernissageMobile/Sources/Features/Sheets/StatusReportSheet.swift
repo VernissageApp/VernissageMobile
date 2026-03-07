@@ -7,7 +7,7 @@
 import SwiftUI
 
 struct StatusReportSheet: View {
-    @EnvironmentObject private var appState: AppState
+    @Environment(AppState.self) private var appState
     @Environment(\.dismiss) private var dismiss
 
     private let status: Status?
@@ -186,10 +186,9 @@ struct StatusReportSheet: View {
             .onFirstAppear {
                 await loadRulesIfNeeded()
             }
-            .onAppear {
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.15) {
-                    isCommentFocused = true
-                }
+            .task {
+                try? await Task.sleep(for: .milliseconds(150))
+                isCommentFocused = true
             }
         }
         .errorAlertToast($errorMessage)

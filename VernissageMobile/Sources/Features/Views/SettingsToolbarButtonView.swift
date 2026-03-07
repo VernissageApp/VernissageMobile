@@ -15,5 +15,6 @@ struct SettingsToolbarButtonView: View {
                 .font(.system(size: 16, weight: .semibold))
                 .foregroundStyle(.primary)
         }
+        .accessibilityLabel("Settings")
     }
 }

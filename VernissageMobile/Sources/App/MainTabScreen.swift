@@ -15,7 +15,7 @@ struct MainTabScreen: View {
         case search
     }
 
-    @EnvironmentObject private var appState: AppState
+    @Environment(AppState.self) private var appState
     @State private var showAccountSwitcher = false
     @State private var selectedTab: MainTab = .privateHome
     @State private var selectedOtherTimeline: OtherTimelineSelection = .local
@@ -50,7 +50,7 @@ struct MainTabScreen: View {
         }
         .sheet(isPresented: $showAccountSwitcher) {
             AccountSwitcherSheet()
-                .environmentObject(appState)
+                .environment(appState)
         }
     }
 }

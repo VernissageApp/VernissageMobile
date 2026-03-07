@@ -7,7 +7,7 @@
 import SwiftUI
 
 struct UserProfileScreen: View {
-    @EnvironmentObject private var appState: AppState
+    @Environment(AppState.self) private var appState
 
     let userName: String
     let preferredDisplayName: String?
@@ -231,7 +231,7 @@ struct UserProfileScreen: View {
                 ProfileEditSheet(profile: profile) { updatedProfile in
                     self.profile = updatedProfile
                 }
-                .environmentObject(appState)
+                .environment(appState)
             }
         }
         .sheet(isPresented: $isShowingAvatarChooser) {
@@ -239,7 +239,7 @@ struct UserProfileScreen: View {
                 ProfileAvatarSheet(profile: profile) { updatedProfile in
                     self.profile = updatedProfile
                 }
-                .environmentObject(appState)
+                .environment(appState)
             }
         }
         .sheet(isPresented: $isShowingHeaderChooser) {
@@ -247,7 +247,7 @@ struct UserProfileScreen: View {
                 ProfileHeaderSheet(profile: profile) { updatedProfile in
                     self.profile = updatedProfile
                 }
-                .environmentObject(appState)
+                .environment(appState)
             }
         }
         .sheet(isPresented: $isShowingDeleteAccount) {
@@ -256,7 +256,7 @@ struct UserProfileScreen: View {
                     appState.removeAccount(id: activeAccountID)
                 }
             }
-            .environmentObject(appState)
+            .environment(appState)
         }
         .sheet(isPresented: $isShowingMuteAccount) {
             if let profile {
@@ -266,7 +266,7 @@ struct UserProfileScreen: View {
                         relationshipsByUserID[userId] = updatedRelationship
                     }
                 }
-                .environmentObject(appState)
+                .environment(appState)
                 .presentationDetents([.fraction(0.58), .large])
                 .presentationDragIndicator(.visible)
             }
@@ -274,14 +274,14 @@ struct UserProfileScreen: View {
         .sheet(isPresented: $isShowingUserReport) {
             if let profileId = profile?.id?.nilIfEmpty {
                 StatusReportSheet(reportedUserId: profileId)
-                    .environmentObject(appState)
+                    .environment(appState)
                     .presentationDetents([.fraction(0.58), .large])
                     .presentationDragIndicator(.visible)
             }
         }
         .sheet(isPresented: $isShowingBlockDomain) {
             UserBlockDomainSheet(initialDomain: blockableDomain ?? "")
-                .environmentObject(appState)
+                .environment(appState)
                 .presentationDetents([.fraction(0.58), .large])
                 .presentationDragIndicator(.visible)
         }
@@ -363,13 +363,20 @@ struct UserProfileScreen: View {
             }
             .disabled(profile?.email?.nilIfEmpty == nil)
         } label: {
-            Image(systemName: "ellipsis.circle")
+            Image(systemName: "ellipsis")
                 .font(.title3)
         }
+        .accessibilityLabel("Profile actions")
     }
 
     private var externalProfileActionsToolbarMenu: some View {
         Menu {
+            if let profileShareURLObject {
+                Link(destination: profileShareURLObject) {
+                    Label("Open in browser", systemImage: "safari")
+                }
+            }
+            
             Button {
                 copyLinkToProfile()
             } label: {
@@ -378,10 +385,6 @@ struct UserProfileScreen: View {
             .disabled(profileShareURL?.nilIfEmpty == nil)
 
             if let profileShareURLObject {
-                Link(destination: profileShareURLObject) {
-                    Label("Open in browser", systemImage: "safari")
-                }
-
                 ShareLink(item: profileShareURLObject) {
                     Label("Share profile", systemImage: "square.and.arrow.up")
                 }
@@ -424,6 +427,7 @@ struct UserProfileScreen: View {
             Image(systemName: "ellipsis")
                 .font(.title3)
         }
+        .accessibilityLabel("Profile actions")
     }
 
     private func copyLinkToProfile() {

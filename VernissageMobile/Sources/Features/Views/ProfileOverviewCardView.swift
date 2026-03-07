@@ -168,7 +168,8 @@ struct ProfileOverviewCardView: View {
                         .foregroundStyle(.secondary)
 
                     HStack(spacing: 0) {
-                        ForEach(Array(shownLatestFollowers.enumerated()), id: \.offset) { index, follower in
+                        ForEach(shownLatestFollowers.indices, id: \.self) { index in
+                            let follower = shownLatestFollowers[index]
                             AsyncAvatarView(urlString: follower.avatarUrl, size: 40)
                                 .overlay(
                                     Circle()
@@ -187,7 +188,8 @@ struct ProfileOverviewCardView: View {
 
             if !nonEmptyFields.isEmpty {
                 VStack(spacing: 0) {
-                    ForEach(Array(nonEmptyFields.enumerated()), id: \.offset) { index, item in
+                    ForEach(nonEmptyFields.indices, id: \.self) { index in
+                        let item = nonEmptyFields[index]
                         ProfileFieldRowView(field: item)
 
                         if index < nonEmptyFields.count - 1 {

@@ -7,7 +7,7 @@
 import SwiftUI
 
 struct SearchScreen: View {
-    @EnvironmentObject private var appState: AppState
+    @Environment(AppState.self) private var appState
 
     @State private var query = ""
     @State private var selectedScope: SearchScopeSelection = .statuses
@@ -137,7 +137,8 @@ struct SearchScreen: View {
                     .foregroundStyle(.secondary)
             } else {
                 LazyVStack(spacing: 0) {
-                    ForEach(Array(users.enumerated()), id: \.offset) { index, user in
+                    ForEach(users.indices, id: \.self) { index in
+                        let user = users[index]
                         TrendingArtistRowView(
                             user: user,
                             statuses: userStatusesByKey[user.uniquenessKey],
@@ -166,7 +167,8 @@ struct SearchScreen: View {
                     .foregroundStyle(.secondary)
             } else {
                 LazyVStack(spacing: 0) {
-                    ForEach(Array(hashtags.enumerated()), id: \.offset) { index, hashtag in
+                    ForEach(hashtags.indices, id: \.self) { index in
+                        let hashtag = hashtags[index]
                         let hashtagNameKey = hashtag.name.lowercased()
                         TrendingTagRowView(
                             hashtag: hashtag,

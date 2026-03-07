@@ -7,7 +7,7 @@
 import SwiftUI
 
 struct ProfileScreen: View {
-    @EnvironmentObject private var appState: AppState
+    @Environment(AppState.self) private var appState
     @State private var profile: User?
     @State private var isLoading = false
     @State private var errorMessage: String?
@@ -146,7 +146,7 @@ struct ProfileScreen: View {
                 ProfileEditSheet(profile: profile) { updatedProfile in
                     self.profile = updatedProfile
                 }
-                .environmentObject(appState)
+                .environment(appState)
             }
         }
         .sheet(isPresented: $isShowingAvatarChooser) {
@@ -154,7 +154,7 @@ struct ProfileScreen: View {
                 ProfileAvatarSheet(profile: profile) { updatedProfile in
                     self.profile = updatedProfile
                 }
-                .environmentObject(appState)
+                .environment(appState)
             }
         }
         .sheet(isPresented: $isShowingHeaderChooser) {
@@ -162,7 +162,7 @@ struct ProfileScreen: View {
                 ProfileHeaderSheet(profile: profile) { updatedProfile in
                     self.profile = updatedProfile
                 }
-                .environmentObject(appState)
+                .environment(appState)
             }
         }
         .sheet(isPresented: $isShowingDeleteAccount) {
@@ -171,7 +171,7 @@ struct ProfileScreen: View {
                     appState.removeAccount(id: activeAccountID)
                 }
             }
-            .environmentObject(appState)
+            .environment(appState)
         }
         .onChange(of: selectedContentTab, initial: false) { oldTab, newTab in
             Task {
@@ -260,6 +260,7 @@ struct ProfileScreen: View {
             Image(systemName: "ellipsis")
                 .font(.title3)
         }
+        .accessibilityLabel("Profile actions")
     }
 
     @ViewBuilder

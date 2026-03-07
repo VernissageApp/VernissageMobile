@@ -6,9 +6,10 @@
 
 import SwiftUI
 import PhotosUI
+import UniformTypeIdentifiers
 
 struct StatusComposeScreen: View {
-    @EnvironmentObject private var appState: AppState
+    @Environment(AppState.self) private var appState
     @Environment(\.dismiss) private var dismiss
     @AppStorage(AppConstants.StorageKeys.composeSelectedCategoryId) private var rememberedSelectedCategoryId = ""
 
@@ -44,6 +45,7 @@ struct StatusComposeScreen: View {
     @State private var isFileImporterPresented = false
     @State private var selectedAttachmentSheet: ComposeAttachmentSheetSelection?
     @State private var isEditingTemplate = false
+    @State private var draggedAttachmentID: UUID?
 
     @State private var mentionSuggestions: [User] = []
     @State private var hashtagSuggestions: [Hashtag] = []
@@ -170,16 +172,15 @@ struct StatusComposeScreen: View {
             await loadInitialDataIfNeeded()
             await importInitialAttachmentURLsIfNeeded(initialAttachmentURLs)
         }
-        .onAppear {
+        .task(id: shouldRestrictComposeForUnverifiedEmail) {
             guard !shouldRestrictComposeForUnverifiedEmail else {
                 isTextFocused = false
                 return
             }
 
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
-                if !shouldRestrictComposeForUnverifiedEmail {
-                    isTextFocused = true
-                }
+            try? await Task.sleep(for: .milliseconds(200))
+            if !shouldRestrictComposeForUnverifiedEmail {
+                isTextFocused = true
             }
         }
         .onDisappear {
@@ -477,7 +478,7 @@ struct StatusComposeScreen: View {
 
     private var attachmentsSection: some View {
         VStack(alignment: .leading, spacing: 10) {
-            ScrollView(.horizontal, showsIndicators: false) {
+            ScrollView(.horizontal) {
                 HStack(spacing: 10) {
                     ForEach(attachments) { attachment in
                         ComposeAttachmentThumbnailView(
@@ -490,6 +491,18 @@ struct StatusComposeScreen: View {
                                     await removeAttachment(attachment.id)
                                 }
                             }
+                        )
+                        .onDrag {
+                            draggedAttachmentID = attachment.id
+                            return NSItemProvider(object: attachment.id.uuidString as NSString)
+                        }
+                        .onDrop(
+                            of: [UTType.text],
+                            delegate: ComposeAttachmentDropDelegate(
+                                item: attachment,
+                                items: $attachments,
+                                draggedAttachmentID: $draggedAttachmentID
+                            )
                         )
                     }
 
@@ -504,6 +517,7 @@ struct StatusComposeScreen: View {
                 }
                 .padding(.vertical, 2)
             }
+            .scrollIndicators(.hidden)
         }
     }
 
@@ -632,10 +646,11 @@ struct StatusComposeScreen: View {
     }
 
     private var autocompleteSuggestionsBar: some View {
-        ScrollView(.horizontal, showsIndicators: false) {
+        ScrollView(.horizontal) {
             HStack(spacing: 0) {
                 if autocompleteMode == .users {
-                    ForEach(Array(mentionSuggestions.enumerated()), id: \.offset) { index, user in
+                    ForEach(mentionSuggestions.indices, id: \.self) { index in
+                        let user = mentionSuggestions[index]
                         Button {
                             applyMentionSuggestion(user)
                         } label: {
@@ -663,7 +678,8 @@ struct StatusComposeScreen: View {
                         }
                     }
                 } else {
-                    ForEach(Array(hashtagSuggestions.enumerated()), id: \.offset) { index, hashtag in
+                    ForEach(hashtagSuggestions.indices, id: \.self) { index in
+                        let hashtag = hashtagSuggestions[index]
                         Button {
                             applyHashtagSuggestion(hashtag)
                         } label: {
@@ -683,6 +699,7 @@ struct StatusComposeScreen: View {
             }
             .padding(.horizontal, 6)
         }
+        .scrollIndicators(.hidden)
         .frame(height: 44)
     }
 
@@ -1208,7 +1225,7 @@ struct StatusComposeScreen: View {
         }
 
         autocompleteTask = Task {
-            try? await Task.sleep(nanoseconds: 260_000_000)
+            try? await Task.sleep(for: .milliseconds(260))
             guard !Task.isCancelled else {
                 return
             }
@@ -1366,7 +1383,7 @@ struct StatusComposeScreen: View {
             return "\(Int(mebibytes)) MiB"
         }
 
-        return String(format: "%.1f MiB", mebibytes)
+        return mebibytes.formatted(.number.precision(.fractionLength(1))) + " MiB"
     }
 
     private var selectedMaxAttachmentLongestEdge: CGFloat {

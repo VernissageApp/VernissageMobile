@@ -7,18 +7,21 @@
 import SwiftUI
 
 struct HashtagTimelineScreen: View {
-    @EnvironmentObject private var appState: AppState
-    @StateObject private var viewModel: HashtagTimelineViewModel
+    @Environment(AppState.self) private var appState
+    @State private var viewModel: HashtagTimelineViewModel
+    @State private var refreshFeedbackTrigger = false
 
     private let hashtagName: String
 
     init(hashtagName: String) {
         let normalizedHashtagName = hashtagName.trimmingPrefix("#")
         self.hashtagName = normalizedHashtagName
-        _viewModel = StateObject(wrappedValue: HashtagTimelineViewModel(hashtagName: normalizedHashtagName))
+        _viewModel = State(initialValue: HashtagTimelineViewModel(hashtagName: normalizedHashtagName))
     }
 
     var body: some View {
+        @Bindable var bindableViewModel = viewModel
+
         ScrollView {
             LazyVStack(spacing: 8) {
                 if viewModel.isLoading && viewModel.statuses.isEmpty {
@@ -69,12 +72,15 @@ struct HashtagTimelineScreen: View {
             await viewModel.load(using: appState)
         }
         .refreshable {
-            HapticFeedbackHelper.timelineRefreshStarted()
             await viewModel.load(using: appState, forceRefresh: true)
+
+            guard !Task.isCancelled else {
+                return
+            }
+
+            refreshFeedbackTrigger.toggle()
         }
-        .errorAlertToast(Binding(
-            get: { viewModel.errorMessage },
-            set: { viewModel.errorMessage = $0 }
-        ))
+        .errorAlertToast($bindableViewModel.errorMessage)
+        .sensoryFeedback(.impact, trigger: refreshFeedbackTrigger)
     }
 }

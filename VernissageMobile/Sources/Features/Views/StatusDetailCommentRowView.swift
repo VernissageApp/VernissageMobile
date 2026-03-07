@@ -7,7 +7,7 @@
 import SwiftUI
 
 struct StatusDetailCommentRowView: View {
-    @EnvironmentObject private var appState: AppState
+    @Environment(AppState.self) private var appState
 
     let comment: Status
     let isIndented: Bool

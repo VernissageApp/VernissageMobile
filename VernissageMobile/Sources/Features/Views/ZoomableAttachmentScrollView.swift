@@ -127,7 +127,7 @@ struct ZoomableAttachmentScrollView: UIViewRepresentable {
                     return
                 }
 
-                DispatchQueue.main.async {
+                Task { @MainActor in
                     guard self.loadedURLString == imageURLString else {
                         return
                     }

@@ -4,31 +4,34 @@
 //  Licensed under the Apache License 2.0.
 //
 
-import SwiftUI
+import Foundation
+import Observation
 
-final class TrendingViewModel: ObservableObject {
-    @Published private(set) var photoStatuses: [Status] = []
-    @Published private(set) var isPhotosLoading = false
-    @Published private(set) var isPhotosLoadingMore = false
-    @Published var photosErrorMessage: String?
+@MainActor
+@Observable
+final class TrendingViewModel {
+    private(set) var photoStatuses: [Status] = []
+    private(set) var isPhotosLoading = false
+    private(set) var isPhotosLoadingMore = false
+    var photosErrorMessage: String?
 
-    @Published private(set) var artists: [User] = []
-    @Published private(set) var isArtistsLoading = false
-    @Published private(set) var isArtistsLoadingMore = false
-    @Published var artistsErrorMessage: String?
+    private(set) var artists: [User] = []
+    private(set) var isArtistsLoading = false
+    private(set) var isArtistsLoadingMore = false
+    var artistsErrorMessage: String?
 
-    @Published private(set) var hashtags: [Hashtag] = []
-    @Published private(set) var isTagsLoading = false
-    @Published private(set) var isTagsLoadingMore = false
-    @Published var tagsErrorMessage: String?
+    private(set) var hashtags: [Hashtag] = []
+    private(set) var isTagsLoading = false
+    private(set) var isTagsLoadingMore = false
+    var tagsErrorMessage: String?
 
-    @Published private(set) var artistStatusesByKey: [String: [Status]] = [:]
-    @Published private(set) var loadingArtistKeys: Set<String> = []
-    @Published private(set) var tagStatusesByName: [String: [Status]] = [:]
-    @Published private(set) var loadingTagNames: Set<String> = []
-    @Published private(set) var artistsRefreshToken = 0
-    @Published private(set) var tagsRefreshToken = 0
-    @Published var errorMessage: String?
+    private(set) var artistStatusesByKey: [String: [Status]] = [:]
+    private(set) var loadingArtistKeys: Set<String> = []
+    private(set) var tagStatusesByName: [String: [Status]] = [:]
+    private(set) var loadingTagNames: Set<String> = []
+    private(set) var artistsRefreshToken = 0
+    private(set) var tagsRefreshToken = 0
+    var errorMessage: String?
 
     private var loadedPhotosPeriod: TrendingPeriodSelection?
     private var nextPhotosMaxId: String?
@@ -45,7 +48,6 @@ final class TrendingViewModel: ObservableObject {
     private var canLoadMoreTags = true
     private var isFetchingTagsFirstPage = false
 
-    @MainActor
     func reset() {
         photoStatuses = []
         isPhotosLoading = false
@@ -79,7 +81,6 @@ final class TrendingViewModel: ObservableObject {
         loadingTagNames = []
     }
 
-    @MainActor
     func loadPhotos(using appState: AppState, period: TrendingPeriodSelection, forceRefresh: Bool = false) async {
         if !forceRefresh, loadedPhotosPeriod == period {
             return
@@ -128,7 +129,6 @@ final class TrendingViewModel: ObservableObject {
         }
     }
 
-    @MainActor
     func loadMorePhotosIfNeeded(using appState: AppState, period: TrendingPeriodSelection, currentStatusID: String) async {
         guard loadedPhotosPeriod == period,
               !isFetchingPhotosFirstPage,
@@ -166,7 +166,6 @@ final class TrendingViewModel: ObservableObject {
         }
     }
 
-    @MainActor
     func loadArtists(using appState: AppState, period: TrendingPeriodSelection, forceRefresh: Bool = false) async {
         if !forceRefresh, loadedArtistsPeriod == period {
             return
@@ -210,7 +209,6 @@ final class TrendingViewModel: ObservableObject {
         }
     }
 
-    @MainActor
     func loadMoreArtistsIfNeeded(using appState: AppState, period: TrendingPeriodSelection, currentUser: User) async {
         guard loadedArtistsPeriod == period,
               !isFetchingArtistsFirstPage,
@@ -248,7 +246,6 @@ final class TrendingViewModel: ObservableObject {
         }
     }
 
-    @MainActor
     func loadArtistStatusesIfNeeded(using appState: AppState, user: User) async {
         let key = user.uniquenessKey
         guard !loadingArtistKeys.contains(key), artistStatusesByKey[key] == nil else {
@@ -277,7 +274,6 @@ final class TrendingViewModel: ObservableObject {
         }
     }
 
-    @MainActor
     func loadTags(using appState: AppState, period: TrendingPeriodSelection, forceRefresh: Bool = false) async {
         if !forceRefresh, loadedTagsPeriod == period {
             return
@@ -321,7 +317,6 @@ final class TrendingViewModel: ObservableObject {
         }
     }
 
-    @MainActor
     func loadMoreTagsIfNeeded(using appState: AppState, period: TrendingPeriodSelection, currentHashtag: Hashtag) async {
         guard loadedTagsPeriod == period,
               !isFetchingTagsFirstPage,
@@ -359,7 +354,6 @@ final class TrendingViewModel: ObservableObject {
         }
     }
 
-    @MainActor
     func loadTagStatusesIfNeeded(using appState: AppState, hashtag: Hashtag) async {
         let key = hashtag.name.lowercased()
         guard !loadingTagNames.contains(key), tagStatusesByName[key] == nil else {

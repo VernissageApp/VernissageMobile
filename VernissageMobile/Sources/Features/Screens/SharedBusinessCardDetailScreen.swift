@@ -7,7 +7,7 @@
 import SwiftUI
 
 struct SharedBusinessCardDetailScreen: View {
-    @EnvironmentObject private var appState: AppState
+    @Environment(AppState.self) private var appState
 
     let sharedBusinessCardID: String
 
@@ -115,7 +115,8 @@ struct SharedBusinessCardDetailScreen: View {
                                 .padding(.vertical, 20)
                         } else {
                             VStack(alignment: .leading, spacing: 12) {
-                                ForEach(Array(messages.enumerated()), id: \.offset) { _, message in
+                                ForEach(messages.indices, id: \.self) { index in
+                                    let message = messages[index]
                                     messageRow(message)
                                 }
                             }

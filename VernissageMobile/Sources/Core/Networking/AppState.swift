@@ -4,16 +4,18 @@
 //  Licensed under the Apache License 2.0.
 //
 
-import SwiftUI
+import Foundation
+import Observation
 
 @MainActor
-final class AppState: ObservableObject {
-    @Published private(set) var accounts: [StoredAccount] = []
-    @Published private(set) var activeAccountID: UUID?
-    @Published private(set) var unreadNotificationsCount = 0
-    @Published var globalErrorMessage: String?
-    @Published var toastMessage: String?
-    @Published var warningToastMessage: String?
+@Observable
+final class AppState {
+    private(set) var accounts: [StoredAccount] = []
+    private(set) var activeAccountID: UUID?
+    private(set) var unreadNotificationsCount = 0
+    var globalErrorMessage: String?
+    var toastMessage: String?
+    var warningToastMessage: String?
 
     private var toastDismissTask: Task<Void, Never>?
     private var warningToastDismissTask: Task<Void, Never>?
@@ -380,7 +382,7 @@ final class AppState: ObservableObject {
         toastMessage = presentableMessage
 
         toastDismissTask = Task { [weak self] in
-            try? await Task.sleep(nanoseconds: 3_000_000_000)
+            try? await Task.sleep(for: .seconds(3))
             guard !Task.isCancelled else {
                 return
             }
@@ -398,7 +400,7 @@ final class AppState: ObservableObject {
         warningToastMessage = presentableMessage
 
         warningToastDismissTask = Task { [weak self] in
-            try? await Task.sleep(nanoseconds: 5_000_000_000)
+            try? await Task.sleep(for: .seconds(5))
             guard !Task.isCancelled else {
                 return
             }

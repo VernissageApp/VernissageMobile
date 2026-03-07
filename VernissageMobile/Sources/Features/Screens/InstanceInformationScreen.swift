@@ -7,7 +7,7 @@
 import SwiftUI
 
 struct InstanceInformationScreen: View {
-    @EnvironmentObject private var appState: AppState
+    @Environment(AppState.self) private var appState
 
     @State private var instance: InstanceDetails?
     @State private var isLoading = false
@@ -138,6 +138,6 @@ struct InstanceInformationScreen: View {
             return "\(Int(mebibytes)) MiB"
         }
 
-        return String(format: "%.1f MiB", mebibytes)
+        return mebibytes.formatted(.number.precision(.fractionLength(1))) + " MiB"
     }
 }

@@ -7,10 +7,11 @@
 import SwiftUI
 
 struct TrendingScreen: View {
-    @EnvironmentObject private var appState: AppState
-    @StateObject private var viewModel = TrendingViewModel()
+    @Environment(AppState.self) private var appState
+    @State private var viewModel = TrendingViewModel()
     @State private var selectedContent: TrendingContentSelection = .photos
     @State private var isShowingProfile = false
+    @State private var refreshFeedbackTrigger = false
     @State private var showAddSheet = false
     @State private var hashtagTimelineRoute: HashtagTimelineRoute?
 
@@ -21,6 +22,8 @@ struct TrendingScreen: View {
     }
 
     var body: some View {
+        @Bindable var bindableViewModel = viewModel
+
         NavigationStack {
             ScrollView {
                 LazyVStack(spacing: 12) {
@@ -85,13 +88,16 @@ struct TrendingScreen: View {
                 }
             }
             .refreshable {
-                HapticFeedbackHelper.timelineRefreshStarted()
                 await loadSelectedContent(force: true)
+
+                guard !Task.isCancelled else {
+                    return
+                }
+
+                refreshFeedbackTrigger.toggle()
             }
-            .errorAlertToast(Binding(
-                get: { viewModel.errorMessage },
-                set: { viewModel.errorMessage = $0 }
-            ))
+            .errorAlertToast($bindableViewModel.errorMessage)
+            .sensoryFeedback(.impact, trigger: refreshFeedbackTrigger)
         }
         .id(appState.activeAccountID)
         .sheet(isPresented: $showAddSheet) {
@@ -175,7 +181,8 @@ struct TrendingScreen: View {
                 .foregroundStyle(.secondary)
         } else {
             LazyVStack(spacing: 0) {
-                ForEach(Array(viewModel.artists.enumerated()), id: \.element.uniquenessKey) { index, user in
+                ForEach(viewModel.artists.indices, id: \.self) { index in
+                    let user = viewModel.artists[index]
                     TrendingArtistRowView(
                         user: user,
                         statuses: viewModel.artistStatusesByKey[user.uniquenessKey],
@@ -225,7 +232,8 @@ struct TrendingScreen: View {
                 .foregroundStyle(.secondary)
         } else {
             LazyVStack(spacing: 0) {
-                ForEach(Array(viewModel.hashtags.enumerated()), id: \.offset) { index, hashtag in
+                ForEach(viewModel.hashtags.indices, id: \.self) { index in
+                    let hashtag = viewModel.hashtags[index]
                     TrendingTagRowView(
                         hashtag: hashtag,
                         statuses: viewModel.tagStatusesByName[hashtag.name.lowercased()],

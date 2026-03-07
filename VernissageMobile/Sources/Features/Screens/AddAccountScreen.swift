@@ -7,7 +7,7 @@
 import SwiftUI
 
 struct AddAccountScreen: View {
-    @EnvironmentObject private var appState: AppState
+    @Environment(AppState.self) private var appState
 
     let mode: AddAccountMode
     var onDone: (() -> Void)? = nil

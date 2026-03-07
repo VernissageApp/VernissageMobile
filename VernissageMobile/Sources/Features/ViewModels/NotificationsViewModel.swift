@@ -4,19 +4,21 @@
 //  Licensed under the Apache License 2.0.
 //
 
-import SwiftUI
+import Foundation
+import Observation
 
-final class NotificationsViewModel: ObservableObject {
-    @Published private(set) var notifications: [AppNotification] = []
-    @Published private(set) var isLoading = false
-    @Published private(set) var isLoadingMore = false
-    @Published var errorMessage: String?
+@MainActor
+@Observable
+final class NotificationsViewModel {
+    private(set) var notifications: [AppNotification] = []
+    private(set) var isLoading = false
+    private(set) var isLoadingMore = false
+    var errorMessage: String?
 
     private var nextMaxId: String?
     private var canLoadMore = true
     private var isFetchingFirstPage = false
 
-    @MainActor
     func load(using appState: AppState) async -> Bool {
         guard !isFetchingFirstPage, !isLoadingMore else {
             return false
@@ -52,7 +54,6 @@ final class NotificationsViewModel: ObservableObject {
         }
     }
 
-    @MainActor
     func loadMoreIfNeeded(using appState: AppState, currentIndex: Int) async {
         guard !isFetchingFirstPage, !isLoadingMore, canLoadMore else {
             return

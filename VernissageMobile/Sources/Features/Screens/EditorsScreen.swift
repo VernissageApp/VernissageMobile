@@ -7,12 +7,13 @@
 import SwiftUI
 
 struct EditorsScreen: View {
-    @EnvironmentObject private var appState: AppState
-    @StateObject private var photosViewModel = TimelineViewModel(kind: .editorsChoice)
-    @StateObject private var artistsViewModel = FeaturedUsersViewModel()
+    @Environment(AppState.self) private var appState
+    @State private var photosViewModel = TimelineViewModel(kind: .editorsChoice)
+    @State private var artistsViewModel = FeaturedUsersViewModel()
     @State private var selectedContent: EditorsContentSelection = .photos
     @State private var hasCompletedInitialPhotosLoad = false
     @State private var isShowingProfile = false
+    @State private var refreshFeedbackTrigger = false
     @State private var showAddSheet = false
     @Binding private var showAccountSwitcher: Bool
 
@@ -21,6 +22,9 @@ struct EditorsScreen: View {
     }
 
     var body: some View {
+        @Bindable var bindablePhotosViewModel = photosViewModel
+        @Bindable var bindableArtistsViewModel = artistsViewModel
+
         NavigationStack {
             ScrollView {
                 LazyVStack(spacing: 12) {
@@ -82,17 +86,17 @@ struct EditorsScreen: View {
                 }
             }
             .refreshable {
-                HapticFeedbackHelper.timelineRefreshStarted()
                 await loadSelectedContentIfNeeded(force: true)
+
+                guard !Task.isCancelled else {
+                    return
+                }
+
+                refreshFeedbackTrigger.toggle()
             }
-            .errorAlertToast(Binding(
-                get: { photosViewModel.errorMessage },
-                set: { photosViewModel.errorMessage = $0 }
-            ))
-            .errorAlertToast(Binding(
-                get: { artistsViewModel.errorMessage },
-                set: { artistsViewModel.errorMessage = $0 }
-            ))
+            .errorAlertToast($bindablePhotosViewModel.errorMessage)
+            .errorAlertToast($bindableArtistsViewModel.errorMessage)
+            .sensoryFeedback(.impact, trigger: refreshFeedbackTrigger)
         }
         .id(appState.activeAccountID)
         .sheet(isPresented: $showAddSheet) {
@@ -162,7 +166,8 @@ struct EditorsScreen: View {
                 .foregroundStyle(.secondary)
         } else {
             LazyVStack(spacing: 0) {
-                ForEach(Array(artistsViewModel.users.enumerated()), id: \.element.uniquenessKey) { index, user in
+                ForEach(artistsViewModel.users.indices, id: \.self) { index in
+                    let user = artistsViewModel.users[index]
                     TrendingArtistRowView(
                         user: user,
                         statuses: artistsViewModel.userStatusesByKey[user.uniquenessKey],

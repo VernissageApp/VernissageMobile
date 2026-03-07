@@ -7,17 +7,20 @@
 import SwiftUI
 
 struct CategoryTimelineScreen: View {
-    @EnvironmentObject private var appState: AppState
-    @StateObject private var viewModel: CategoryTimelineViewModel
+    @Environment(AppState.self) private var appState
+    @State private var viewModel: CategoryTimelineViewModel
+    @State private var refreshFeedbackTrigger = false
 
     private let categoryName: String
 
     init(categoryName: String) {
         self.categoryName = categoryName
-        _viewModel = StateObject(wrappedValue: CategoryTimelineViewModel(categoryName: categoryName))
+        _viewModel = State(initialValue: CategoryTimelineViewModel(categoryName: categoryName))
     }
 
     var body: some View {
+        @Bindable var bindableViewModel = viewModel
+
         ScrollView {
             LazyVStack(spacing: 8) {
                 if viewModel.isLoading && viewModel.statuses.isEmpty {
@@ -68,12 +71,15 @@ struct CategoryTimelineScreen: View {
             await viewModel.load(using: appState)
         }
         .refreshable {
-            HapticFeedbackHelper.timelineRefreshStarted()
             await viewModel.load(using: appState, forceRefresh: true)
+
+            guard !Task.isCancelled else {
+                return
+            }
+
+            refreshFeedbackTrigger.toggle()
         }
-        .errorAlertToast(Binding(
-            get: { viewModel.errorMessage },
-            set: { viewModel.errorMessage = $0 }
-        ))
+        .errorAlertToast($bindableViewModel.errorMessage)
+        .sensoryFeedback(.impact, trigger: refreshFeedbackTrigger)
     }
 }

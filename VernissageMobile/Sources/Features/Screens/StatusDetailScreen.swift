@@ -11,7 +11,7 @@ import Translation
 #endif
 
 struct StatusDetailScreen: View {
-    @EnvironmentObject private var appState: AppState
+    @Environment(AppState.self) private var appState
     @Environment(\.dismiss) private var dismiss
     @Environment(\.openURL) private var openURL
     @AppStorage(AppConstants.StorageKeys.settingsShowAlternativeText) private var showAlternativeText = false
@@ -37,6 +37,8 @@ struct StatusDetailScreen: View {
     @State private var hashtagTimelineRoute: HashtagTimelineRoute?
     @State private var mentionedUserRoute: MentionedUserRoute?
     @State private var showDeleteStatusConfirmation = false
+    @State private var showDeleteCommentConfirmation = false
+    @State private var commentPendingDeletion: Status?
     @State private var reportSheetStatus: Status?
     @State private var isShowingApplyContentWarningSheet = false
     @State private var isShowingTranslateSheet = false
@@ -146,7 +148,24 @@ struct StatusDetailScreen: View {
                     }
                 }
             } message: {
-                Text("Are you sure you want to delete this status? This action cannot be undone.")
+                Text("This action will permanently delete the status and cannot be undone. Do you want to continue?")
+            }
+            .alert("Delete comment?", isPresented: $showDeleteCommentConfirmation) {
+                Button("Cancel", role: .cancel) {
+                    commentPendingDeletion = nil
+                }
+                Button("Delete", role: .destructive) {
+                    guard let commentPendingDeletion else {
+                        return
+                    }
+
+                    self.commentPendingDeletion = nil
+                    Task {
+                        await deleteComment(commentPendingDeletion)
+                    }
+                }
+            } message: {
+                Text("This action will permanently delete the comment and cannot be undone. Do you want to continue?")
             }
             .errorAlertToast($actionErrorMessage)
             .errorAlertToast($commentsErrorMessage)
@@ -178,13 +197,19 @@ struct StatusDetailScreen: View {
     private var attachmentsSection: some View {
         if displayableAttachments.count > 1 {
             TabView(selection: $selectedAttachmentIndex) {
-                ForEach(Array(displayableAttachments.enumerated()), id: \.offset) { index, attachment in
-                    statusAttachmentView(for: attachment, fixedHeight: multiAttachmentHeight)
-                        .tag(index)
-                        .contentShape(Rectangle())
-                        .onTapGesture {
-                            openAttachmentViewer(at: index)
-                        }
+                ForEach(displayableAttachments.indices, id: \.self) { index in
+                    let attachment = displayableAttachments[index]
+                    Button {
+                        openAttachmentViewer(at: index)
+                    } label: {
+                        statusAttachmentView(for: attachment, fixedHeight: multiAttachmentHeight)
+                    }
+                    .buttonStyle(.plain)
+                    .tag(index)
+                    .contentShape(Rectangle())
+                    .attachmentImageContextMenu(attachment: attachment)
+                    .accessibilityLabel("Open attachment")
+                    .accessibilityHint("Shows the attachment in full screen")
                 }
             }
             .frame(height: multiAttachmentHeight)
@@ -193,12 +218,17 @@ struct StatusDetailScreen: View {
             .indexViewStyle(.page(backgroundDisplayMode: .automatic))
             .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
         } else if let attachment = displayableAttachments.first {
-            statusAttachmentView(for: attachment, fixedHeight: singleAttachmentHeight)
-                .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
-                .contentShape(Rectangle())
-                .onTapGesture {
-                    openAttachmentViewer(at: 0)
-                }
+            Button {
+                openAttachmentViewer(at: 0)
+            } label: {
+                statusAttachmentView(for: attachment, fixedHeight: singleAttachmentHeight)
+            }
+            .buttonStyle(.plain)
+            .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
+            .contentShape(Rectangle())
+            .attachmentImageContextMenu(attachment: attachment)
+            .accessibilityLabel("Open attachment")
+            .accessibilityHint("Shows the attachment in full screen")
         }
     }
 
@@ -481,9 +511,8 @@ struct StatusDetailScreen: View {
                                 presentReportSheet(for: item.status)
                             },
                             onDelete: {
-                                Task {
-                                    await deleteComment(item.status)
-                                }
+                                commentPendingDeletion = item.status
+                                showDeleteCommentConfirmation = true
                             }
                         )
                     }
@@ -543,6 +572,12 @@ struct StatusDetailScreen: View {
 
     @ViewBuilder
     private var statusMoreMenuLinksSection: some View {
+        if let urlString = displayedStatus.shareURL?.nilIfEmpty, let url = URL(string: urlString) {
+            Link(destination: url) {
+                Label("Open in browser", systemImage: "safari")
+            }
+        }
+
         Button {
             copyLinkToStatus()
         } label: {
@@ -551,15 +586,13 @@ struct StatusDetailScreen: View {
         .disabled(displayedStatus.shareURL?.nilIfEmpty == nil)
 
         if let urlString = displayedStatus.shareURL?.nilIfEmpty, let url = URL(string: urlString) {
-            Link(destination: url) {
-                Label("Open in browser", systemImage: "safari")
-            }
-
             ShareLink(item: url) {
                 Label("Share status", systemImage: "square.and.arrow.up")
             }
         }
-
+        
+        Divider()
+        
         Button {
             guard let plainText = prepareStatusTextForTranslation() else {
                 return
@@ -608,8 +641,10 @@ struct StatusDetailScreen: View {
     }
 
     private var statusMoreMenuLabel: some View {
-        Image(systemName: "ellipsis")
+        Label("Actions", systemImage: "ellipsis")
+            .labelStyle(.iconOnly)
             .font(.title3)
+            .accessibilityLabel("Actions")
     }
 
     private func replyComposerSheet(for target: ReplySheetTarget) -> some View {
@@ -669,11 +704,10 @@ struct StatusDetailScreen: View {
                     .disabled(isSendingReply || !isMeaningfulComment(replyText, for: target.status))
                 }
             }
-            .onAppear {
+            .task {
                 fillReplyMention(for: target.status, force: true)
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.15) {
-                    isReplyFieldFocused = true
-                }
+                try? await Task.sleep(for: .milliseconds(150))
+                isReplyFieldFocused = true
             }
         }
     }

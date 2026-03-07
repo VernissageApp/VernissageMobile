@@ -4,13 +4,16 @@
 //  Licensed under the Apache License 2.0.
 //
 
-import SwiftUI
+import Foundation
+import Observation
 
-final class CategoryTimelineViewModel: ObservableObject {
-    @Published private(set) var statuses: [Status] = []
-    @Published private(set) var isLoading = false
-    @Published private(set) var isLoadingMore = false
-    @Published var errorMessage: String?
+@MainActor
+@Observable
+final class CategoryTimelineViewModel {
+    private(set) var statuses: [Status] = []
+    private(set) var isLoading = false
+    private(set) var isLoadingMore = false
+    var errorMessage: String?
 
     var photoStatuses: [Status] {
         statuses.filter(\.hasAttachment)
@@ -25,7 +28,6 @@ final class CategoryTimelineViewModel: ObservableObject {
         self.categoryName = categoryName
     }
 
-    @MainActor
     func load(using appState: AppState, forceRefresh: Bool = false) async {
         guard !isFetchingFirstPage, !isLoadingMore else {
             return
@@ -70,7 +72,6 @@ final class CategoryTimelineViewModel: ObservableObject {
         }
     }
 
-    @MainActor
     func loadMoreIfNeeded(using appState: AppState, currentStatusID: String) async {
         guard !isFetchingFirstPage, !isLoadingMore, canLoadMore else {
             return

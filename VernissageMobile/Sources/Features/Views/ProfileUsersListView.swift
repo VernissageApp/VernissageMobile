@@ -59,7 +59,8 @@ struct ProfileUsersListView: View {
                 .padding(.horizontal, 16)
         } else {
             LazyVStack(spacing: 0) {
-                ForEach(Array(users.enumerated()), id: \.offset) { index, user in
+                ForEach(users.indices, id: \.self) { index in
+                    let user = users[index]
                     ProfileUserRowView(
                         user: user,
                         relationship: relationship(for: user),

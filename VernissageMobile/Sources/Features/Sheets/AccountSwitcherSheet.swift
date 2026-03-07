@@ -7,7 +7,7 @@
 import SwiftUI
 
 struct AccountSwitcherSheet: View {
-    @EnvironmentObject private var appState: AppState
+    @Environment(AppState.self) private var appState
     @Environment(\.dismiss) private var dismiss
 
     @State private var showingAddAccount = false
@@ -100,7 +100,7 @@ struct AccountSwitcherSheet: View {
                 AddAccountScreen(mode: .additionalAccount) {
                     showingAddAccount = false
                 }
-                .environmentObject(appState)
+                .environment(appState)
             }
         }
         .preferredColorScheme(.dark)

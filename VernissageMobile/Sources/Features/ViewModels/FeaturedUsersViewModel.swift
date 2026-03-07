@@ -4,24 +4,26 @@
 //  Licensed under the Apache License 2.0.
 //
 
-import SwiftUI
+import Foundation
+import Observation
 
-final class FeaturedUsersViewModel: ObservableObject {
-    @Published private(set) var users: [User] = []
-    @Published private(set) var isLoading = false
-    @Published private(set) var isLoadingMore = false
-    @Published var errorMessage: String?
+@MainActor
+@Observable
+final class FeaturedUsersViewModel {
+    private(set) var users: [User] = []
+    private(set) var isLoading = false
+    private(set) var isLoadingMore = false
+    var errorMessage: String?
 
-    @Published private(set) var userStatusesByKey: [String: [Status]] = [:]
-    @Published private(set) var loadingStatusesUserKeys: Set<String> = []
-    @Published private(set) var artistsRefreshToken = 0
+    private(set) var userStatusesByKey: [String: [Status]] = [:]
+    private(set) var loadingStatusesUserKeys: Set<String> = []
+    private(set) var artistsRefreshToken = 0
 
     private var hasLoaded = false
     private var nextMaxId: String?
     private var canLoadMore = true
     private var isFetchingFirstPage = false
 
-    @MainActor
     func reset() {
         users = []
         isLoading = false
@@ -36,7 +38,6 @@ final class FeaturedUsersViewModel: ObservableObject {
         isFetchingFirstPage = false
     }
 
-    @MainActor
     func load(using appState: AppState, forceRefresh: Bool = false) async {
         if !forceRefresh, hasLoaded {
             return
@@ -75,7 +76,6 @@ final class FeaturedUsersViewModel: ObservableObject {
         }
     }
 
-    @MainActor
     func loadMoreIfNeeded(using appState: AppState, currentUser: User) async {
         guard hasLoaded, !isFetchingFirstPage, !isLoadingMore, canLoadMore else {
             return
@@ -105,7 +105,6 @@ final class FeaturedUsersViewModel: ObservableObject {
         }
     }
 
-    @MainActor
     func loadStatusesIfNeeded(using appState: AppState, user: User) async {
         let key = user.uniquenessKey
         guard !loadingStatusesUserKeys.contains(key), userStatusesByKey[key] == nil else {

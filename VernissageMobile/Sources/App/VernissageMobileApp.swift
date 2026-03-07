@@ -9,7 +9,7 @@ import Nuke
 
 @main
 struct VernissageMobileApp: App {
-    @StateObject private var appState = AppState()
+    @State private var appState = AppState()
 
     private static let imagePipelineCacheName = "photos.vernissage.vernissage.data-cache"
     private static let imagePipelineCacheSizeLimit = 300 * 1024 * 1024
@@ -38,7 +38,7 @@ struct VernissageMobileApp: App {
     var body: some Scene {
         WindowGroup {
             RootScreen()
-                .environmentObject(appState)
+                .environment(appState)
         }
     }
 

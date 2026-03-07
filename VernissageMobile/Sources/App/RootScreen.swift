@@ -7,10 +7,12 @@
 import SwiftUI
 
 struct RootScreen: View {
-    @EnvironmentObject private var appState: AppState
+    @Environment(AppState.self) private var appState
     @Environment(\.scenePhase) private var scenePhase
 
     var body: some View {
+        @Bindable var bindableAppState = appState
+
         ZStack {
             LinearGradient(
                 colors: [Color.black.opacity(0.95), Color.blue.opacity(0.30), Color.black.opacity(0.98)],
@@ -26,9 +28,9 @@ struct RootScreen: View {
                 MainTabScreen()
             }
         }
-        .warningAlertToast($appState.warningToastMessage)
-        .errorAlertToast($appState.toastMessage)
-        .errorAlertToast($appState.globalErrorMessage)
+        .warningAlertToast($bindableAppState.warningToastMessage)
+        .errorAlertToast($bindableAppState.toastMessage)
+        .errorAlertToast($bindableAppState.globalErrorMessage)
         .task(id: appState.activeAccountID) {
             await appState.refreshActiveTokenIfNeeded(force: false)
             await appState.refreshUnreadNotificationsCount()

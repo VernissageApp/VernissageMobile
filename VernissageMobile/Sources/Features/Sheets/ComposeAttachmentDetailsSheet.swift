@@ -180,7 +180,8 @@ struct ComposeAttachmentDetailsSheet: View {
                         }
                     } else if !citySuggestions.isEmpty {
                         VStack(alignment: .leading, spacing: 6) {
-                            ForEach(Array(citySuggestions.enumerated()), id: \.offset) { _, location in
+                            ForEach(citySuggestions.indices, id: \.self) { index in
+                                let location = citySuggestions[index]
                                 Button {
                                     attachment.cityName = location.name?.nilIfEmpty ?? cityQuery
                                     cityQuery = attachment.cityName
@@ -348,10 +349,10 @@ struct ComposeAttachmentDetailsSheet: View {
 
         let megapixels = Double(size.width * size.height) / 1_000_000.0
         if megapixels >= 10 {
-            return String(format: "%.1f MP", megapixels)
+            return megapixels.formatted(.number.precision(.fractionLength(1))) + " MP"
         }
 
-        return String(format: "%.2f MP", megapixels)
+        return megapixels.formatted(.number.precision(.fractionLength(2))) + " MP"
     }
 
     private var attachmentColorSpaceLabel: String {
@@ -394,7 +395,7 @@ struct ComposeAttachmentDetailsSheet: View {
 
     private func formatMebibytes(bytes: Int) -> String {
         let mebibytes = Double(bytes) / (1024.0 * 1024.0)
-        return String(format: "%.2f MiB", mebibytes)
+        return mebibytes.formatted(.number.precision(.fractionLength(2))) + " MiB"
     }
 
     private func colorSpaceDisplayName(_ colorSpace: CGColorSpace) -> String {
@@ -486,7 +487,7 @@ struct ComposeAttachmentDetailsSheet: View {
         }
 
         citySearchTask = Task {
-            try? await Task.sleep(nanoseconds: 300_000_000)
+            try? await Task.sleep(for: .milliseconds(300))
             guard !Task.isCancelled else {
                 return
             }

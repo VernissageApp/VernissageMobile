@@ -42,6 +42,8 @@
 	</dict>
 	<key>NSCameraUsageDescription</key>
 	<string>The camera is used to take a photo for posting a status.</string>
+	<key>NSPhotoLibraryAddUsageDescription</key>
+	<string>The photo library is used to save images from posts.</string>
 	<key>UIApplicationSceneManifest</key>
 	<dict>
 		<key>UIApplicationSupportsMultipleScenes</key>

@@ -7,12 +7,14 @@
 import SwiftUI
 
 struct ShareComposeRootView: View {
-    @StateObject private var appState = AppState()
-    @ObservedObject var session: ShareComposeSession
+    @State private var appState = AppState()
+    let session: ShareComposeSession
 
     let onClose: () -> Void
 
     var body: some View {
+        @Bindable var bindableSession = session
+
         Group {
             if appState.activeAccount == nil {
                 NavigationStack {
@@ -51,10 +53,10 @@ struct ShareComposeRootView: View {
                 }
             }
         }
-        .environmentObject(appState)
+        .environment(appState)
         .task {
             await appState.refreshActiveTokenIfNeeded(force: false)
         }
-        .errorAlertToast($session.preparationErrorMessage)
+        .errorAlertToast($bindableSession.preparationErrorMessage)
     }
 }

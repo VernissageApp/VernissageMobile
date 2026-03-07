@@ -7,7 +7,7 @@
 import SwiftUI
 
 struct NotificationsToolbarButtonView: View {
-    @EnvironmentObject private var appState: AppState
+    @Environment(AppState.self) private var appState
 
     private var badgeCount: Int? {
         let count = appState.unreadNotificationsCount
@@ -32,6 +32,7 @@ struct NotificationsToolbarButtonView: View {
         }
         .frame(width: 44, height: 44)
         .buttonStyle(.plain)
+        .accessibilityLabel("Notifications")
         .applyIfLet(badgeCount) { view, count in
             view.badge(count)
         }

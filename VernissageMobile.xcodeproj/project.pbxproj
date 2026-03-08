@@ -79,6 +79,11 @@
 		A10000211000000100000021 /* HTML2Markdown in Frameworks */ = {isa = PBXBuildFile; productRef = A10000221000000100000022 /* HTML2Markdown */; };
 		A1B2C3D4E5F60718293A4B5C /* ImageContextMenu.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1D2E3F40516273849A5B6C7 /* ImageContextMenu.swift */; };
 		A1B2C3D4E5F60718293A4B5D /* RemoteImageLibrarySaver.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F60718293A4B5E /* RemoteImageLibrarySaver.swift */; };
+		A1B2C3D4E5F60718293A4B5F /* ImageContextMenuPreview.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F60718293A4B60 /* ImageContextMenuPreview.swift */; };
+		A1B2C3D4E5F60718293A4B61 /* ImageContextMenuMultiplePreviewPlaceholderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F60718293A4B62 /* ImageContextMenuMultiplePreviewPlaceholderView.swift */; };
+		A1B2C3D4E5F60718293A4B63 /* ImageContextMenuMultiplePreviewContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F60718293A4B64 /* ImageContextMenuMultiplePreviewContentView.swift */; };
+		A1B2C3D4E5F60718293A4B65 /* ImageContextMenuSinglePreviewPlaceholderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F60718293A4B66 /* ImageContextMenuSinglePreviewPlaceholderView.swift */; };
+		A1B2C3D4E5F60718293A4B67 /* ImageContextMenuSinglePreviewContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F60718293A4B68 /* ImageContextMenuSinglePreviewContentView.swift */; };
 		A31EAF2C765024FB2ECBFBD3 /* AppState.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB5A20D9A0EC4B1B7F8540F0 /* AppState.swift */; };
 		A491D889E2BE1CC8A1BC0328 /* Relationship.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0870DA50088C9CF6E4CF05D1 /* Relationship.swift */; };
 		A80491967C87FEEDAFC1A232 /* SearchResult.swift in Sources */ = {isa = PBXBuildFile; fileRef = 72B8E09C009044CA1F6E62CD /* SearchResult.swift */; };
@@ -474,6 +479,11 @@
 		A10000041000000100000004 /* VernissageMobile.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = VernissageMobile.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		A10000201000000100000020 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		A1B2C3D4E5F60718293A4B5E /* RemoteImageLibrarySaver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoteImageLibrarySaver.swift; sourceTree = "<group>"; };
+		A1B2C3D4E5F60718293A4B60 /* ImageContextMenuPreview.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageContextMenuPreview.swift; sourceTree = "<group>"; };
+		A1B2C3D4E5F60718293A4B62 /* ImageContextMenuMultiplePreviewPlaceholderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageContextMenuMultiplePreviewPlaceholderView.swift; sourceTree = "<group>"; };
+		A1B2C3D4E5F60718293A4B64 /* ImageContextMenuMultiplePreviewContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageContextMenuMultiplePreviewContentView.swift; sourceTree = "<group>"; };
+		A1B2C3D4E5F60718293A4B66 /* ImageContextMenuSinglePreviewPlaceholderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageContextMenuSinglePreviewPlaceholderView.swift; sourceTree = "<group>"; };
+		A1B2C3D4E5F60718293A4B68 /* ImageContextMenuSinglePreviewContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageContextMenuSinglePreviewContentView.swift; sourceTree = "<group>"; };
 		A1BED174470D5E926F734215 /* AddAccountScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddAccountScreen.swift; sourceTree = "<group>"; };
 		A1D2C3E4F5A60718293A4B5C /* HashtagTimelineScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HashtagTimelineScreen.swift; sourceTree = "<group>"; };
 		A25A845D39846779B59F3E91 /* FollowButtonsSectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FollowButtonsSectionView.swift; sourceTree = "<group>"; };
@@ -760,6 +770,11 @@
 				11728BFD7C0524D2AE761B39 /* FirstAppear.swift */,
 				355EA70CC534A9A092ACE9B5 /* FirstAppearForId.swift */,
 				C1D2E3F40516273849A5B6C7 /* ImageContextMenu.swift */,
+				A1B2C3D4E5F60718293A4B64 /* ImageContextMenuMultiplePreviewContentView.swift */,
+				A1B2C3D4E5F60718293A4B62 /* ImageContextMenuMultiplePreviewPlaceholderView.swift */,
+				A1B2C3D4E5F60718293A4B60 /* ImageContextMenuPreview.swift */,
+				A1B2C3D4E5F60718293A4B68 /* ImageContextMenuSinglePreviewContentView.swift */,
+				A1B2C3D4E5F60718293A4B66 /* ImageContextMenuSinglePreviewPlaceholderView.swift */,
 				A1B2C3D4E5F60718293A4B5E /* RemoteImageLibrarySaver.swift */,
 				506E5E4837BA6D9587CC833D /* LiquidGlassCardModifier.swift */,
 			);
@@ -1296,6 +1311,11 @@
 				F86185C02F4B900F00C3AFB8 /* FirstAppearForId.swift in Sources */,
 				5A1B2C3D4E5F60718293A4B5 /* AttachmentImageContextMenu.swift in Sources */,
 				A1B2C3D4E5F60718293A4B5C /* ImageContextMenu.swift in Sources */,
+				A1B2C3D4E5F60718293A4B63 /* ImageContextMenuMultiplePreviewContentView.swift in Sources */,
+				A1B2C3D4E5F60718293A4B61 /* ImageContextMenuMultiplePreviewPlaceholderView.swift in Sources */,
+				A1B2C3D4E5F60718293A4B5F /* ImageContextMenuPreview.swift in Sources */,
+				A1B2C3D4E5F60718293A4B67 /* ImageContextMenuSinglePreviewContentView.swift in Sources */,
+				A1B2C3D4E5F60718293A4B65 /* ImageContextMenuSinglePreviewPlaceholderView.swift in Sources */,
 				A1B2C3D4E5F60718293A4B5D /* RemoteImageLibrarySaver.swift in Sources */,
 				F86185C22F4B900F00C3AFB8 /* LiquidGlassCardModifier.swift in Sources */,
 				F86185C32F4B900F00C3AFB8 /* CuratedInstance.swift in Sources */,
@@ -1552,7 +1572,7 @@
 				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
 				CODE_SIGN_ENTITLEMENTS = VernissageMobile/VernissageMobile.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 35;
+				CURRENT_PROJECT_VERSION = 36;
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = VernissageMobile/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = Vernissage;
@@ -1580,7 +1600,7 @@
 				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
 				CODE_SIGN_ENTITLEMENTS = VernissageMobile/VernissageMobile.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 35;
+				CURRENT_PROJECT_VERSION = 36;
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = VernissageMobile/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = Vernissage;
@@ -1606,7 +1626,7 @@
 				APPLICATION_EXTENSION_API_ONLY = YES;
 				CODE_SIGN_ENTITLEMENTS = VernissageShareExtension/VernissageShareExtension.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 35;
+				CURRENT_PROJECT_VERSION = 36;
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = VernissageShareExtension/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = VernissageShareExtension;
@@ -1634,7 +1654,7 @@
 				APPLICATION_EXTENSION_API_ONLY = YES;
 				CODE_SIGN_ENTITLEMENTS = VernissageShareExtension/VernissageShareExtension.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 35;
+				CURRENT_PROJECT_VERSION = 36;
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = VernissageShareExtension/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = VernissageShareExtension;

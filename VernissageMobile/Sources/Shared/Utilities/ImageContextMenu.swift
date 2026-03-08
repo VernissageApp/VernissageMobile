@@ -86,6 +86,8 @@ struct ImageContextMenu: ViewModifier {
                     Label("Save image", systemImage: "square.and.arrow.down")
                 }
                 .disabled(imageShareURL == nil)
+            } preview: {
+                ImageContextMenuPreview(status: currentStatus)
             }
             .errorAlertToast($actionErrorMessage)
             .successAlertToast($actionSuccessMessage)

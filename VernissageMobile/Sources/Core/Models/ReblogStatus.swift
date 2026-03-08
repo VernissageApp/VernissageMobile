@@ -15,6 +15,7 @@ struct ReblogStatus: Decodable {
     let replyToStatusId: String?
     let note: String?
     let noteHtml: String?
+    let application: String?
     let url: String?
     let activityPubUrl: String?
     let contentWarning: String?
@@ -43,6 +44,7 @@ extension ReblogStatus {
             replyToStatusId: replyToStatusId,
             note: note,
             noteHtml: noteHtml,
+            application: application,
             url: url,
             activityPubUrl: activityPubUrl,
             contentWarning: contentWarning,

@@ -13,7 +13,7 @@ enum OAuthAPI {
             tokenEndpointAuthMethod: "none",
             grantTypes: ["authorization_code", "refresh_token"],
             responseTypes: ["code"],
-            clientName: "Vernissage iOS",
+            clientName: AppConstants.OAuth.clientName,
             scope: scope,
             softwareId: "vernissage-ios-native",
             softwareVersion: Bundle.main.appVersionLabel

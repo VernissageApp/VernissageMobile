@@ -16,6 +16,7 @@ struct Status: Decodable, Identifiable {
     let replyToStatusId: String?
     let note: String?
     let noteHtml: String?
+    let application: String?
     let url: String?
     let activityPubUrl: String?
     let contentWarning: String?
@@ -42,6 +43,7 @@ struct Status: Decodable, Identifiable {
         case replyToStatusId
         case note
         case noteHtml
+        case application
         case url
         case activityPubUrl
         case contentWarning

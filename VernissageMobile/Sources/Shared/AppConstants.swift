@@ -29,6 +29,7 @@ enum AppConstants {
     }
 
     enum OAuth {
+        static let clientName = "Vernissage iOS"
         static let redirectURI = "vernissage-mobile://oauth-callback"
         static let scope = "read write profile"
     }

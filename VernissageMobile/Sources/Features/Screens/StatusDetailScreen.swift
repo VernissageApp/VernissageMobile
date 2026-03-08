@@ -349,7 +349,7 @@ struct StatusDetailScreen: View {
                 Label("\(displayedStatus.repliesCount ?? 0)", systemImage: "bubble.right")
                 Spacer(minLength: 8)
                 if let statusDate = displayedStatus.displayDate {
-                    Label(statusDate.shortDateAndTimeLabel, systemImage: "calendar")
+                    Label(statusDate.shortDateAndTimeLabel, systemImage: statusApplicationIconSystemName)
                         .lineLimit(1)
                         .minimumScaleFactor(0.8)
                 }
@@ -360,6 +360,20 @@ struct StatusDetailScreen: View {
         }
         .padding(14)
         .liquidGlassCard()
+    }
+
+    private var statusApplicationIconSystemName: String {
+        let applicationName = displayedStatus.mainStatus.application?.nilIfEmpty
+
+        if applicationName == AppConstants.OAuth.clientName {
+            return "iphone"
+        }
+
+        if applicationName != nil {
+            return "globe"
+        }
+
+        return "calendar"
     }
 
     private func statusActionButton(

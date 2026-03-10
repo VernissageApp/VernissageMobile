@@ -6,7 +6,6 @@
 
 import SwiftUI
 
-struct PublicSettings: Decodable {
-    let isOpenAIEnabled: Bool?
-    let isQuickCaptchaEnabled: Bool?
+struct BooleanResult: Decodable {
+    let result: Bool
 }

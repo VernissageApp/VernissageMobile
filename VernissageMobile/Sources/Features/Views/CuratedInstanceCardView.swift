@@ -42,13 +42,18 @@ struct CuratedInstanceCardView: View {
 
                 Button(action: onChoose) {
                     Text("Choose server")
-                        .fontWeight(.semibold)
+                        .bold()
                         .frame(maxWidth: .infinity)
                         .padding(.vertical, 12)
                 }
-                .buttonStyle(.borderedProminent)
-                .tint(.blue)
-                .foregroundStyle(.white)
+                .foregroundStyle(.blue)
+                .background(.clear)
+                .overlay(
+                    RoundedRectangle(cornerRadius: 10, style: .continuous)
+                        .stroke(.blue, lineWidth: 1)
+                )
+                .contentShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
+                .buttonStyle(.plain)
             }
             .padding(16)
         }

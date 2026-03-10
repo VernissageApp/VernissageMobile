@@ -87,6 +87,10 @@
 		A31EAF2C765024FB2ECBFBD3 /* AppState.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB5A20D9A0EC4B1B7F8540F0 /* AppState.swift */; };
 		A491D889E2BE1CC8A1BC0328 /* Relationship.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0870DA50088C9CF6E4CF05D1 /* Relationship.swift */; };
 		A80491967C87FEEDAFC1A232 /* SearchResult.swift in Sources */ = {isa = PBXBuildFile; fileRef = 72B8E09C009044CA1F6E62CD /* SearchResult.swift */; };
+		A90000000000000000000001 /* BooleanResult.swift in Sources */ = {isa = PBXBuildFile; fileRef = A90000000000000000000011 /* BooleanResult.swift */; };
+		A90000000000000000000002 /* RegisterUserRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = A90000000000000000000012 /* RegisterUserRequest.swift */; };
+		A90000000000000000000003 /* RegistrationAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = A90000000000000000000013 /* RegistrationAPI.swift */; };
+		A90000000000000000000004 /* RegisterAccountScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = A90000000000000000000014 /* RegisterAccountScreen.swift */; };
 		AA7B6278A2362F32AEA207C7 /* PagedResult.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5AA2E59A570207F11ACB41B3 /* PagedResult.swift */; };
 		B10020000000000000000001 /* ShareViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10010000000000000000002 /* ShareViewController.swift */; };
 		B10020000000000000000003 /* VernissageShareExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = B10010000000000000000001 /* VernissageShareExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
@@ -491,6 +495,10 @@
 		A3DDF587B51E50AB3C32936E /* Image+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Image+Extensions.swift"; sourceTree = "<group>"; };
 		A44F880501089BCBAC355807 /* License.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = License.swift; sourceTree = "<group>"; };
 		A8B9C0D1E2F3041526374859 /* CategoryTimelineScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CategoryTimelineScreen.swift; sourceTree = "<group>"; };
+		A90000000000000000000011 /* BooleanResult.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BooleanResult.swift; sourceTree = "<group>"; };
+		A90000000000000000000012 /* RegisterUserRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegisterUserRequest.swift; sourceTree = "<group>"; };
+		A90000000000000000000013 /* RegistrationAPI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegistrationAPI.swift; sourceTree = "<group>"; };
+		A90000000000000000000014 /* RegisterAccountScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegisterAccountScreen.swift; sourceTree = "<group>"; };
 		A97C84A411989876EB57FFEC /* StatusComposeMode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatusComposeMode.swift; sourceTree = "<group>"; };
 		AAEE6958D4C7AA60957455D1 /* StatusInteractionAction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatusInteractionAction.swift; sourceTree = "<group>"; };
 		AB6F3F2D5DA757ADD0D618B2 /* TimelineContentWarningOverlayView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimelineContentWarningOverlayView.swift; sourceTree = "<group>"; };
@@ -644,6 +652,7 @@
 				7346F75D346FFF7C89BF486A /* OAuthAPI.swift */,
 				77220C8242DA375F71EEA304 /* OAuthCoordinator.swift */,
 				70A6B03BACC8707AC2843E5C /* OAuthPresentationContextProvider.swift */,
+				A90000000000000000000013 /* RegistrationAPI.swift */,
 				BDD4323115CFD327556C7FB8 /* URLSanitizer.swift */,
 				B7C567764886C37942B70A49 /* CuratedInstancesAPI.swift */,
 			);
@@ -654,6 +663,7 @@
 			isa = PBXGroup;
 			children = (
 				A1BED174470D5E926F734215 /* AddAccountScreen.swift */,
+				A90000000000000000000014 /* RegisterAccountScreen.swift */,
 				9789CE239979714A8DCEFE6B /* AppSettingsScreen.swift */,
 				4D3E17B42669C83B69ED4D7A /* EditorsScreen.swift */,
 				A1D2C3E4F5A60718293A4B5C /* HashtagTimelineScreen.swift */,
@@ -698,6 +708,7 @@
 				B5401A7843F0B8A5DC2B6F39 /* AppNotification.swift */,
 				AF48546B97DEEAA1F04552B0 /* AppNotificationType.swift */,
 				50A125CCD0BC516E9531FB4F /* Attachment.swift */,
+				A90000000000000000000011 /* BooleanResult.swift */,
 				F750EABEE0B5CAC5F65D2C83 /* AttachmentCountry.swift */,
 				3B00E8B30A4DABF0606D00A0 /* AttachmentDescriptionResult.swift */,
 				6A0F6D98D7ECEB85AC7CC3A8 /* AttachmentExif.swift */,
@@ -727,6 +738,7 @@
 				447CAFF2EE3F576725A05076 /* OAuthTokenResponse.swift */,
 				5AA2E59A570207F11ACB41B3 /* PagedResult.swift */,
 				C2EB5AC5BBC465732E97A88C /* PublicSettings.swift */,
+				A90000000000000000000012 /* RegisterUserRequest.swift */,
 				65837BE4598D13DE716DB646 /* ReblogRequest.swift */,
 				9B0D8C660B8AEE6914180473 /* ReblogStatus.swift */,
 				0870DA50088C9CF6E4CF05D1 /* Relationship.swift */,
@@ -1132,6 +1144,7 @@
 				F86185112F4B900F00C3AFB8 /* AttachmentMetadata.swift in Sources */,
 				F86185122F4B900F00C3AFB8 /* AttachmentUpdateRequest.swift in Sources */,
 				F86185132F4B900F00C3AFB8 /* BusinessCard.swift in Sources */,
+				A90000000000000000000001 /* BooleanResult.swift in Sources */,
 				F86185142F4B900F00C3AFB8 /* Category.swift in Sources */,
 				F86185152F4B900F00C3AFB8 /* ContentWarningRequestBody.swift in Sources */,
 				F86185162F4B900F00C3AFB8 /* Country.swift in Sources */,
@@ -1173,6 +1186,7 @@
 				F861853A2F4B900F00C3AFB8 /* UserBlockedDomainRequest.swift in Sources */,
 				F861853B2F4B900F00C3AFB8 /* UserMuteRequestBody.swift in Sources */,
 				F861853C2F4B900F00C3AFB8 /* UserSetting.swift in Sources */,
+				A90000000000000000000002 /* RegisterUserRequest.swift in Sources */,
 				F861853D2F4B900F00C3AFB8 /* APIClient.swift in Sources */,
 				F861853E2F4B900F00C3AFB8 /* APIError.swift in Sources */,
 				F861853F2F4B900F00C3AFB8 /* AppState.swift in Sources */,
@@ -1183,10 +1197,12 @@
 				F86185442F4B900F00C3AFB8 /* OAuthAPI.swift in Sources */,
 				F86185452F4B900F00C3AFB8 /* OAuthCoordinator.swift in Sources */,
 				F86185462F4B900F00C3AFB8 /* OAuthPresentationContextProvider.swift in Sources */,
+				A90000000000000000000003 /* RegistrationAPI.swift in Sources */,
 				F86185472F4B900F00C3AFB8 /* URLSanitizer.swift in Sources */,
 				F86185482F4B900F00C3AFB8 /* StoredAccount.swift in Sources */,
 				F86185492F4B900F00C3AFB8 /* JWTClaims.swift in Sources */,
 				F861854A2F4B900F00C3AFB8 /* AddAccountScreen.swift in Sources */,
+				A90000000000000000000004 /* RegisterAccountScreen.swift in Sources */,
 				F861854B2F4B900F00C3AFB8 /* AppSettingsScreen.swift in Sources */,
 				F861854C2F4B900F00C3AFB8 /* EditorsScreen.swift in Sources */,
 				F861854D2F4B900F00C3AFB8 /* InstanceInformationScreen.swift in Sources */,
@@ -1572,7 +1588,7 @@
 				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
 				CODE_SIGN_ENTITLEMENTS = VernissageMobile/VernissageMobile.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 37;
+				CURRENT_PROJECT_VERSION = 38;
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = VernissageMobile/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = Vernissage;
@@ -1600,7 +1616,7 @@
 				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
 				CODE_SIGN_ENTITLEMENTS = VernissageMobile/VernissageMobile.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 37;
+				CURRENT_PROJECT_VERSION = 38;
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = VernissageMobile/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = Vernissage;
@@ -1626,7 +1642,7 @@
 				APPLICATION_EXTENSION_API_ONLY = YES;
 				CODE_SIGN_ENTITLEMENTS = VernissageShareExtension/VernissageShareExtension.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 37;
+				CURRENT_PROJECT_VERSION = 38;
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = VernissageShareExtension/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = VernissageShareExtension;
@@ -1654,7 +1670,7 @@
 				APPLICATION_EXTENSION_API_ONLY = YES;
 				CODE_SIGN_ENTITLEMENTS = VernissageShareExtension/VernissageShareExtension.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 37;
+				CURRENT_PROJECT_VERSION = 38;
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = VernissageShareExtension/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = VernissageShareExtension;

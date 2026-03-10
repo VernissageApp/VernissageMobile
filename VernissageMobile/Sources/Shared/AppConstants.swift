@@ -7,6 +7,10 @@
 import CoreGraphics
 
 enum AppConstants {
+    enum Copy {
+        static let fediverseServerDescription = "Vernissage is part of the Fediverse, a network of independently run servers. Your account is hosted on one server, and each server has its own rules and administrators. Whichever server you choose, you can still follow and interact with people across Vernissage, Mastodon, Pixelfed, and other compatible platforms."
+    }
+
     enum StorageKeys {
         static let settingsAlwaysShowNsfw = "settings.alwaysShowNsfw"
         static let settingsShowAlternativeText = "settings.showAlternativeText"

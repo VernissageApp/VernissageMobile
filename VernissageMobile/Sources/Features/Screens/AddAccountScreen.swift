@@ -7,6 +7,11 @@
 import SwiftUI
 
 struct AddAccountScreen: View {
+    private struct RegistrationDestination: Identifiable {
+        let id = UUID()
+        let instanceURL: URL
+    }
+
     @Environment(AppState.self) private var appState
 
     let mode: AddAccountMode
@@ -15,10 +20,12 @@ struct AddAccountScreen: View {
     @State private var instanceURL = ""
     @State private var isSubmitting = false
     @State private var errorMessage: String?
+    @State private var successMessage: String?
     @State private var curatedInstances: [CuratedInstance] = []
     @State private var isCuratedInstancesLoading = false
     @State private var didLoadCuratedInstances = false
     @State private var curatedInstancesErrorMessage: String?
+    @State private var registrationDestination: RegistrationDestination?
     @FocusState private var isInstanceURLFocused: Bool
 
     private var isAdditionalAccount: Bool {
@@ -58,9 +65,14 @@ struct AddAccountScreen: View {
 
     var body: some View {
         VStack(spacing: 16) {
-            titleSection
+            Text("Add account")
+                .font(.largeTitle.bold())
+                .foregroundStyle(.white)
+                .padding(.top, 12)
+                .padding(.bottom, 6)
+            
             addAccountFormSection
-
+            
             ScrollView {
                 VStack(spacing: 16) {
                     curatedInstancesSection
@@ -76,7 +88,7 @@ struct AddAccountScreen: View {
             .scrollDismissesKeyboard(.immediately)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
-        .padding(.horizontal, isAdditionalAccount ? 16 : 0)
+        .padding(.horizontal, 16)
         .padding(.top, isAdditionalAccount ? 20 : 0)
         .background(
             screenBackgroundGradient
@@ -84,24 +96,14 @@ struct AddAccountScreen: View {
         )
         .preferredColorScheme(.dark)
         .errorAlertToast($errorMessage)
+        .successAlertToast($successMessage)
+        .fullScreenCover(item: $registrationDestination) { destination in
+            RegisterAccountScreen(instanceURL: destination.instanceURL) { message in
+                successMessage = message
+            }
+        }
         .task {
             await loadCuratedInstancesIfNeeded()
-        }
-    }
-
-    @ViewBuilder
-    private var titleSection: some View {
-        if mode == .firstAccount {
-            VStack(spacing: 8) {
-                Text("Vernissage for iPhone")
-                    .font(.largeTitle.bold())
-                    .foregroundStyle(.white)
-
-                Text("Sign in with OAuth and access private timeline, local timeline, editors choice and profile.")
-                    .font(.subheadline)
-                    .foregroundStyle(secondaryTextColor)
-                    .multilineTextAlignment(.center)
-            }
         }
     }
 
@@ -118,7 +120,7 @@ struct AddAccountScreen: View {
                 .submitLabel(.go)
                 .focused($isInstanceURLFocused)
                 .onSubmit {
-                    onAddAccountTap()
+                    onSignInTap()
                 }
                 .padding(12)
                 .background(fieldFillColor, in: RoundedRectangle(cornerRadius: 12, style: .continuous))
@@ -129,13 +131,22 @@ struct AddAccountScreen: View {
                 )
                 .foregroundStyle(fieldTextColor)
 
-            Button(action: onAddAccountTap) {
+            Text(AppConstants.Copy.fediverseServerDescription)
+                .font(.subheadline)
+                .foregroundStyle(.white.opacity(0.78))
+                .multilineTextAlignment(.leading)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .fixedSize(horizontal: false, vertical: true)
+                .layoutPriority(1)
+            
+            Button(action: onSignInTap) {
                 HStack(spacing: 8) {
                     if isSubmitting {
                         ProgressView().tint(.white)
                     }
-                    Text(mode == .firstAccount ? "Sign in with OAuth" : "Add account")
-                        .fontWeight(.semibold)
+
+                    Text("Sign in")
+                        .bold()
                 }
                 .frame(maxWidth: .infinity)
                 .padding(.vertical, 12)
@@ -143,6 +154,47 @@ struct AddAccountScreen: View {
                 .background(
                     RoundedRectangle(cornerRadius: 12, style: .continuous)
                         .fill(.blue)
+                )
+                .contentShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
+            }
+            .buttonStyle(.plain)
+            .opacity(isSubmitting ? 0.72 : 1)
+            .disabled(isSubmitting)
+            
+            HStack(spacing: 12) {
+                Rectangle()
+                    .fill(.white.opacity(0.18))
+                    .frame(maxWidth: .infinity)
+                    .frame(height: 1)
+
+                Text("OR")
+                    .font(.footnote.bold())
+                    .foregroundStyle(.white.opacity(0.70))
+
+                Rectangle()
+                    .fill(.white.opacity(0.18))
+                    .frame(maxWidth: .infinity)
+                    .frame(height: 1)
+            }
+            .frame(maxWidth: .infinity)
+            .accessibilityElement(children: .combine)
+            
+            Button(action: onCreateAccountTap) {
+                HStack(spacing: 8) {
+                    if isSubmitting {
+                        ProgressView().tint(.blue)
+                    }
+
+                    Text("Create account")
+                        .bold()
+                }
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, 12)
+                .foregroundStyle(.blue)
+                .background(.clear)
+                .overlay(
+                    RoundedRectangle(cornerRadius: 12, style: .continuous)
+                        .stroke(.blue, lineWidth: 1)
                 )
                 .contentShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
             }
@@ -211,7 +263,7 @@ struct AddAccountScreen: View {
         }
     }
 
-    private func onAddAccountTap() {
+    private func onSignInTap() {
         guard !isSubmitting else {
             return
         }
@@ -219,6 +271,23 @@ struct AddAccountScreen: View {
         isInstanceURLFocused = false
         Task {
             await signIn()
+        }
+    }
+    
+    private func onCreateAccountTap() {
+        let trimmed = instanceURL.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !trimmed.isEmpty else {
+            errorMessage = "Instance URL is required."
+            return
+        }
+
+        do {
+            registrationDestination = RegistrationDestination(
+                instanceURL: try URLSanitizer.sanitizeBaseURL(trimmed)
+            )
+            isInstanceURLFocused = false
+        } catch {
+            errorMessage = (error as? LocalizedError)?.errorDescription ?? error.localizedDescription
         }
     }
 

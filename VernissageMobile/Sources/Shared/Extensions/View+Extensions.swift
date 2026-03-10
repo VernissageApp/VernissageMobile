@@ -24,7 +24,7 @@ extension View {
             AlertToast(
                 displayMode: .alert,
                 type: .regular,
-                title: nil,
+                title: "Error",
                 subTitle: message.wrappedValue?.toastPresentableMessage ?? "",
                 style: .style(
                     backgroundColor: .red.opacity(0.8),
@@ -49,7 +49,7 @@ extension View {
             AlertToast(
                 displayMode: .alert,
                 type: .regular,
-                title: nil,
+                title: "Information",
                 subTitle: message.wrappedValue?.toastPresentableMessage ?? "",
                 style: .style(
                     backgroundColor: Color.orange.opacity(0.92),
@@ -74,7 +74,7 @@ extension View {
             AlertToast(
                 displayMode: .alert,
                 type: .regular,
-                title: nil,
+                title: "Success",
                 subTitle: message.wrappedValue?.toastPresentableMessage ?? "",
                 style: .style(
                     backgroundColor: Color(red: 0.10, green: 0.58, blue: 0.21).opacity(0.92),

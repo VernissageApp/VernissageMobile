@@ -15,6 +15,9 @@ struct InstanceDetails: Decodable {
     let version: String?
     let thumbnail: String?
     let languages: [String]?
+    let registrationOpened: Bool?
+    let registrationByApprovalOpened: Bool?
+    let registrationByInvitationsOpened: Bool?
     let configuration: InstanceConfiguration?
     let contact: User?
     let rules: [InstanceRule]?

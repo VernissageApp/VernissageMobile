@@ -148,11 +148,11 @@ struct RegisterAccountScreen: View {
     }
 
     private var showsInvitationField: Bool {
-        registrationByInvitationsOpened
+        !registrationOpened && registrationByInvitationsOpened
     }
 
     private var showsReasonField: Bool {
-        registrationByApprovalOpened
+        !registrationOpened && registrationByApprovalOpened
     }
 
     private var showsCaptcha: Bool {
@@ -966,7 +966,7 @@ struct RegisterAccountScreen: View {
             email: sanitizedEmail,
             password: password,
             name: sanitizedName.nilIfEmpty,
-            securityToken: showsCaptcha ? "\(captchaKey)/\(sanitizedCaptchaText)" : nil,
+            securityToken: showsCaptcha ? "\(captchaKey)/\(sanitizedCaptchaText)" : "",
             inviteToken: sanitizedInviteToken.nilIfEmpty,
             redirectBaseUrl: instanceURL.absoluteString,
             agreement: agreement,

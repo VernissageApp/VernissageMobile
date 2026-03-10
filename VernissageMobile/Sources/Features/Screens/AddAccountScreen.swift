@@ -63,33 +63,49 @@ struct AddAccountScreen: View {
         .white
     }
 
-    var body: some View {
-        VStack(spacing: 16) {
-            Text("Add account")
-                .font(.largeTitle.bold())
-                .foregroundStyle(.white)
-                .padding(.top, 12)
-                .padding(.bottom, 6)
-            
-            addAccountFormSection
-            
-            ScrollView {
-                VStack(spacing: 16) {
-                    curatedInstancesSection
+    private var filteredCuratedInstances: [CuratedInstance] {
+        let query = normalizedFilterQuery
+        guard !query.isEmpty else {
+            return curatedInstances
+        }
 
-                    if mode == .firstAccount {
-                        Text("OAuth redirect scheme: \(AppConstants.OAuth.redirectURI)")
-                            .font(.caption2)
-                            .foregroundStyle(.white.opacity(0.60))
-                    }
+        return curatedInstances.filter { instance in
+            normalizeInstanceURLForMatching(instance.url).contains(query)
+        }
+    }
+
+    private var normalizedFilterQuery: String {
+        normalizeInstanceURLForMatching(instanceURL)
+    }
+
+    var body: some View {
+        ScrollView {
+            VStack(spacing: 16) {
+                Text("Add account")
+                    .font(.largeTitle.bold())
+                    .foregroundStyle(.white)
+                    .padding(.top, 12)
+                    .padding(.bottom, 6)
+
+                addAccountFormSection
+                    .zIndex(1)
+
+                curatedInstancesSection
+                    .zIndex(0)
+
+                if mode == .firstAccount {
+                    Text("OAuth redirect scheme: \(AppConstants.OAuth.redirectURI)")
+                        .font(.caption2)
+                        .foregroundStyle(.white.opacity(0.60))
                 }
-                .frame(maxWidth: .infinity, alignment: .top)
             }
-            .scrollDismissesKeyboard(.immediately)
+            .frame(maxWidth: .infinity, alignment: .top)
+            .padding(.horizontal, 16)
+            .padding(.top, isAdditionalAccount ? 20 : 0)
+            .padding(.bottom, 20)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
-        .padding(.horizontal, 16)
-        .padding(.top, isAdditionalAccount ? 20 : 0)
+        .scrollDismissesKeyboard(.immediately)
         .background(
             screenBackgroundGradient
                 .ignoresSafeArea()
@@ -113,7 +129,7 @@ struct AddAccountScreen: View {
                 .font(.caption.weight(.semibold))
                 .foregroundStyle(fieldLabelColor)
 
-            TextField("https://your-vernissage.instance", text: $instanceURL)
+            TextField("your-vernissage.instance", text: $instanceURL)
                 .textInputAutocapitalization(.never)
                 .keyboardType(.URL)
                 .autocorrectionDisabled()
@@ -122,7 +138,25 @@ struct AddAccountScreen: View {
                 .onSubmit {
                     onSignInTap()
                 }
-                .padding(12)
+                .padding(.leading, 12)
+                .padding(.vertical, 12)
+                .padding(.trailing, instanceURL.isEmpty ? 12 : 40)
+                .foregroundStyle(fieldTextColor)
+                .overlay(alignment: .trailing) {
+                    if !instanceURL.isEmpty {
+                        Button {
+                            instanceURL = ""
+                            isInstanceURLFocused = true
+                        } label: {
+                            Image(systemName: "xmark.circle.fill")
+                                .font(.system(size: 18, weight: .semibold))
+                                .foregroundStyle(.white.opacity(0.65))
+                        }
+                        .buttonStyle(.plain)
+                        .padding(.trailing, 12)
+                        .accessibilityLabel("Clear instance URL")
+                    }
+                }
                 .background(fieldFillColor, in: RoundedRectangle(cornerRadius: 12, style: .continuous))
                 .overlay(
                     RoundedRectangle(cornerRadius: 12, style: .continuous)
@@ -151,13 +185,8 @@ struct AddAccountScreen: View {
                 .frame(maxWidth: .infinity)
                 .padding(.vertical, 12)
                 .foregroundStyle(.white)
-                .background(
-                    RoundedRectangle(cornerRadius: 12, style: .continuous)
-                        .fill(.blue)
-                )
-                .contentShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
             }
-            .buttonStyle(.plain)
+            .buttonStyle(.glassProminent)
             .opacity(isSubmitting ? 0.72 : 1)
             .disabled(isSubmitting)
             
@@ -181,26 +210,20 @@ struct AddAccountScreen: View {
             
             Button(action: onCreateAccountTap) {
                 HStack(spacing: 8) {
-                    if isSubmitting {
-                        ProgressView().tint(.blue)
-                    }
-
                     Text("Create account")
                         .bold()
                 }
                 .frame(maxWidth: .infinity)
                 .padding(.vertical, 12)
-                .foregroundStyle(.blue)
-                .background(.clear)
-                .overlay(
-                    RoundedRectangle(cornerRadius: 12, style: .continuous)
-                        .stroke(.blue, lineWidth: 1)
-                )
-                .contentShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
             }
-            .buttonStyle(.plain)
+            .buttonStyle(.glass)
             .opacity(isSubmitting ? 0.72 : 1)
             .disabled(isSubmitting)
+            .highPriorityGesture(
+                TapGesture().onEnded {
+                    onCreateAccountTap()
+                }
+            )
         }
         .padding(16)
         .background(
@@ -252,10 +275,16 @@ struct AddAccountScreen: View {
                         .redacted(reason: .placeholder)
                         .allowsHitTesting(false)
                 }
+            } else if filteredCuratedInstances.isEmpty {
+                Text("No suggested servers match your URL filter.")
+                    .font(.footnote)
+                    .foregroundStyle(.white.opacity(0.72))
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .padding(.vertical, 10)
             } else {
-                ForEach(curatedInstances) { instance in
+                ForEach(filteredCuratedInstances) { instance in
                     CuratedInstanceCardView(instance: instance) {
-                        instanceURL = instance.url.trimmingCharacters(in: .whitespacesAndNewlines)
+                        instanceURL = instanceURLWithoutScheme(instance.url)
                         isInstanceURLFocused = false
                     }
                 }
@@ -275,6 +304,14 @@ struct AddAccountScreen: View {
     }
     
     private func onCreateAccountTap() {
+        guard !isSubmitting else {
+            return
+        }
+
+        guard registrationDestination == nil else {
+            return
+        }
+
         let trimmed = instanceURL.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !trimmed.isEmpty else {
             errorMessage = "Instance URL is required."
@@ -283,7 +320,7 @@ struct AddAccountScreen: View {
 
         do {
             registrationDestination = RegistrationDestination(
-                instanceURL: try URLSanitizer.sanitizeBaseURL(trimmed)
+                instanceURL: try sanitizeEnteredInstanceURL()
             )
             isInstanceURLFocused = false
         } catch {
@@ -331,11 +368,35 @@ struct AddAccountScreen: View {
         defer { isSubmitting = false }
 
         do {
-            try await appState.signIn(instanceURLString: trimmed)
+            let sanitizedInstanceURL = try sanitizeEnteredInstanceURL()
+            try await appState.signIn(instanceURLString: sanitizedInstanceURL.absoluteString)
             errorMessage = nil
             onDone?()
         } catch {
             errorMessage = (error as? LocalizedError)?.errorDescription ?? error.localizedDescription
         }
+    }
+
+    private func sanitizeEnteredInstanceURL() throws -> URL {
+        try URLSanitizer.sanitizeBaseURL(instanceURL)
+    }
+
+    private func normalizeInstanceURLForMatching(_ value: String) -> String {
+        instanceURLWithoutScheme(value).lowercased()
+    }
+
+    private func instanceURLWithoutScheme(_ value: String) -> String {
+        let trimmed = value.trimmingCharacters(in: .whitespacesAndNewlines)
+        let lowered = trimmed.lowercased()
+
+        if lowered.hasPrefix("https://") {
+            return String(trimmed.dropFirst("https://".count))
+        }
+
+        if lowered.hasPrefix("http://") {
+            return String(trimmed.dropFirst("http://".count))
+        }
+
+        return trimmed
     }
 }

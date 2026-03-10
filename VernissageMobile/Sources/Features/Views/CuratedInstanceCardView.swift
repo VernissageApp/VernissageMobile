@@ -47,13 +47,7 @@ struct CuratedInstanceCardView: View {
                         .padding(.vertical, 12)
                 }
                 .foregroundStyle(.blue)
-                .background(.clear)
-                .overlay(
-                    RoundedRectangle(cornerRadius: 10, style: .continuous)
-                        .stroke(.blue, lineWidth: 1)
-                )
-                .contentShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
-                .buttonStyle(.plain)
+                .buttonStyle(.glass)
             }
             .padding(16)
         }

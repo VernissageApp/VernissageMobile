@@ -1324,20 +1324,3 @@ struct RegisterAccountScreen: View {
         return String((0..<length).compactMap { _ in characters.randomElement() })
     }
 }
-
-private struct RegistrationFieldStyle: ViewModifier {
-    let fillColor: Color
-    let strokeColor: Color
-
-    func body(content: Content) -> some View {
-        content
-            .padding(12)
-            .foregroundStyle(.white)
-            .background(fillColor, in: RoundedRectangle(cornerRadius: 12, style: .continuous))
-            .overlay(
-                RoundedRectangle(cornerRadius: 12, style: .continuous)
-                    .stroke(strokeColor, lineWidth: 1)
-                    .allowsHitTesting(false)
-            )
-    }
-}

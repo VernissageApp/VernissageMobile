@@ -241,8 +241,13 @@ struct RegisterAccountScreen: View {
                     serverRulesCard
                         .disabled(isInteractionDisabled)
 
-                    if showsInvitationField || showsReasonField || showsCaptcha {
+                    if showsInvitationField || showsReasonField {
                         accessRequirementsCard
+                            .disabled(isInteractionDisabled)
+                    }
+                    
+                    if showsCaptcha {
+                        captchaCard
                             .disabled(isInteractionDisabled)
                     }
                 }
@@ -666,6 +671,26 @@ struct RegisterAccountScreen: View {
                     }
                 }
             }
+            
+            if showsInvitationField && showsReasonField {
+                HStack(spacing: 12) {
+                    Rectangle()
+                        .fill(.white.opacity(0.18))
+                        .frame(maxWidth: .infinity)
+                        .frame(height: 1)
+
+                    Text("OR")
+                        .font(.footnote.bold())
+                        .foregroundStyle(.white.opacity(0.70))
+
+                    Rectangle()
+                        .fill(.white.opacity(0.18))
+                        .frame(maxWidth: .infinity)
+                        .frame(height: 1)
+                }
+                .frame(maxWidth: .infinity)
+                .accessibilityElement(children: .combine)
+            }
 
             if showsReasonField {
                 VStack(alignment: .leading, spacing: 8) {
@@ -690,38 +715,45 @@ struct RegisterAccountScreen: View {
                     }
                 }
             }
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(16)
+        .background(cardBackground)
+        .overlay(cardStroke)
+    }
 
-            if showsCaptcha {
-                VStack(alignment: .leading, spacing: 10) {
-                    Text("Solve the captcha")
-                        .font(.subheadline.weight(.semibold))
-                        .foregroundStyle(.white)
-
-                    HStack(alignment: .center, spacing: 12) {
-                        captchaImageView
-
-                        Button("Refresh") {
-                            refreshCaptcha()
-                        }
-                        .buttonStyle(.bordered)
-                        .tint(.blue)
+    private var captchaCard: some View {
+        VStack(alignment: .leading, spacing: 14) {
+            Text("Solve the captcha")
+                .font(.headline)
+                .foregroundStyle(.white)
+            
+            
+            VStack(alignment: .leading, spacing: 10) {
+                HStack(alignment: .center, spacing: 12) {
+                    captchaImageView
+                    
+                    Button("Refresh") {
+                        refreshCaptcha()
                     }
-
-                    TextField("Captcha text", text: $captchaText)
-                        .textInputAutocapitalization(.never)
-                        .autocorrectionDisabled()
-                        .submitLabel(.done)
-                        .focused($focusedField, equals: .captcha)
-                        .modifier(
-                            RegistrationFieldStyle(
-                                fillColor: fieldFillColor,
-                                strokeColor: strokeColorForField(hasError: captchaErrorMessage != nil)
-                            )
+                    .buttonStyle(.bordered)
+                    .tint(.blue)
+                }
+                
+                TextField("Captcha text", text: $captchaText)
+                    .textInputAutocapitalization(.never)
+                    .autocorrectionDisabled()
+                    .submitLabel(.done)
+                    .focused($focusedField, equals: .captcha)
+                    .modifier(
+                        RegistrationFieldStyle(
+                            fillColor: fieldFillColor,
+                            strokeColor: strokeColorForField(hasError: captchaErrorMessage != nil)
                         )
-
-                    if let captchaErrorMessage {
-                        validationMessage(captchaErrorMessage)
-                    }
+                    )
+                
+                if let captchaErrorMessage {
+                    validationMessage(captchaErrorMessage)
                 }
             }
         }
@@ -730,7 +762,7 @@ struct RegisterAccountScreen: View {
         .background(cardBackground)
         .overlay(cardStroke)
     }
-
+    
     private var captchaImageView: some View {
         Group {
             if let captchaImageURL {

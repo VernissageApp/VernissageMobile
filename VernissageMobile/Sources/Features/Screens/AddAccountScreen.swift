@@ -26,6 +26,7 @@ struct AddAccountScreen: View {
     @State private var didLoadCuratedInstances = false
     @State private var curatedInstancesErrorMessage: String?
     @State private var registrationDestination: RegistrationDestination?
+    @State private var showsInstanceURLRequiredError = false
     @FocusState private var isInstanceURLFocused: Bool
 
     private var isAdditionalAccount: Bool {
@@ -59,8 +60,20 @@ struct AddAccountScreen: View {
         .white.opacity(0.22)
     }
 
+    private var fieldErrorStrokeColor: Color {
+        .red.opacity(0.88)
+    }
+
     private var fieldTextColor: Color {
         .white
+    }
+
+    private var instanceURLValidationMessage: String? {
+        showsInstanceURLRequiredError ? AppConstants.Copy.instanceURLRequired : nil
+    }
+
+    private var instanceURLStrokeColor: Color {
+        showsInstanceURLRequiredError ? fieldErrorStrokeColor : fieldStrokeColor
     }
 
     private var filteredCuratedInstances: [CuratedInstance] {
@@ -121,6 +134,15 @@ struct AddAccountScreen: View {
         .task {
             await loadCuratedInstancesIfNeeded()
         }
+        .onChange(of: instanceURL) { _, newValue in
+            guard showsInstanceURLRequiredError else {
+                return
+            }
+
+            if !newValue.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+                showsInstanceURLRequiredError = false
+            }
+        }
     }
 
     private var addAccountFormSection: some View {
@@ -160,10 +182,17 @@ struct AddAccountScreen: View {
                 .background(fieldFillColor, in: RoundedRectangle(cornerRadius: 12, style: .continuous))
                 .overlay(
                     RoundedRectangle(cornerRadius: 12, style: .continuous)
-                        .stroke(fieldStrokeColor, lineWidth: 1)
+                        .stroke(instanceURLStrokeColor, lineWidth: 1)
                         .allowsHitTesting(false)
                 )
                 .foregroundStyle(fieldTextColor)
+
+            if let instanceURLValidationMessage {
+                Text(instanceURLValidationMessage)
+                    .font(.footnote)
+                    .foregroundStyle(.red.opacity(0.92))
+                    .fixedSize(horizontal: false, vertical: true)
+            }
 
             Text(AppConstants.Copy.fediverseServerDescription)
                 .font(.subheadline)
@@ -312,9 +341,7 @@ struct AddAccountScreen: View {
             return
         }
 
-        let trimmed = instanceURL.trimmingCharacters(in: .whitespacesAndNewlines)
-        guard !trimmed.isEmpty else {
-            errorMessage = "Instance URL is required."
+        guard validateInstanceURLPresence() else {
             return
         }
 
@@ -358,9 +385,7 @@ struct AddAccountScreen: View {
 
     @MainActor
     private func signIn() async {
-        let trimmed = instanceURL.trimmingCharacters(in: .whitespacesAndNewlines)
-        guard !trimmed.isEmpty else {
-            errorMessage = "Instance URL is required."
+        guard validateInstanceURLPresence() else {
             return
         }
 
@@ -379,6 +404,17 @@ struct AddAccountScreen: View {
 
     private func sanitizeEnteredInstanceURL() throws -> URL {
         try URLSanitizer.sanitizeBaseURL(instanceURL)
+    }
+
+    private func validateInstanceURLPresence() -> Bool {
+        let trimmed = instanceURL.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !trimmed.isEmpty else {
+            showsInstanceURLRequiredError = true
+            return false
+        }
+
+        showsInstanceURLRequiredError = false
+        return true
     }
 
     private func normalizeInstanceURLForMatching(_ value: String) -> String {

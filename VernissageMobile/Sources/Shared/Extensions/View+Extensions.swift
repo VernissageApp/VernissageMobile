@@ -27,9 +27,9 @@ extension View {
                 title: "Error",
                 subTitle: message.wrappedValue?.toastPresentableMessage ?? "",
                 style: .style(
-                    backgroundColor: .red.opacity(0.8),
-                    titleColor: .white.opacity(0.8),
-                    subTitleColor: .white.opacity(0.8),
+                    backgroundColor: .red,
+                    titleColor: .white,
+                    subTitleColor: .white,
                     titleFont: .headline.weight(.semibold),
                     subTitleFont: .body
                 )
@@ -52,7 +52,7 @@ extension View {
                 title: "Information",
                 subTitle: message.wrappedValue?.toastPresentableMessage ?? "",
                 style: .style(
-                    backgroundColor: Color.orange.opacity(0.92),
+                    backgroundColor: .orange,
                     titleColor: .white,
                     subTitleColor: .white,
                     titleFont: .headline.weight(.semibold),
@@ -77,7 +77,7 @@ extension View {
                 title: "Success",
                 subTitle: message.wrappedValue?.toastPresentableMessage ?? "",
                 style: .style(
-                    backgroundColor: Color(red: 0.10, green: 0.58, blue: 0.21).opacity(0.92),
+                    backgroundColor: Color(red: 0.10, green: 0.58, blue: 0.21),
                     titleColor: .white,
                     subTitleColor: .white,
                     titleFont: .headline.weight(.semibold),

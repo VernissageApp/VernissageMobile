@@ -5,7 +5,6 @@
 //
 
 import SwiftUI
-import AlertToast
 
 extension View {
     func liquidGlassCard() -> some View {
@@ -13,79 +12,21 @@ extension View {
     }
 
     func errorAlertToast(_ message: Binding<String?>) -> some View {
-        toast(isPresenting: Binding(
-            get: { message.wrappedValue?.toastPresentableMessage != nil },
-            set: { isPresented in
-                if !isPresented {
-                    message.wrappedValue = nil
-                }
-            }
-        ), duration: 5) {
-            AlertToast(
-                displayMode: .alert,
-                type: .regular,
-                title: "Error",
-                subTitle: message.wrappedValue?.toastPresentableMessage ?? "",
-                style: .style(
-                    backgroundColor: .red,
-                    titleColor: .white,
-                    subTitleColor: .white,
-                    titleFont: .headline.weight(.semibold),
-                    subTitleFont: .body
-                )
-            )
-        }
+        modifier(AppToastModifier(message: message, style: .error))
     }
 
     func warningAlertToast(_ message: Binding<String?>) -> some View {
-        toast(isPresenting: Binding(
-            get: { message.wrappedValue?.toastPresentableMessage != nil },
-            set: { isPresented in
-                if !isPresented {
-                    message.wrappedValue = nil
-                }
-            }
-        ), duration: 5) {
-            AlertToast(
-                displayMode: .alert,
-                type: .regular,
-                title: "Information",
-                subTitle: message.wrappedValue?.toastPresentableMessage ?? "",
-                style: .style(
-                    backgroundColor: .orange,
-                    titleColor: .white,
-                    subTitleColor: .white,
-                    titleFont: .headline.weight(.semibold),
-                    subTitleFont: .body.weight(.semibold)
-                )
-            )
-        }
+        modifier(AppToastModifier(message: message, style: .warning))
+    }
+
+    func informationAlertToast(_ message: Binding<String?>) -> some View {
+        modifier(AppToastModifier(message: message, style: .information))
     }
 
     func successAlertToast(_ message: Binding<String?>) -> some View {
-        toast(isPresenting: Binding(
-            get: { message.wrappedValue?.toastPresentableMessage != nil },
-            set: { isPresented in
-                if !isPresented {
-                    message.wrappedValue = nil
-                }
-            }
-        ), duration: 5) {
-            AlertToast(
-                displayMode: .alert,
-                type: .regular,
-                title: "Success",
-                subTitle: message.wrappedValue?.toastPresentableMessage ?? "",
-                style: .style(
-                    backgroundColor: Color(red: 0.10, green: 0.58, blue: 0.21),
-                    titleColor: .white,
-                    subTitleColor: .white,
-                    titleFont: .headline.weight(.semibold),
-                    subTitleFont: .body.weight(.semibold)
-                )
-            )
-        }
+        modifier(AppToastModifier(message: message, style: .success))
     }
+
     @ViewBuilder
     func applyIfLet<T, Content: View>(_ value: T?, transform: (Self, T) -> Content) -> some View {
         if let value {

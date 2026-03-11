@@ -38,4 +38,9 @@ enum AppConstants {
         static let redirectURI = "vernissage-mobile://oauth-callback"
         static let scope = "read write profile"
     }
+
+    enum Toast {
+        static let visibleDurationSeconds: Double = 5
+        static let maxSubtitleLines = 6
+    }
 }

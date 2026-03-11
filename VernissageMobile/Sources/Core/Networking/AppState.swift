@@ -382,7 +382,7 @@ final class AppState {
         toastMessage = presentableMessage
 
         toastDismissTask = Task { [weak self] in
-            try? await Task.sleep(for: .seconds(3))
+            try? await Task.sleep(for: .seconds(AppConstants.Toast.visibleDurationSeconds))
             guard !Task.isCancelled else {
                 return
             }
@@ -400,7 +400,7 @@ final class AppState {
         warningToastMessage = presentableMessage
 
         warningToastDismissTask = Task { [weak self] in
-            try? await Task.sleep(for: .seconds(5))
+            try? await Task.sleep(for: .seconds(AppConstants.Toast.visibleDurationSeconds))
             guard !Task.isCancelled else {
                 return
             }

@@ -109,7 +109,7 @@ struct UserBlockDomainSheet: View {
         defer { isSubmitting = false }
 
         do {
-            try await appState.blockDomain(domain: domain, reason: reason.nilIfEmpty)
+            try await appState.api.users.blockDomain(domain: domain, reason: reason.nilIfEmpty)
             errorMessage = nil
             dismiss()
         } catch {

@@ -5,6 +5,7 @@
 //
 
 import SwiftUI
+import Nuke
 
 struct ProfilePhotoCollectionScreen: View {
     @Environment(AppState.self) private var appState
@@ -17,6 +18,7 @@ struct ProfilePhotoCollectionScreen: View {
     @State private var isLoadingMore = false
     @State private var nextMaxId: String?
     @State private var canLoadMore = true
+    private let imagePrefetcher = ImagePrefetcher(destination: .diskCache)
 
     private var photoStatuses: [Status] {
         statuses.filter(\.hasAttachment)
@@ -98,6 +100,7 @@ struct ProfilePhotoCollectionScreen: View {
         do {
             let page = try await fetchPage(maxId: nil)
             statuses = page.data
+            prefetch(statuses: page.data)
             nextMaxId = page.maxId
             canLoadMore = page.maxId != nil && !page.data.isEmpty
             errorMessage = nil
@@ -136,7 +139,8 @@ struct ProfilePhotoCollectionScreen: View {
 
         do {
             let page = try await fetchPage(maxId: cursor)
-            appendUniqueStatuses(page.data)
+            let uniqueStatuses = appendUniqueStatuses(page.data)
+            prefetch(statuses: uniqueStatuses)
             nextMaxId = page.maxId
             canLoadMore = page.maxId != nil && !page.data.isEmpty
             errorMessage = nil
@@ -152,19 +156,29 @@ struct ProfilePhotoCollectionScreen: View {
     private func fetchPage(maxId: String?) async throws -> LinkableResult<Status> {
         switch kind {
         case .favourites:
-            return try await appState.fetchFavourites(maxId: maxId)
+            return try await appState.api.timelines.fetchFavourites(maxId: maxId, limit: 40)
         case .bookmarks:
-            return try await appState.fetchBookmarks(maxId: maxId)
+            return try await appState.api.timelines.fetchBookmarks(maxId: maxId, limit: 40)
         }
     }
 
-    private func appendUniqueStatuses(_ incoming: [Status]) {
+    private func appendUniqueStatuses(_ incoming: [Status]) -> [Status] {
         guard !incoming.isEmpty else {
-            return
+            return []
         }
 
         let existingIds = Set(statuses.map(\.id))
         let uniqueIncoming = incoming.filter { !existingIds.contains($0.id) }
         statuses.append(contentsOf: uniqueIncoming)
+        return uniqueIncoming
+    }
+
+    private func prefetch(statuses: [Status]) {
+        let imageURLs = statuses.allPrefetchImageURLs
+        guard !imageURLs.isEmpty else {
+            return
+        }
+
+        imagePrefetcher.startPrefetching(with: imageURLs)
     }
 }

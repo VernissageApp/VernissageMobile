@@ -243,7 +243,7 @@ struct StatusReportSheet: View {
         defer { isRulesLoading = false }
 
         do {
-            availableRules = try await appState.fetchInstanceRules()
+            availableRules = try await appState.api.instance.fetchInstanceRules()
             errorMessage = nil
         } catch {
             availableRules = []
@@ -270,7 +270,7 @@ struct StatusReportSheet: View {
         defer { isSubmitting = false }
 
         do {
-            try await appState.createReport(
+            try await appState.api.reports.createReport(
                 reportedUserId: reportedUserId,
                 statusId: status?.id,
                 comment: comment.trimmingCharacters(in: .whitespacesAndNewlines),

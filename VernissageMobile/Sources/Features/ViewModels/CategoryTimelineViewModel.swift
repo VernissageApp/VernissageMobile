@@ -36,7 +36,7 @@ final class CategoryTimelineViewModel {
         isFetchingFirstPage = true
         defer { isFetchingFirstPage = false }
 
-        let shouldShowInitialLoader = statuses.isEmpty
+        let shouldShowInitialLoader = statuses.isEmpty && !forceRefresh
         if shouldShowInitialLoader {
             isLoading = true
         }
@@ -47,17 +47,10 @@ final class CategoryTimelineViewModel {
         }
 
         do {
-            let cachePolicy: URLRequest.CachePolicy = forceRefresh
-            ? .reloadIgnoringLocalCacheData
-            : .useProtocolCachePolicy
-            let requestNonce = forceRefresh ? String(Int(Date().timeIntervalSince1970 * 1000)) : nil
-
-            let page = try await appState.fetchCategoryStatuses(
+            let page = try await appState.api.timelines.fetchCategoryStatuses(
                 category: categoryName,
                 maxId: nil,
-                limit: 40,
-                cachePolicy: cachePolicy,
-                requestNonce: requestNonce
+                limit: 40
             )
             statuses = page.data
             nextMaxId = page.maxId
@@ -90,7 +83,7 @@ final class CategoryTimelineViewModel {
         defer { isLoadingMore = false }
 
         do {
-            let page = try await appState.fetchCategoryStatuses(category: categoryName, maxId: cursor)
+            let page = try await appState.api.timelines.fetchCategoryStatuses(category: categoryName, maxId: cursor, limit: 40)
             appendUniqueStatuses(page.data)
             nextMaxId = page.maxId
             canLoadMore = page.maxId != nil && !page.data.isEmpty

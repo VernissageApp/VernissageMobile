@@ -29,8 +29,9 @@ struct RootScreen: View {
             }
         }
         .warningAlertToast($bindableAppState.warningToastMessage)
-        .errorAlertToast($bindableAppState.toastMessage)
-        .errorAlertToast($bindableAppState.globalErrorMessage)
+        .errorAlertToast($bindableAppState.errorToastMessage)
+        .informationAlertToast($bindableAppState.infoToastMessage)
+        .successAlertToast($bindableAppState.successToastMessage)
         .task(id: appState.activeAccountID) {
             await appState.refreshActiveTokenIfNeeded(force: false)
             await appState.refreshUnreadNotificationsCount()

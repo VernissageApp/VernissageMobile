@@ -6,6 +6,7 @@
 
 import Foundation
 import Observation
+import Nuke
 
 @MainActor
 @Observable
@@ -34,6 +35,7 @@ final class TrendingViewModel {
     var errorMessage: String?
 
     private var loadedPhotosPeriod: TrendingPeriodSelection?
+    private let imagePrefetcher = ImagePrefetcher(destination: .diskCache)
     private var nextPhotosMaxId: String?
     private var canLoadMorePhotos = true
     private var isFetchingPhotosFirstPage = false
@@ -104,16 +106,10 @@ final class TrendingViewModel {
         }
 
         do {
-            let cachePolicy: URLRequest.CachePolicy = forceRefresh
-            ? .reloadIgnoringLocalCacheData
-            : .useProtocolCachePolicy
-            let requestNonce = forceRefresh ? String(Int(Date().timeIntervalSince1970 * 1000)) : nil
-
-            let page = try await appState.fetchTrendingStatuses(period: period,
-                                                                maxId: nil,
-                                                                cachePolicy: cachePolicy,
-                                                                requestNonce: requestNonce)
-            photoStatuses = page.data.filter(\.hasAttachment)
+            let page = try await appState.api.timelines.fetchTrendingStatuses(period: period, maxId: nil)
+            let fetchedPhotoStatuses = page.data.filter(\.hasAttachment)
+            photoStatuses = fetchedPhotoStatuses
+            prefetch(statuses: fetchedPhotoStatuses)
             nextPhotosMaxId = page.maxId
             canLoadMorePhotos = page.maxId != nil && !page.data.isEmpty
             loadedPhotosPeriod = period
@@ -150,8 +146,9 @@ final class TrendingViewModel {
         defer { isPhotosLoadingMore = false }
 
         do {
-            let page = try await appState.fetchTrendingStatuses(period: period, maxId: cursor)
-            appendUniqueStatuses(page.data.filter(\.hasAttachment), to: &photoStatuses)
+            let page = try await appState.api.timelines.fetchTrendingStatuses(period: period, maxId: cursor)
+            let uniqueStatuses = appendUniqueStatuses(page.data.filter(\.hasAttachment), to: &photoStatuses)
+            prefetch(statuses: uniqueStatuses)
             nextPhotosMaxId = page.maxId
             canLoadMorePhotos = page.maxId != nil && !page.data.isEmpty
             photosErrorMessage = nil
@@ -189,7 +186,7 @@ final class TrendingViewModel {
         }
 
         do {
-            let page = try await appState.fetchTrendingUsers(period: period, maxId: nil)
+            let page = try await appState.api.timelines.fetchTrendingUsers(period: period, maxId: nil, limit: 40)
             artists = page.data
             nextArtistsMaxId = page.maxId
             canLoadMoreArtists = page.maxId != nil && !page.data.isEmpty
@@ -230,7 +227,7 @@ final class TrendingViewModel {
         defer { isArtistsLoadingMore = false }
 
         do {
-            let page = try await appState.fetchTrendingUsers(period: period, maxId: cursor)
+            let page = try await appState.api.timelines.fetchTrendingUsers(period: period, maxId: cursor, limit: 40)
             appendUniqueUsers(page.data, to: &artists)
             nextArtistsMaxId = page.maxId
             canLoadMoreArtists = page.maxId != nil && !page.data.isEmpty
@@ -261,7 +258,7 @@ final class TrendingViewModel {
         defer { loadingArtistKeys.remove(key) }
 
         do {
-            let page = try await appState.fetchUserStatuses(userName: userName, maxId: nil, limit: 10)
+            let page = try await appState.api.timelines.fetchUserStatuses(userName: userName, maxId: nil, limit: 10)
             artistStatusesByKey[key] = page.data.filter(\.hasAttachment)
         } catch {
             if error.isCancellationLike {
@@ -297,7 +294,7 @@ final class TrendingViewModel {
         }
 
         do {
-            let page = try await appState.fetchTrendingHashtags(period: period, maxId: nil)
+            let page = try await appState.api.timelines.fetchTrendingHashtags(period: period, maxId: nil, limit: 40)
             hashtags = page.data
             nextTagsMaxId = page.maxId
             canLoadMoreTags = page.maxId != nil && !page.data.isEmpty
@@ -338,7 +335,7 @@ final class TrendingViewModel {
         defer { isTagsLoadingMore = false }
 
         do {
-            let page = try await appState.fetchTrendingHashtags(period: period, maxId: cursor)
+            let page = try await appState.api.timelines.fetchTrendingHashtags(period: period, maxId: cursor, limit: 40)
             appendUniqueHashtags(page.data, to: &hashtags)
             nextTagsMaxId = page.maxId
             canLoadMoreTags = page.maxId != nil && !page.data.isEmpty
@@ -364,7 +361,7 @@ final class TrendingViewModel {
         defer { loadingTagNames.remove(key) }
 
         do {
-            let page = try await appState.fetchHashtagStatuses(hashtag: hashtag.name, maxId: nil, limit: 10)
+            let page = try await appState.api.timelines.fetchHashtagStatuses(hashtag: hashtag.name, maxId: nil, limit: 10)
             tagStatusesByName[key] = page.data.filter(\.hasAttachment)
         } catch {
             if error.isCancellationLike {
@@ -377,14 +374,15 @@ final class TrendingViewModel {
         }
     }
 
-    private func appendUniqueStatuses(_ incoming: [Status], to destination: inout [Status]) {
+    private func appendUniqueStatuses(_ incoming: [Status], to destination: inout [Status]) -> [Status] {
         guard !incoming.isEmpty else {
-            return
+            return []
         }
 
         let existingIds = Set(destination.map(\.id))
         let uniqueIncoming = incoming.filter { !existingIds.contains($0.id) }
         destination.append(contentsOf: uniqueIncoming)
+        return uniqueIncoming
     }
 
     private func appendUniqueUsers(_ incoming: [User], to destination: inout [User]) {
@@ -405,5 +403,14 @@ final class TrendingViewModel {
         var existingNames = Set(destination.map { $0.name.lowercased() })
         let uniqueIncoming = incoming.filter { existingNames.insert($0.name.lowercased()).inserted }
         destination.append(contentsOf: uniqueIncoming)
+    }
+
+    private func prefetch(statuses: [Status]) {
+        let imageURLs = statuses.allPrefetchImageURLs
+        guard !imageURLs.isEmpty else {
+            return
+        }
+
+        imagePrefetcher.startPrefetching(with: imageURLs)
     }
 }

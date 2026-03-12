@@ -39,16 +39,14 @@ enum APIClient {
         method: String,
         queryItems: [URLQueryItem] = [],
         headers: [String: String] = [:],
-        body: Data? = nil,
-        cachePolicy: URLRequest.CachePolicy = .useProtocolCachePolicy
+        body: Data? = nil
     ) async throws -> T {
         let request = try makeRequest(baseURL: baseURL,
                                       path: path,
                                       method: method,
                                       queryItems: queryItems,
                                       headers: headers,
-                                      body: body,
-                                      cachePolicy: cachePolicy)
+                                      body: body)
 
         let (data, response) = try await URLSession.shared.data(for: request)
         guard let httpResponse = response as? HTTPURLResponse else {
@@ -73,8 +71,7 @@ enum APIClient {
         method: String,
         queryItems: [URLQueryItem] = [],
         headers: [String: String] = [:],
-        body: Data? = nil,
-        cachePolicy: URLRequest.CachePolicy = .useProtocolCachePolicy
+        body: Data? = nil
     ) async throws {
         let request = try makeRequest(
             baseURL: baseURL,
@@ -82,8 +79,7 @@ enum APIClient {
             method: method,
             queryItems: queryItems,
             headers: headers,
-            body: body,
-            cachePolicy: cachePolicy
+            body: body
         )
 
         let (data, response) = try await URLSession.shared.data(for: request)
@@ -103,8 +99,7 @@ enum APIClient {
         method: String,
         queryItems: [URLQueryItem],
         headers: [String: String],
-        body: Data?,
-        cachePolicy: URLRequest.CachePolicy
+        body: Data?
     ) throws -> URLRequest {
         var components = URLComponents(url: baseURL.appending(path: path), resolvingAgainstBaseURL: false)
         components?.queryItems = queryItems.isEmpty ? nil : queryItems
@@ -117,7 +112,6 @@ enum APIClient {
         request.httpMethod = method
         request.httpBody = body
         request.timeoutInterval = 30
-        request.cachePolicy = cachePolicy
 
         headers.forEach { request.setValue($1, forHTTPHeaderField: $0) }
         if headers["Accept"] == nil {

@@ -186,7 +186,7 @@ struct SharedBusinessCardsScreen: View {
         defer { isCheckingBusinessCard = false }
 
         do {
-            let exists = try await appState.activeBusinessCardExists()
+            let exists = try await appState.api.businessCards.activeBusinessCardExists()
             if !exists {
                 errorMessage = "You need to create a business card first."
                 return
@@ -208,7 +208,7 @@ struct SharedBusinessCardsScreen: View {
         defer { isLoading = false }
 
         do {
-            let page = try await appState.fetchSharedBusinessCards(page: 1, size: pageSize)
+            let page = try await appState.api.businessCards.fetchSharedBusinessCards(page: 1, size: pageSize)
             cards = page.data ?? []
             currentPage = 1
             canLoadMore = (page.data ?? []).count >= pageSize
@@ -237,7 +237,7 @@ struct SharedBusinessCardsScreen: View {
         let nextPage = currentPage + 1
 
         do {
-            let page = try await appState.fetchSharedBusinessCards(page: nextPage, size: pageSize)
+            let page = try await appState.api.businessCards.fetchSharedBusinessCards(page: nextPage, size: pageSize)
             let incoming = page.data ?? []
             appendUniqueCards(incoming)
             currentPage = nextPage
@@ -257,7 +257,7 @@ struct SharedBusinessCardsScreen: View {
         do {
             switch mode {
             case .create:
-                let created = try await appState.createSharedBusinessCard(
+                let created = try await appState.api.businessCards.createSharedBusinessCard(
                     title: draft.title,
                     note: draft.note,
                     thirdPartyName: draft.thirdPartyName,
@@ -265,7 +265,7 @@ struct SharedBusinessCardsScreen: View {
                 )
                 cards.insert(created, at: 0)
             case .edit(let card):
-                let updated = try await appState.updateSharedBusinessCard(
+                let updated = try await appState.api.businessCards.updateSharedBusinessCard(
                     id: card.id,
                     title: draft.title,
                     note: draft.note,
@@ -295,9 +295,9 @@ struct SharedBusinessCardsScreen: View {
 
         do {
             if isEnabled {
-                try await appState.unrevokeSharedBusinessCard(id: card.id)
+                try await appState.api.businessCards.unrevokeSharedBusinessCard(id: card.id)
             } else {
-                try await appState.revokeSharedBusinessCard(id: card.id)
+                try await appState.api.businessCards.revokeSharedBusinessCard(id: card.id)
             }
 
             if let index = cards.firstIndex(where: { $0.id == card.id }) {
@@ -313,7 +313,7 @@ struct SharedBusinessCardsScreen: View {
     @MainActor
     private func deleteSharedBusinessCard(_ card: SharedBusinessCard) async {
         do {
-            try await appState.deleteSharedBusinessCard(id: card.id)
+            try await appState.api.businessCards.deleteSharedBusinessCard(id: card.id)
             cards.removeAll { $0.id == card.id }
             errorMessage = nil
         } catch {

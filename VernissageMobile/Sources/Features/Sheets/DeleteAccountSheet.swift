@@ -118,7 +118,7 @@ struct DeleteAccountSheet: View {
         defer { isDeleting = false }
 
         do {
-            try await appState.deleteActiveAccount()
+            try await appState.api.users.deleteActiveAccount()
             onDeleted()
             dismiss()
         } catch {

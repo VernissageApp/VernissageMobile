@@ -248,9 +248,9 @@ struct StatusComposeScreen: View {
                     countries: countries,
                     isOpenAIEnabled: isOpenAIEnabled
                 ) { countryCode, query in
-                    try await appState.searchLocations(countryCode: countryCode, query: query)
+                    try await appState.api.settings.searchLocations(countryCode: countryCode, query: query)
                 } generateDescription: { attachmentId in
-                    try await appState.describeAttachment(attachmentId: attachmentId)
+                    try await appState.api.attachments.describeAttachment(attachmentId: attachmentId)
                 }
             } else {
                 EmptyView()
@@ -259,7 +259,7 @@ struct StatusComposeScreen: View {
         .sheet(isPresented: $isEditingTemplate) {
             StatusTextTemplateSheet(template: statusTextTemplate) { templateValue in
                 let sanitizedValue = String(templateValue.prefix(1000))
-                _ = try await appState.setUserSetting(
+                _ = try await appState.api.settings.setUserSetting(
                     key: Self.statusTextTemplateKey,
                     value: sanitizedValue
                 )
@@ -768,13 +768,13 @@ struct StatusComposeScreen: View {
 
         do {
             async let fetchedProfile = appState.fetchActiveProfile()
-            async let fetchedCategories = appState.fetchCategories()
-            async let fetchedLicenses = appState.fetchLicenses()
-            async let fetchedCountries = appState.fetchCountries()
-            async let fetchedInstance = appState.fetchInstanceDetails()
-            async let fetchedPublicSettings = appState.fetchPublicSettings()
-            async let fetchedStatusTextTemplate = appState.fetchUserSetting(key: Self.statusTextTemplateKey)
-            async let fetchedEmailVerified = appState.fetchEmailVerified()
+            async let fetchedCategories = appState.api.settings.fetchCategories()
+            async let fetchedLicenses = appState.api.settings.fetchLicenses()
+            async let fetchedCountries = appState.api.settings.fetchCountries()
+            async let fetchedInstance = appState.api.instance.fetchInstanceDetails()
+            async let fetchedPublicSettings = appState.api.settings.fetchPublicSettings()
+            async let fetchedStatusTextTemplate = appState.api.settings.fetchUserSetting(key: Self.statusTextTemplateKey)
+            async let fetchedEmailVerified = appState.api.settings.fetchEmailVerified()
 
             profile = try await fetchedProfile
             categories = try await fetchedCategories.sorted {
@@ -799,7 +799,7 @@ struct StatusComposeScreen: View {
 
             if let editingStatusId {
                 do {
-                    let refreshedStatus = try await appState.fetchStatus(statusId: editingStatusId)
+                    let refreshedStatus = try await appState.api.statuses.fetchStatus(statusId: editingStatusId)
                     applyEditingSnapshot(from: refreshedStatus)
                 } catch {
                     // Keep already prefilled status values when refresh fails.
@@ -1051,7 +1051,7 @@ struct StatusComposeScreen: View {
         }
 
         do {
-            let uploaded = try await appState.uploadAttachment(
+            let uploaded = try await appState.api.attachments.uploadAttachment(
                 imageData: uploadData,
                 fileName: "photo-\(UUID().uuidString.prefix(8)).jpg",
                 mimeType: "image/jpeg"
@@ -1082,7 +1082,7 @@ struct StatusComposeScreen: View {
         if !item.isExistingAttachment,
            let serverId = item.serverId?.nilIfEmpty {
             do {
-                try await appState.deleteAttachment(attachmentId: serverId)
+                try await appState.api.attachments.deleteAttachment(attachmentId: serverId)
             } catch {
                 errorMessage = (error as? LocalizedError)?.errorDescription ?? error.localizedDescription
             }
@@ -1106,7 +1106,7 @@ struct StatusComposeScreen: View {
             .compactMap { $0.serverId?.nilIfEmpty }
 
         for attachmentId in temporaryAttachmentIds {
-            try? await appState.deleteAttachment(attachmentId: attachmentId)
+            try? await appState.api.attachments.deleteAttachment(attachmentId: attachmentId)
         }
     }
 
@@ -1140,7 +1140,7 @@ struct StatusComposeScreen: View {
                     continue
                 }
 
-                try await appState.updateAttachment(attachmentId: serverId, request: payload)
+                try await appState.api.attachments.updateAttachment(attachmentId: serverId, request: payload)
             }
 
             let payload = StatusComposeRequest(
@@ -1157,9 +1157,9 @@ struct StatusComposeScreen: View {
 
             let savedStatus: Status
             if let editingStatusId {
-                savedStatus = try await appState.updateStatus(statusId: editingStatusId, request: payload)
+                savedStatus = try await appState.api.statuses.updateStatus(statusId: editingStatusId, request: payload)
             } else {
-                savedStatus = try await appState.createStatus(request: payload)
+                savedStatus = try await appState.api.statuses.createStatus(request: payload)
             }
 
             onStatusSaved?(savedStatus)
@@ -1207,7 +1207,7 @@ struct StatusComposeScreen: View {
         defer { isResendingConfirmationEmail = false }
 
         do {
-            try await appState.resendEmailConfirmation()
+            try await appState.api.settings.resendEmailConfirmation()
             successMessage = "The email has been sent and should arrive in your inbox shortly."
         } catch {
             errorMessage = (error as? LocalizedError)?.errorDescription ?? error.localizedDescription
@@ -1260,12 +1260,12 @@ struct StatusComposeScreen: View {
         do {
             switch marker {
             case "@":
-                let result = try await appState.search(query: query, type: "users")
+                let result = try await appState.api.search.search(query: query, type: "users")
                 mentionSuggestions = Array((result.users ?? []).prefix(12))
                 hashtagSuggestions = []
                 autocompleteMode = mentionSuggestions.isEmpty ? nil : .users
             case "#":
-                let result = try await appState.search(query: query, type: "hashtags")
+                let result = try await appState.api.search.search(query: query, type: "hashtags")
                 hashtagSuggestions = Array((result.hashtags ?? []).prefix(16))
                 mentionSuggestions = []
                 autocompleteMode = hashtagSuggestions.isEmpty ? nil : .hashtags

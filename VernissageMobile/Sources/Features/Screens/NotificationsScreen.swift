@@ -83,7 +83,7 @@ struct NotificationsScreen: View {
     private func updateMarkerAndRefreshCounter() async {
         if let notificationId = viewModel.notifications.first?.id?.nilIfEmpty {
             do {
-                try await appState.updateNotificationMarker(notificationId: notificationId)
+                try await appState.api.notifications.updateNotificationMarker(notificationId: notificationId)
             } catch {
                 // If marker update fails, keep notifications list visible and still refresh the counter.
             }

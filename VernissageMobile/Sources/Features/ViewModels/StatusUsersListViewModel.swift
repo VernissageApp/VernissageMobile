@@ -82,9 +82,9 @@ final class StatusUsersListViewModel {
     ) async throws -> LinkableResult<User> {
         switch kind {
         case .boostedBy:
-            return try await appState.fetchStatusRebloggedBy(statusId: statusId, maxId: maxId)
+            return try await appState.api.statuses.fetchStatusRebloggedBy(statusId: statusId, maxId: maxId, limit: 40)
         case .favouritedBy:
-            return try await appState.fetchStatusFavouritedBy(statusId: statusId, maxId: maxId)
+            return try await appState.api.statuses.fetchStatusFavouritedBy(statusId: statusId, maxId: maxId, limit: 40)
         }
     }
 

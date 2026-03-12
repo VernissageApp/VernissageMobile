@@ -5,6 +5,7 @@
 //
 
 import SwiftUI
+import Nuke
 
 struct ProfileScreen: View {
     @Environment(AppState.self) private var appState
@@ -45,6 +46,7 @@ struct ProfileScreen: View {
     @State private var isShowingDeleteAccount = false
 
     @Binding private var showAccountSwitcher: Bool
+    private let imagePrefetcher = ImagePrefetcher(destination: .diskCache)
 
     init(showAccountSwitcher: Binding<Bool>) {
         _showAccountSwitcher = showAccountSwitcher
@@ -405,8 +407,9 @@ struct ProfileScreen: View {
         defer { isStatusesLoading = false }
 
         do {
-            let page = try await appState.fetchUserStatuses(userName: userName, maxId: nil)
+            let page = try await appState.api.timelines.fetchUserStatuses(userName: userName, maxId: nil, limit: 40)
             statuses = page.data
+            prefetch(statuses: page.data)
             nextStatusesMaxId = page.maxId
             canLoadMoreStatuses = page.maxId != nil && !page.data.isEmpty
             statusesErrorMessage = nil
@@ -442,8 +445,9 @@ struct ProfileScreen: View {
         defer { isLoadingMoreStatuses = false }
 
         do {
-            let page = try await appState.fetchUserStatuses(userName: userName, maxId: cursor)
-            appendUniqueStatuses(page.data)
+            let page = try await appState.api.timelines.fetchUserStatuses(userName: userName, maxId: cursor, limit: 40)
+            let uniqueStatuses = appendUniqueStatuses(page.data)
+            prefetch(statuses: uniqueStatuses)
             nextStatusesMaxId = page.maxId
             canLoadMoreStatuses = page.maxId != nil && !page.data.isEmpty
             statusesErrorMessage = nil
@@ -470,7 +474,7 @@ struct ProfileScreen: View {
         defer { isFollowingLoading = false }
 
         do {
-            let page = try await appState.fetchUserFollowing(userName: cleanedName, maxId: nil)
+            let page = try await appState.api.users.fetchUserFollowing(userName: cleanedName, maxId: nil, limit: 40)
             followingUsers = page.data
             await refreshRelationships(for: page.data)
             nextFollowingMaxId = page.maxId
@@ -502,7 +506,7 @@ struct ProfileScreen: View {
         defer { isFollowersLoading = false }
 
         do {
-            let page = try await appState.fetchUserFollowers(userName: cleanedName, maxId: nil)
+            let page = try await appState.api.users.fetchUserFollowers(userName: cleanedName, maxId: nil, limit: 40)
             followersUsers = page.data
             await refreshRelationships(for: page.data)
             nextFollowersMaxId = page.maxId
@@ -541,7 +545,7 @@ struct ProfileScreen: View {
         defer { isLoadingMoreFollowing = false }
 
         do {
-            let page = try await appState.fetchUserFollowing(userName: userName, maxId: cursor)
+            let page = try await appState.api.users.fetchUserFollowing(userName: userName, maxId: cursor, limit: 40)
             appendUniqueUsers(page.data, to: &followingUsers)
             await refreshRelationships(for: page.data)
             nextFollowingMaxId = page.maxId
@@ -577,7 +581,7 @@ struct ProfileScreen: View {
         defer { isLoadingMoreFollowers = false }
 
         do {
-            let page = try await appState.fetchUserFollowers(userName: userName, maxId: cursor)
+            let page = try await appState.api.users.fetchUserFollowers(userName: userName, maxId: cursor, limit: 40)
             appendUniqueUsers(page.data, to: &followersUsers)
             await refreshRelationships(for: page.data)
             nextFollowersMaxId = page.maxId
@@ -588,14 +592,15 @@ struct ProfileScreen: View {
         }
     }
 
-    private func appendUniqueStatuses(_ incoming: [Status]) {
+    private func appendUniqueStatuses(_ incoming: [Status]) -> [Status] {
         guard !incoming.isEmpty else {
-            return
+            return []
         }
 
         let existingIds = Set(statuses.map(\.id))
         let uniqueIncoming = incoming.filter { !existingIds.contains($0.id) }
         statuses.append(contentsOf: uniqueIncoming)
+        return uniqueIncoming
     }
 
     private func appendUniqueUsers(_ incoming: [User], to destination: inout [User]) {
@@ -616,7 +621,7 @@ struct ProfileScreen: View {
         }
 
         do {
-            let relationships = try await appState.fetchRelationships(userIds: userIds)
+            let relationships = try await appState.api.users.fetchRelationships(userIds: userIds)
             for relationship in relationships {
                 if let userId = relationship.userId?.nilIfEmpty {
                     relationshipsByUserID[userId] = relationship
@@ -635,10 +640,19 @@ struct ProfileScreen: View {
         }
 
         do {
-            latestFollowers = try await appState.fetchLatestFollowers(userName: userName, limit: 10)
+            latestFollowers = try await appState.api.users.fetchLatestFollowers(userName: userName, limit: 10)
         } catch {
             latestFollowers = []
         }
+    }
+
+    private func prefetch(statuses: [Status]) {
+        let imageURLs = statuses.allPrefetchImageURLs
+        guard !imageURLs.isEmpty else {
+            return
+        }
+
+        imagePrefetcher.startPrefetching(with: imageURLs)
     }
     
     private var profileShareURLObject: URL? {

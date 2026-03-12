@@ -51,8 +51,7 @@ enum RegistrationAPI {
         try await APIClient.requestJSON(
             baseURL: baseURL,
             path: "/api/v1/instance",
-            method: "GET",
-            cachePolicy: .reloadIgnoringLocalCacheData
+            method: "GET"
         )
     }
 
@@ -60,8 +59,7 @@ enum RegistrationAPI {
         try await APIClient.requestJSON(
             baseURL: baseURL,
             path: "/api/v1/settings/public",
-            method: "GET",
-            cachePolicy: .reloadIgnoringLocalCacheData
+            method: "GET"
         )
     }
 
@@ -70,8 +68,7 @@ enum RegistrationAPI {
         let result: BooleanResult = try await APIClient.requestJSON(
             baseURL: baseURL,
             path: "/api/v1/register/username/\(encodedUserName)",
-            method: "GET",
-            cachePolicy: .reloadIgnoringLocalCacheData
+            method: "GET"
         )
 
         return result.result
@@ -82,8 +79,7 @@ enum RegistrationAPI {
         let result: BooleanResult = try await APIClient.requestJSON(
             baseURL: baseURL,
             path: "/api/v1/register/email/\(encodedEmail)",
-            method: "GET",
-            cachePolicy: .reloadIgnoringLocalCacheData
+            method: "GET"
         )
 
         return result.result
@@ -96,8 +92,7 @@ enum RegistrationAPI {
                 path: "/api/v1/register",
                 method: "POST",
                 headers: ["Content-Type": "application/json"],
-                body: try JSONEncoder().encode(request),
-                cachePolicy: .reloadIgnoringLocalCacheData
+                body: try JSONEncoder().encode(request)
             )
         } catch let APIError.http(statusCode, body) {
             throw ServerError(statusCode: statusCode, body: body)

@@ -61,6 +61,7 @@ struct Status: Decodable, Identifiable {
         case category
     }
 }
+
 extension Status {
     var mainStatus: Status {
         reblog?.asStatus ?? self
@@ -143,5 +144,23 @@ extension Status {
 
         let markdown = try? noteForDisplay.parseToMarkdown()
         return markdown?.nilIfEmpty
+    }
+
+    var prefetchImageURLs: [URL] {
+        let attachments = mainStatus.attachments ?? []
+        return attachments.compactMap { attachment in
+            guard let urlString = attachment.smallImageURL?.nilIfEmpty ?? attachment.orginalImageURL?.nilIfEmpty else {
+                return nil
+            }
+
+            return URL(string: urlString)
+        }
+    }
+}
+
+extension Collection where Element == Status {
+    var allPrefetchImageURLs: [URL] {
+        var seenURLs = Set<URL>()
+        return flatMap(\.prefetchImageURLs).filter { seenURLs.insert($0).inserted }
     }
 }

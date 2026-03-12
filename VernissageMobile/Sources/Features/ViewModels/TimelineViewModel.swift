@@ -6,6 +6,7 @@
 
 import Foundation
 import Observation
+import Nuke
 
 @MainActor
 @Observable
@@ -20,6 +21,7 @@ final class TimelineViewModel {
     }
 
     private let kind: TimelineKind
+    private let imagePrefetcher = ImagePrefetcher(destination: .diskCache)
     private var nextMaxId: String?
     private var canLoadMore = true
     private var isFetchingFirstPage = false
@@ -47,18 +49,12 @@ final class TimelineViewModel {
         }
 
         do {
-            let cachePolicy: URLRequest.CachePolicy = forceRefresh
-            ? .reloadIgnoringLocalCacheData
-            : .useProtocolCachePolicy
-            let requestNonce = forceRefresh ? String(Int(Date().timeIntervalSince1970 * 1000)) : nil
-
-            let page = try await appState.fetchTimeline(
+            let page = try await appState.api.timelines.fetchTimeline(
                 kind: kind,
-                maxId: nil,
-                cachePolicy: cachePolicy,
-                requestNonce: requestNonce
+                maxId: nil
             )
             statuses = page.data
+            prefetch(statuses: page.data)
             nextMaxId = page.maxId
             canLoadMore = page.maxId != nil && !page.data.isEmpty
             errorMessage = nil
@@ -90,8 +86,9 @@ final class TimelineViewModel {
         defer { isLoadingMore = false }
 
         do {
-            let page = try await appState.fetchTimeline(kind: kind, maxId: cursor)
-            appendUniqueStatuses(page.data)
+            let page = try await appState.api.timelines.fetchTimeline(kind: kind, maxId: cursor)
+            let uniqueStatuses = appendUniqueStatuses(page.data)
+            prefetch(statuses: uniqueStatuses)
             nextMaxId = page.maxId
             canLoadMore = page.maxId != nil && !page.data.isEmpty
             errorMessage = nil
@@ -105,13 +102,23 @@ final class TimelineViewModel {
         }
     }
 
-    private func appendUniqueStatuses(_ incoming: [Status]) {
+    private func appendUniqueStatuses(_ incoming: [Status]) -> [Status] {
         guard !incoming.isEmpty else {
-            return
+            return []
         }
 
         let existingIds = Set(statuses.map(\.id))
         let uniqueIncoming = incoming.filter { !existingIds.contains($0.id) }
         statuses.append(contentsOf: uniqueIncoming)
+        return uniqueIncoming
+    }
+
+    private func prefetch(statuses: [Status]) {
+        let imageURLs = statuses.allPrefetchImageURLs
+        guard !imageURLs.isEmpty else {
+            return
+        }
+
+        imagePrefetcher.startPrefetching(with: imageURLs)
     }
 }

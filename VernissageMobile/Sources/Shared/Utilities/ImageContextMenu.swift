@@ -165,7 +165,7 @@ struct ImageContextMenu: ViewModifier {
     @MainActor
     private func performAction(_ action: StatusInteractionAction) async {
         do {
-            currentStatus = try await appState.updateStatusInteraction(statusId: currentStatus.id, action: action)
+            currentStatus = try await appState.api.statuses.updateStatusInteraction(statusId: currentStatus.id, action: action)
             actionErrorMessage = nil
         } catch {
             actionErrorMessage = (error as? LocalizedError)?.errorDescription ?? error.localizedDescription

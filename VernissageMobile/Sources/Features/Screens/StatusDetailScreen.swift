@@ -98,8 +98,8 @@ struct StatusDetailScreen: View {
             }
             .sheet(isPresented: $isShowingApplyContentWarningSheet) {
                 StatusContentWarningSheet(initialContentWarning: displayedStatus.contentWarning ?? "") { contentWarning in
-                    try await appState.applyContentWarning(statusId: displayedStatus.id, contentWarning: contentWarning)
-                    displayedStatus = try await appState.fetchStatus(statusId: displayedStatus.id)
+                    try await appState.api.statuses.applyContentWarning(statusId: displayedStatus.id, contentWarning: contentWarning)
+                    displayedStatus = try await appState.api.statuses.fetchStatus(statusId: displayedStatus.id)
                 }
                 .presentationDetents([.fraction(0.5), .large])
                 .presentationDragIndicator(.visible)
@@ -860,7 +860,7 @@ struct StatusDetailScreen: View {
         let action: StatusInteractionAction = status.favourited == true ? .unfavourite : .favourite
 
         do {
-            let updatedStatus = try await appState.updateStatusInteraction(statusId: status.id, action: action)
+            let updatedStatus = try await appState.api.statuses.updateStatusInteraction(statusId: status.id, action: action)
             if let index = comments.firstIndex(where: { $0.status.id == status.id }) {
                 comments[index] = StatusCommentItem(status: updatedStatus, isIndented: comments[index].isIndented)
             }
@@ -891,7 +891,7 @@ struct StatusDetailScreen: View {
     @MainActor
     private func performAction(_ action: StatusInteractionAction) async {
         do {
-            displayedStatus = try await appState.updateStatusInteraction(statusId: displayedStatus.id, action: action)
+            displayedStatus = try await appState.api.statuses.updateStatusInteraction(statusId: displayedStatus.id, action: action)
             actionErrorMessage = nil
         } catch {
             actionErrorMessage = (error as? LocalizedError)?.errorDescription ?? error.localizedDescription
@@ -907,7 +907,7 @@ struct StatusDetailScreen: View {
     @MainActor
     private func refreshStatusFromServer() async {
         do {
-            displayedStatus = try await appState.fetchStatus(statusId: displayedStatus.id)
+            displayedStatus = try await appState.api.statuses.fetchStatus(statusId: displayedStatus.id)
         } catch {
             // Keep current snapshot when refresh fails.
         }
@@ -920,7 +920,7 @@ struct StatusDetailScreen: View {
         }
 
         do {
-            try await appState.deleteStatus(statusId: displayedStatus.id)
+            try await appState.api.statuses.deleteStatus(statusId: displayedStatus.id)
             dismiss()
         } catch {
             actionErrorMessage = (error as? LocalizedError)?.errorDescription ?? error.localizedDescription
@@ -934,7 +934,7 @@ struct StatusDetailScreen: View {
         }
 
         do {
-            try await appState.deleteStatus(statusId: status.id)
+            try await appState.api.statuses.deleteStatus(statusId: status.id)
             await refreshStatusFromServer()
             await loadComments()
             actionErrorMessage = nil
@@ -949,7 +949,7 @@ struct StatusDetailScreen: View {
         defer { isCommentsLoading = false }
 
         do {
-            let context = try await appState.fetchStatusContext(statusId: displayedStatus.id)
+            let context = try await appState.api.statuses.fetchStatusContext(statusId: displayedStatus.id)
             comments = flattenComments(rootStatusId: displayedStatus.id, descendants: context.descendants)
             commentsErrorMessage = nil
         } catch {
@@ -997,7 +997,7 @@ struct StatusDetailScreen: View {
         defer { isSendingReply = false }
 
         do {
-            _ = try await appState.createComment(note: note, replyToStatusId: target.id)
+            _ = try await appState.api.statuses.createComment(note: note, replyToStatusId: target.id)
             await refreshStatusFromServer()
             await loadComments()
             cancelReplySheet()
@@ -1106,7 +1106,7 @@ struct StatusDetailScreen: View {
     private func openMentionedUserOrFallback(userName: String, fallbackURL: URL) {
         Task {
             do {
-                let result = try await appState.search(query: userName, type: SearchScopeSelection.users.rawValue)
+                let result = try await appState.api.search.search(query: userName, type: SearchScopeSelection.users.rawValue)
                 if let matchedUser = preferredMentionSearchUser(in: result.users ?? [], query: userName),
                    let routeUserName = routeUserName(from: matchedUser) {
                     mentionedUserRoute = MentionedUserRoute(

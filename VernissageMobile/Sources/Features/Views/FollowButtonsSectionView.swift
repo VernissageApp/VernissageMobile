@@ -223,7 +223,7 @@ struct FollowButtonsSectionView: View {
         defer { isProcessing = false }
 
         do {
-            let updated = try await appState.follow(userName: userName)
+            let updated = try await appState.api.users.follow(userName: userName)
             updateRelationship(updated)
             startRelationshipRefreshIfNeeded(using: updated)
         } catch {
@@ -241,7 +241,7 @@ struct FollowButtonsSectionView: View {
         defer { isProcessing = false }
 
         do {
-            let updated = try await appState.unfollow(userName: userName)
+            let updated = try await appState.api.users.unfollow(userName: userName)
             updateRelationship(updated)
         } catch {
             appState.showErrorToast((error as? LocalizedError)?.errorDescription ?? error.localizedDescription)
@@ -258,7 +258,7 @@ struct FollowButtonsSectionView: View {
         defer { isProcessing = false }
 
         do {
-            let updated = try await appState.approveFollowRequest(userId: userId)
+            let updated = try await appState.api.users.approveFollowRequest(userId: userId)
             updateRelationship(updated)
         } catch {
             appState.showErrorToast((error as? LocalizedError)?.errorDescription ?? error.localizedDescription)
@@ -275,7 +275,7 @@ struct FollowButtonsSectionView: View {
         defer { isProcessing = false }
 
         do {
-            let updated = try await appState.rejectFollowRequest(userId: userId)
+            let updated = try await appState.api.users.rejectFollowRequest(userId: userId)
             updateRelationship(updated)
         } catch {
             appState.showErrorToast((error as? LocalizedError)?.errorDescription ?? error.localizedDescription)
@@ -308,7 +308,7 @@ struct FollowButtonsSectionView: View {
                 }
 
                 do {
-                    let refreshed = try await appState.fetchRelationship(userId: userId)
+                    let refreshed = try await appState.api.users.fetchRelationship(userId: userId)
                     await MainActor.run {
                         updateRelationship(refreshed)
                     }

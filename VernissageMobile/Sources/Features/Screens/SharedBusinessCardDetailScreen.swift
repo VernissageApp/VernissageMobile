@@ -230,7 +230,7 @@ struct SharedBusinessCardDetailScreen: View {
         defer { isLoading = false }
 
         do {
-            card = try await appState.fetchSharedBusinessCard(id: sharedBusinessCardID)
+            card = try await appState.api.businessCards.fetchSharedBusinessCard(id: sharedBusinessCardID)
             errorMessage = nil
         } catch {
             errorMessage = (error as? LocalizedError)?.errorDescription ?? error.localizedDescription
@@ -247,7 +247,7 @@ struct SharedBusinessCardDetailScreen: View {
         defer { isSending = false }
 
         do {
-            try await appState.sendSharedBusinessCardMessage(id: sharedBusinessCardID, message: trimmedMessage)
+            try await appState.api.businessCards.sendSharedBusinessCardMessage(id: sharedBusinessCardID, message: trimmedMessage)
 
             if var card {
                 var cardMessages = card.messages ?? []

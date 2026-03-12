@@ -248,7 +248,7 @@ struct SearchScreen: View {
         defer { isSearching = false }
 
         do {
-            let result = try await appState.search(query: trimmedQuery, type: selectedScope.rawValue)
+            let result = try await appState.api.search.search(query: trimmedQuery, type: selectedScope.rawValue)
             users = result.users ?? []
             hashtags = result.hashtags ?? []
             statuses = result.statuses ?? []
@@ -289,7 +289,7 @@ struct SearchScreen: View {
         defer { loadingUserKeys.remove(key) }
 
         do {
-            let page = try await appState.fetchUserStatuses(userName: userName, maxId: nil, limit: 10)
+            let page = try await appState.api.timelines.fetchUserStatuses(userName: userName, maxId: nil, limit: 10)
             guard searchToken == userStatusesRefreshToken else {
                 return
             }
@@ -323,7 +323,7 @@ struct SearchScreen: View {
         defer { loadingHashtagNames.remove(key) }
 
         do {
-            let page = try await appState.fetchHashtagStatuses(hashtag: hashtag.name, maxId: nil, limit: 10)
+            let page = try await appState.api.timelines.fetchHashtagStatuses(hashtag: hashtag.name, maxId: nil, limit: 10)
             guard searchToken == hashtagStatusesRefreshToken else {
                 return
             }

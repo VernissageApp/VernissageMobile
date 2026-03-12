@@ -121,7 +121,7 @@ struct InstanceInformationScreen: View {
         defer { isLoading = false }
 
         do {
-            instance = try await appState.fetchInstanceDetails()
+            instance = try await appState.api.instance.fetchInstanceDetails()
             errorMessage = nil
         } catch {
             errorMessage = (error as? LocalizedError)?.errorDescription ?? error.localizedDescription

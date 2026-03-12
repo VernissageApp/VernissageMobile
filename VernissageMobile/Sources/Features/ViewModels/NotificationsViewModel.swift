@@ -38,7 +38,7 @@ final class NotificationsViewModel {
         }
 
         do {
-            let page = try await appState.fetchNotifications(maxId: nil)
+            let page = try await appState.api.notifications.fetchNotifications(maxId: nil)
             notifications = page.data
             nextMaxId = page.maxId
             canLoadMore = page.maxId != nil && !page.data.isEmpty
@@ -72,7 +72,7 @@ final class NotificationsViewModel {
         defer { isLoadingMore = false }
 
         do {
-            let page = try await appState.fetchNotifications(maxId: cursor)
+            let page = try await appState.api.notifications.fetchNotifications(maxId: cursor)
             appendUniqueNotifications(page.data)
             nextMaxId = page.maxId
             canLoadMore = page.maxId != nil && !page.data.isEmpty

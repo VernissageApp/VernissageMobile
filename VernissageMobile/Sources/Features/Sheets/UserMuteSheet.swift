@@ -109,7 +109,7 @@ struct UserMuteSheet: View {
         do {
             let updatedRelationship: Relationship
             if hasAnyMuteScopeSelected {
-                updatedRelationship = try await appState.mute(
+                updatedRelationship = try await appState.api.users.mute(
                     userName: userName,
                     muteStatuses: muteStatuses,
                     muteReblogs: muteReblogs,
@@ -117,7 +117,7 @@ struct UserMuteSheet: View {
                     muteEnd: isMuteEndDateEnabled ? muteEndDate : nil
                 )
             } else {
-                updatedRelationship = try await appState.unmute(userName: userName)
+                updatedRelationship = try await appState.api.users.unmute(userName: userName)
             }
 
             onRelationshipChanged?(updatedRelationship)

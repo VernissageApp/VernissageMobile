@@ -61,7 +61,7 @@ final class FeaturedUsersViewModel {
         }
 
         do {
-            let page = try await appState.fetchFeaturedUsers(maxId: nil)
+            let page = try await appState.api.timelines.fetchFeaturedUsers(maxId: nil, limit: 40)
             users = page.data
             nextMaxId = page.maxId
             canLoadMore = page.maxId != nil && !page.data.isEmpty
@@ -94,7 +94,7 @@ final class FeaturedUsersViewModel {
         defer { isLoadingMore = false }
 
         do {
-            let page = try await appState.fetchFeaturedUsers(maxId: cursor)
+            let page = try await appState.api.timelines.fetchFeaturedUsers(maxId: cursor, limit: 40)
             appendUniqueUsers(page.data)
             nextMaxId = page.maxId
             canLoadMore = page.maxId != nil && !page.data.isEmpty
@@ -120,7 +120,7 @@ final class FeaturedUsersViewModel {
         defer { loadingStatusesUserKeys.remove(key) }
 
         do {
-            let page = try await appState.fetchUserStatuses(userName: userName, maxId: nil, limit: 10)
+            let page = try await appState.api.timelines.fetchUserStatuses(userName: userName, maxId: nil, limit: 10)
             userStatusesByKey[key] = page.data.filter(\.hasAttachment)
         } catch {
             let message = (error as? LocalizedError)?.errorDescription ?? error.localizedDescription

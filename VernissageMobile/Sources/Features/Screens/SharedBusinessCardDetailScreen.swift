@@ -215,7 +215,9 @@ struct SharedBusinessCardDetailScreen: View {
                         .frame(width: 60)
                 }
             }
-            .buttonStyle(.borderedProminent)
+            .buttonBorderShape(.roundedRectangle(radius: 10))
+            .buttonStyle(.glassProminent)
+            .padding(.trailing, 6)
             .disabled(!canSend)
         }
         .background(

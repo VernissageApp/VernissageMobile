@@ -487,7 +487,7 @@ struct StatusDetailScreen: View {
                     .frame(maxWidth: .infinity)
                     .padding(.vertical, 10)
             }
-            .buttonStyle(.borderedProminent)
+            .buttonStyle(.glassProminent)
 
             if isCommentsLoading && comments.isEmpty {
                 ProgressView()

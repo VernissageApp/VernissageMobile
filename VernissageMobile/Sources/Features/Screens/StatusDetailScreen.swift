@@ -233,50 +233,52 @@ struct StatusDetailScreen: View {
     }
 
     private var statusActionsSection: some View {
-        HStack(spacing: 10) {
-            statusActionButton(
-                systemName: displayedStatus.reblogged == true ? "arrow.2.squarepath" : "arrow.2.squarepath",
-                isActive: displayedStatus.reblogged == true,
-                isDisabled: isBoostProcessing,
-                accessibilityLabel: displayedStatus.reblogged == true ? "Unboost" : "Boost"
-            ) {
-                Task { await toggleReblog() }
-            }
-
-            statusActionButton(
-                systemName: displayedStatus.favourited == true ? "star.fill" : "star",
-                isActive: displayedStatus.favourited == true,
-                isDisabled: isFavouriteProcessing,
-                accessibilityLabel: displayedStatus.favourited == true ? "Unfavourite" : "Favourite"
-            ) {
-                Task { await toggleFavourite() }
-            }
-
-            statusActionButton(
-                systemName: displayedStatus.bookmarked == true ? "bookmark.fill" : "bookmark",
-                isActive: displayedStatus.bookmarked == true,
-                isDisabled: isBookmarkProcessing,
-                accessibilityLabel: displayedStatus.bookmarked == true ? "Unbookmark" : "Bookmark"
-            ) {
-                Task { await toggleBookmark() }
-            }
-
-            if canFeatureStatus {
+        GlassEffectContainer(spacing: 10) {
+            HStack(spacing: 10) {
                 statusActionButton(
-                    systemName: displayedStatus.featured == true ? "star.circle.fill" : "star.circle",
-                    isActive: displayedStatus.featured == true,
-                    isDisabled: isFeatureProcessing,
-                    accessibilityLabel: displayedStatus.featured == true ? "Unfeature" : "Feature"
+                    systemName: displayedStatus.reblogged == true ? "arrow.2.squarepath" : "arrow.2.squarepath",
+                    isActive: displayedStatus.reblogged == true,
+                    isDisabled: isBoostProcessing,
+                    accessibilityLabel: displayedStatus.reblogged == true ? "Unboost" : "Boost"
                 ) {
-                    Task { await toggleFeature() }
+                    Task { await toggleReblog() }
                 }
-            } else if let shareURLString = displayedStatus.shareURL?.nilIfEmpty,
-                      let shareURL = URL(string: shareURLString) {
-                ShareLink(item: shareURL) {
-                    statusActionTileIcon(systemName: "square.and.arrow.up", isActive: false)
+
+                statusActionButton(
+                    systemName: displayedStatus.favourited == true ? "star.fill" : "star",
+                    isActive: displayedStatus.favourited == true,
+                    isDisabled: isFavouriteProcessing,
+                    accessibilityLabel: displayedStatus.favourited == true ? "Unfavourite" : "Favourite"
+                ) {
+                    Task { await toggleFavourite() }
                 }
-                .buttonStyle(.plain)
-                .accessibilityLabel("Share")
+
+                statusActionButton(
+                    systemName: displayedStatus.bookmarked == true ? "bookmark.fill" : "bookmark",
+                    isActive: displayedStatus.bookmarked == true,
+                    isDisabled: isBookmarkProcessing,
+                    accessibilityLabel: displayedStatus.bookmarked == true ? "Unbookmark" : "Bookmark"
+                ) {
+                    Task { await toggleBookmark() }
+                }
+
+                if canFeatureStatus {
+                    statusActionButton(
+                        systemName: displayedStatus.featured == true ? "star.circle.fill" : "star.circle",
+                        isActive: displayedStatus.featured == true,
+                        isDisabled: isFeatureProcessing,
+                        accessibilityLabel: displayedStatus.featured == true ? "Unfeature" : "Feature"
+                    ) {
+                        Task { await toggleFeature() }
+                    }
+                } else if let shareURLString = displayedStatus.shareURL?.nilIfEmpty,
+                          let shareURL = URL(string: shareURLString) {
+                    ShareLink(item: shareURL) {
+                        statusActionTileIcon(systemName: "square.and.arrow.up", isActive: false)
+                    }
+                    .buttonStyle(.plain)
+                    .accessibilityLabel("Share")
+                }
             }
         }
     }
@@ -396,10 +398,7 @@ struct StatusDetailScreen: View {
             .font(.title2)
             .foregroundStyle(isActive ? .blue : .primary)
             .frame(maxWidth: .infinity, minHeight: 48)
-            .background(
-                RoundedRectangle(cornerRadius: 12, style: .continuous)
-                    .fill(.secondary.opacity(0.12))
-            )
+            .glassEffect(.regular.interactive(), in: .rect(cornerRadius: 12, style: .continuous))
     }
 
     private var displayableAttachments: [Attachment] {

@@ -179,7 +179,7 @@ struct StatusReportSheet: View {
                             Text("Report")
                         }
                     }
-                    .fontWeight(.semibold)
+                    .buttonStyle(.glassProminent)
                     .disabled(!canSubmit)
                 }
             }

@@ -88,7 +88,7 @@ struct UserMuteSheet: View {
                             Text("Mute")
                         }
                     }
-                    .fontWeight(.semibold)
+                    .buttonStyle(.glassProminent)
                     .disabled(!canSubmit)
                 }
             }

@@ -10,6 +10,8 @@ struct AddAccountScreen: View {
     private struct RegistrationDestination: Identifiable {
         let id = UUID()
         let instanceURL: URL
+        let instanceDetails: InstanceDetails
+        let publicSettings: PublicSettings
     }
 
     @Environment(AppState.self) private var appState
@@ -18,7 +20,8 @@ struct AddAccountScreen: View {
     var onDone: (() -> Void)? = nil
 
     @State private var instanceURL = ""
-    @State private var isSubmitting = false
+    @State private var isSigningIn = false
+    @State private var isPreparingRegistration = false
     @State private var errorMessage: String?
     @State private var successMessage: String?
     @State private var curatedInstances: [CuratedInstance] = []
@@ -76,6 +79,10 @@ struct AddAccountScreen: View {
         showsInstanceURLRequiredError ? fieldErrorStrokeColor : fieldStrokeColor
     }
 
+    private var isActionInProgress: Bool {
+        isSigningIn || isPreparingRegistration
+    }
+
     private var filteredCuratedInstances: [CuratedInstance] {
         let query = normalizedFilterQuery
         guard !query.isEmpty else {
@@ -127,7 +134,11 @@ struct AddAccountScreen: View {
         .errorAlertToast($errorMessage)
         .successAlertToast($successMessage)
         .fullScreenCover(item: $registrationDestination) { destination in
-            RegisterAccountScreen(instanceURL: destination.instanceURL) { message in
+            RegisterAccountScreen(
+                instanceURL: destination.instanceURL,
+                instanceDetails: destination.instanceDetails,
+                publicSettings: destination.publicSettings
+            ) { message in
                 successMessage = message
             }
         }
@@ -204,7 +215,7 @@ struct AddAccountScreen: View {
             
             Button(action: onSignInTap) {
                 HStack(spacing: 8) {
-                    if isSubmitting {
+                    if isSigningIn {
                         ProgressView().tint(.white)
                     }
 
@@ -216,8 +227,8 @@ struct AddAccountScreen: View {
                 .foregroundStyle(.white)
             }
             .buttonStyle(.glassProminent)
-            .opacity(isSubmitting ? 0.72 : 1)
-            .disabled(isSubmitting)
+            .opacity(isActionInProgress ? 0.72 : 1)
+            .disabled(isActionInProgress)
             
             HStack(spacing: 12) {
                 Rectangle()
@@ -239,15 +250,19 @@ struct AddAccountScreen: View {
             
             Button(action: onCreateAccountTap) {
                 HStack(spacing: 8) {
-                    Text("Create account")
-                        .bold()
+                    if isPreparingRegistration {
+                        ProgressView().tint(.white)
+                    } else {
+                        Text("Create account")
+                            .bold()
+                    }
                 }
                 .frame(maxWidth: .infinity)
                 .padding(.vertical, 12)
             }
             .buttonStyle(.glass)
-            .opacity(isSubmitting ? 0.72 : 1)
-            .disabled(isSubmitting)
+            .opacity(isActionInProgress ? 0.72 : 1)
+            .disabled(isActionInProgress)
             .highPriorityGesture(
                 TapGesture().onEnded {
                     onCreateAccountTap()
@@ -322,7 +337,7 @@ struct AddAccountScreen: View {
     }
 
     private func onSignInTap() {
-        guard !isSubmitting else {
+        guard !isActionInProgress else {
             return
         }
 
@@ -333,7 +348,7 @@ struct AddAccountScreen: View {
     }
     
     private func onCreateAccountTap() {
-        guard !isSubmitting else {
+        guard !isActionInProgress else {
             return
         }
 
@@ -345,13 +360,10 @@ struct AddAccountScreen: View {
             return
         }
 
-        do {
-            registrationDestination = RegistrationDestination(
-                instanceURL: try sanitizeEnteredInstanceURL()
-            )
-            isInstanceURLFocused = false
-        } catch {
-            errorMessage = (error as? LocalizedError)?.errorDescription ?? error.localizedDescription
+        isInstanceURLFocused = false
+        isPreparingRegistration = true
+        Task {
+            await prepareRegistration()
         }
     }
 
@@ -389,8 +401,8 @@ struct AddAccountScreen: View {
             return
         }
 
-        isSubmitting = true
-        defer { isSubmitting = false }
+        isSigningIn = true
+        defer { isSigningIn = false }
 
         do {
             let sanitizedInstanceURL = try sanitizeEnteredInstanceURL()
@@ -400,6 +412,36 @@ struct AddAccountScreen: View {
         } catch {
             errorMessage = (error as? LocalizedError)?.errorDescription ?? error.localizedDescription
         }
+    }
+
+    @MainActor
+    private func prepareRegistration() async {
+        defer { isPreparingRegistration = false }
+
+        do {
+            let sanitizedInstanceURL = try sanitizeEnteredInstanceURL()
+            async let fetchedInstanceDetails = RegistrationAPI.fetchInstanceDetails(at: sanitizedInstanceURL)
+            async let fetchedPublicSettings = RegistrationAPI.fetchPublicSettings(at: sanitizedInstanceURL)
+
+            registrationDestination = RegistrationDestination(
+                instanceURL: sanitizedInstanceURL,
+                instanceDetails: try await fetchedInstanceDetails,
+                publicSettings: try await fetchedPublicSettings
+            )
+            errorMessage = nil
+        } catch is CancellationError {
+            return
+        } catch {
+            errorMessage = registrationErrorMessage(for: error)
+        }
+    }
+
+    private func registrationErrorMessage(for error: Error) -> String {
+        if case .decoding = (error as? APIError) {
+            return AppConstants.Copy.unsupportedServerResponse
+        }
+
+        return (error as? LocalizedError)?.errorDescription ?? error.localizedDescription
     }
 
     private func sanitizeEnteredInstanceURL() throws -> URL {

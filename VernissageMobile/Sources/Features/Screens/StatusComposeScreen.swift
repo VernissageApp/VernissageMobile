@@ -148,9 +148,9 @@ struct StatusComposeScreen: View {
                                 .controlSize(.small)
                         } else {
                             Text(mode.publishTitle)
-                                .fontWeight(.semibold)
                         }
                     }
+                    .buttonStyle(.glassProminent)
                     .disabled(!canPublish)
                 }
             }

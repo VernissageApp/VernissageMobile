@@ -90,7 +90,7 @@ struct UserBlockDomainSheet: View {
                             Text("Save")
                         }
                     }
-                    .fontWeight(.semibold)
+                    .buttonStyle(.glassProminent)
                     .disabled(!canSubmit)
                 }
             }

@@ -105,9 +105,9 @@ struct ProfileHeaderSheet: View {
                                 .controlSize(.small)
                         } else {
                             Text("Save")
-                                .fontWeight(.semibold)
                         }
                     }
+                    .buttonStyle(.glassProminent)
                     .disabled(isLoadingPhoto || isSaving || isRemoving || selectedHeaderImage == nil)
                 }
             }

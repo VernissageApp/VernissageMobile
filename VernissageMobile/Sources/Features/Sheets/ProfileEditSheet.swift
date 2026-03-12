@@ -164,9 +164,9 @@ struct ProfileEditSheet: View {
                                 .controlSize(.small)
                         } else {
                             Text("Save")
-                                .fontWeight(.semibold)
                         }
                     }
+                    .buttonStyle(.glassProminent)
                     .disabled(isSaving)
                 }
             }

@@ -173,9 +173,9 @@ struct SharedBusinessCardSheet: View {
                                 .controlSize(.small)
                         } else {
                             Text(mode.submitTitle)
-                                .fontWeight(.semibold)
                         }
                     }
+                    .buttonStyle(.glassProminent)
                     .disabled(!canSubmit)
                 }
             }

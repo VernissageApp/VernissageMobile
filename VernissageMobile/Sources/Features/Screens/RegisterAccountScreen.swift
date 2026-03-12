@@ -70,11 +70,9 @@ struct RegisterAccountScreen: View {
     @State private var captchaText = ""
     @State private var captchaKey = RegisterAccountScreen.generateCaptchaKey(length: 16)
 
-    @State private var instanceDetails: InstanceDetails?
-    @State private var publicSettings: PublicSettings?
-    @State private var isLoadingCapabilities = false
+    @State private var instanceDetails: InstanceDetails
+    @State private var publicSettings: PublicSettings
     @State private var isSubmitting = false
-    @State private var capabilitiesErrorMessage: String?
     @State private var generalErrorMessage: String?
 
     @State private var didAttemptSubmit = false
@@ -132,15 +130,15 @@ struct RegisterAccountScreen: View {
     }
 
     private var registrationOpened: Bool {
-        instanceDetails?.registrationOpened == true
+        instanceDetails.registrationOpened == true
     }
 
     private var registrationByApprovalOpened: Bool {
-        instanceDetails?.registrationByApprovalOpened == true
+        instanceDetails.registrationByApprovalOpened == true
     }
 
     private var registrationByInvitationsOpened: Bool {
-        instanceDetails?.registrationByInvitationsOpened == true
+        instanceDetails.registrationByInvitationsOpened == true
     }
 
     private var isRegistrationEnabled: Bool {
@@ -156,15 +154,15 @@ struct RegisterAccountScreen: View {
     }
 
     private var showsCaptcha: Bool {
-        isRegistrationEnabled && publicSettings?.isQuickCaptchaEnabled == true
+        isRegistrationEnabled && publicSettings.isQuickCaptchaEnabled == true
     }
 
     private var isInteractionDisabled: Bool {
-        isLoadingCapabilities || isSubmitting || !isRegistrationEnabled
+        isSubmitting || !isRegistrationEnabled
     }
 
     private var serverRules: [InstanceRule] {
-        instanceDetails?.rules ?? []
+        instanceDetails.rules ?? []
     }
 
     private var requiresInvitationCode: Bool {
@@ -218,19 +216,27 @@ struct RegisterAccountScreen: View {
         return nil
     }
 
+    init(
+        instanceURL: URL,
+        instanceDetails: InstanceDetails,
+        publicSettings: PublicSettings,
+        onRegistered: ((String) -> Void)? = nil
+    ) {
+        self.instanceURL = instanceURL
+        self.onRegistered = onRegistered
+        _instanceDetails = State(initialValue: instanceDetails)
+        _publicSettings = State(initialValue: publicSettings)
+    }
+
     var body: some View {
         NavigationStack {
             ScrollView {
                 VStack(alignment: .leading, spacing: 16) {
-                    if !isLoadingCapabilities && !isRegistrationEnabled {
+                    if !isRegistrationEnabled {
                         registrationDisabledCard
                     }
 
                     headerCard
-
-                    if let capabilitiesErrorMessage {
-                        retryCard(message: capabilitiesErrorMessage)
-                    }
 
                     accountDetailsCard
                         .disabled(isInteractionDisabled)
@@ -245,7 +251,7 @@ struct RegisterAccountScreen: View {
                         accessRequirementsCard
                             .disabled(isInteractionDisabled)
                     }
-                    
+
                     if showsCaptcha {
                         captchaCard
                             .disabled(isInteractionDisabled)
@@ -280,18 +286,15 @@ struct RegisterAccountScreen: View {
                                 .controlSize(.small)
                         } else {
                             Text("Register")
-                                .fontWeight(.semibold)
                         }
                     }
+                    .buttonStyle(.glassProminent)
                     .disabled(isInteractionDisabled)
                 }
             }
         }
         .preferredColorScheme(.dark)
         .errorAlertToast($generalErrorMessage)
-        .task {
-            await loadRegistrationConfiguration()
-        }
         .onDisappear {
             usernameValidationTask?.cancel()
             emailValidationTask?.cancel()
@@ -314,38 +317,6 @@ struct RegisterAccountScreen: View {
                 .font(.subheadline)
                 .foregroundStyle(secondaryTextColor)
                 .fixedSize(horizontal: false, vertical: true)
-
-            if isLoadingCapabilities {
-                HStack(spacing: 10) {
-                    ProgressView()
-                        .tint(.white)
-
-                    Text("Checking registration options...")
-                        .font(.footnote.weight(.semibold))
-                        .foregroundStyle(.white.opacity(0.82))
-                }
-                .padding(.top, 4)
-            }
-        }
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .padding(16)
-        .background(cardBackground)
-        .overlay(cardStroke)
-    }
-
-    private func retryCard(message: String) -> some View {
-        VStack(alignment: .leading, spacing: 10) {
-            Text(message)
-                .font(.footnote)
-                .foregroundStyle(.red.opacity(0.92))
-
-            Button("Retry") {
-                Task {
-                    await loadRegistrationConfiguration(force: true)
-                }
-            }
-            .buttonStyle(.borderedProminent)
-            .tint(.blue)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding(16)
@@ -837,38 +808,6 @@ struct RegisterAccountScreen: View {
         }
     }
 
-    @MainActor
-    private func loadRegistrationConfiguration(force: Bool = false) async {
-        if isLoadingCapabilities && !force {
-            return
-        }
-
-        isLoadingCapabilities = true
-        capabilitiesErrorMessage = nil
-
-        defer {
-            isLoadingCapabilities = false
-        }
-
-        do {
-            async let fetchedInstanceDetails = RegistrationAPI.fetchInstanceDetails(at: instanceURL)
-            async let fetchedPublicSettings = RegistrationAPI.fetchPublicSettings(at: instanceURL)
-
-            instanceDetails = try await fetchedInstanceDetails
-            publicSettings = try await fetchedPublicSettings
-
-            if !showsCaptcha {
-                captchaText = ""
-            }
-        } catch is CancellationError {
-            return
-        } catch {
-            instanceDetails = nil
-            publicSettings = nil
-            capabilitiesErrorMessage = (error as? LocalizedError)?.errorDescription ?? error.localizedDescription
-        }
-    }
-
     private func scheduleUserNameAvailabilityCheck(for newValue: String) {
         usernameValidationTask?.cancel()
         usernameAvailability = .idle
@@ -1131,20 +1070,20 @@ struct RegisterAccountScreen: View {
         case "registrationisdisabled":
             generalErrorMessage = "Registration is currently disabled on this server."
             instanceDetails = InstanceDetails(
-                uri: instanceDetails?.uri,
-                title: instanceDetails?.title,
-                description: instanceDetails?.description,
-                longDescription: instanceDetails?.longDescription,
-                email: instanceDetails?.email,
-                version: instanceDetails?.version,
-                thumbnail: instanceDetails?.thumbnail,
-                languages: instanceDetails?.languages,
+                uri: instanceDetails.uri,
+                title: instanceDetails.title,
+                description: instanceDetails.description,
+                longDescription: instanceDetails.longDescription,
+                email: instanceDetails.email,
+                version: instanceDetails.version,
+                thumbnail: instanceDetails.thumbnail,
+                languages: instanceDetails.languages,
                 registrationOpened: false,
                 registrationByApprovalOpened: false,
                 registrationByInvitationsOpened: false,
-                configuration: instanceDetails?.configuration,
-                contact: instanceDetails?.contact,
-                rules: instanceDetails?.rules
+                configuration: instanceDetails.configuration,
+                contact: instanceDetails.contact,
+                rules: instanceDetails.rules
             )
         case "validationerror":
             applyValidationFailures(error.failures)

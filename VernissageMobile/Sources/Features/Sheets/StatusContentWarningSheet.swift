@@ -75,7 +75,7 @@ struct StatusContentWarningSheet: View {
                             Text("Send")
                         }
                     }
-                    .fontWeight(.semibold)
+                    .buttonStyle(.glassProminent)
                     .disabled(!canSubmit)
                 }
             }

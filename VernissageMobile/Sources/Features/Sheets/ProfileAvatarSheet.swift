@@ -104,9 +104,9 @@ struct ProfileAvatarSheet: View {
                                 .controlSize(.small)
                         } else {
                             Text("Save")
-                                .fontWeight(.semibold)
                         }
                     }
+                    .buttonStyle(.glassProminent)
                     .disabled(isLoadingPhoto || isSaving || isRemoving || selectedAvatarImage == nil)
                 }
             }

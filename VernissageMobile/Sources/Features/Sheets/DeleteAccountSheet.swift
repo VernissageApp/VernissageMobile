@@ -96,9 +96,10 @@ struct DeleteAccountSheet: View {
                                 .controlSize(.small)
                         } else {
                             Text("Delete")
-                                .fontWeight(.semibold)
                         }
                     }
+                    .buttonStyle(.glassProminent)
+                    .tint(.red)
                     .disabled(!canDelete)
                 }
             }

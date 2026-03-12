@@ -72,7 +72,7 @@ struct AddAccountScreen: View {
     }
 
     private var instanceURLValidationMessage: String? {
-        showsInstanceURLRequiredError ? AppConstants.Copy.instanceURLRequired : nil
+        showsInstanceURLRequiredError ? "Instance URL is required" : nil
     }
 
     private var instanceURLStrokeColor: Color {
@@ -205,7 +205,7 @@ struct AddAccountScreen: View {
                     .fixedSize(horizontal: false, vertical: true)
             }
 
-            Text(AppConstants.Copy.fediverseServerDescription)
+            Text("Vernissage is part of the Fediverse, a network of independently run servers. Your account is hosted on one server, and each server has its own rules and administrators. Whichever server you choose, you can still follow and interact with people across Vernissage, Mastodon, Pixelfed, and other compatible platforms.")
                 .font(.subheadline)
                 .foregroundStyle(.white.opacity(0.78))
                 .multilineTextAlignment(.leading)
@@ -438,7 +438,7 @@ struct AddAccountScreen: View {
 
     private func registrationErrorMessage(for error: Error) -> String {
         if case .decoding = (error as? APIError) {
-            return AppConstants.Copy.unsupportedServerResponse
+            return "Unexpected server response. Please verify this is a Vernissage server. Only Vernissage servers are supported by this app."
         }
 
         return (error as? LocalizedError)?.errorDescription ?? error.localizedDescription

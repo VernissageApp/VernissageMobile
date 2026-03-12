@@ -7,9 +7,14 @@
 import SwiftUI
 
 struct ProfileUsersListView: View {
+    private enum Layout {
+        static let initialLoadingPlaceholderHeight: CGFloat = 640
+    }
+
     let users: [User]
     let isLoading: Bool
     let isLoadingMore: Bool
+    let showInitialLoadingPlaceholder: Bool
     let errorMessage: String?
     let emptyTitle: String
     let emptyDescription: String
@@ -23,6 +28,7 @@ struct ProfileUsersListView: View {
         users: [User],
         isLoading: Bool,
         isLoadingMore: Bool,
+        showInitialLoadingPlaceholder: Bool = false,
         errorMessage: String?,
         emptyTitle: String,
         emptyDescription: String,
@@ -35,6 +41,7 @@ struct ProfileUsersListView: View {
         self.users = users
         self.isLoading = isLoading
         self.isLoadingMore = isLoadingMore
+        self.showInitialLoadingPlaceholder = showInitialLoadingPlaceholder
         self.errorMessage = errorMessage
         self.emptyTitle = emptyTitle
         self.emptyDescription = emptyDescription
@@ -46,10 +53,18 @@ struct ProfileUsersListView: View {
     }
 
     var body: some View {
-        if isLoading && users.isEmpty {
-            ProgressView()
-                .tint(.primary)
-                .padding(.top, 4)
+        if users.isEmpty && errorMessage == nil && (isLoading || showInitialLoadingPlaceholder) {
+            VStack(spacing: 12) {
+                ProgressView()
+                    .tint(.primary)
+                    .padding(.top, 4)
+
+                Color.clear
+                    .frame(maxWidth: .infinity)
+                    .frame(height: Layout.initialLoadingPlaceholderHeight)
+                    .accessibilityHidden(true)
+            }
+            .padding(.horizontal, 16)
         } else if errorMessage != nil, users.isEmpty {
             EmptyView()
         } else if users.isEmpty {

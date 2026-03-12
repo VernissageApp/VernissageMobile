@@ -29,6 +29,7 @@ struct UserProfileScreen: View {
     @State private var followingUsers: [User] = []
     @State private var followingErrorMessage: String?
     @State private var isFollowingLoading = false
+    @State private var hasLoadedFollowingOnce = false
     @State private var isLoadingMoreFollowing = false
     @State private var nextFollowingMaxId: String?
     @State private var canLoadMoreFollowing = true
@@ -36,6 +37,7 @@ struct UserProfileScreen: View {
     @State private var followersUsers: [User] = []
     @State private var followersErrorMessage: String?
     @State private var isFollowersLoading = false
+    @State private var hasLoadedFollowersOnce = false
     @State private var isLoadingMoreFollowers = false
     @State private var nextFollowersMaxId: String?
     @State private var canLoadMoreFollowers = true
@@ -508,6 +510,7 @@ struct UserProfileScreen: View {
         ProfileUsersListView(users: followingUsers,
                              isLoading: isFollowingLoading,
                              isLoadingMore: isLoadingMoreFollowing,
+                             showInitialLoadingPlaceholder: !hasLoadedFollowingOnce,
                              errorMessage: followingErrorMessage,
                              emptyTitle: "No following",
                              emptyDescription: "This user is not following anyone yet.",
@@ -527,6 +530,7 @@ struct UserProfileScreen: View {
         ProfileUsersListView(users: followersUsers,
                              isLoading: isFollowersLoading,
                              isLoadingMore: isLoadingMoreFollowers,
+                             showInitialLoadingPlaceholder: !hasLoadedFollowersOnce,
                              errorMessage: followersErrorMessage,
                              emptyTitle: "No followers",
                              emptyDescription: "This user has no followers yet.",
@@ -568,6 +572,8 @@ struct UserProfileScreen: View {
             isLoadingMoreStatuses = false
             nextStatusesMaxId = nil
             canLoadMoreStatuses = false
+            hasLoadedFollowingOnce = false
+            hasLoadedFollowersOnce = false
             followingUsers = []
             followersUsers = []
             latestFollowers = []
@@ -667,17 +673,22 @@ struct UserProfileScreen: View {
             followingUsers = []
             nextFollowingMaxId = nil
             canLoadMoreFollowing = true
+            hasLoadedFollowingOnce = false
         }
 
         let cleanedUserName = userName.trimmingPrefix("@")
         guard !cleanedUserName.isEmpty else {
             followingErrorMessage = nil
             canLoadMoreFollowing = false
+            hasLoadedFollowingOnce = true
             return
         }
 
         isFollowingLoading = true
-        defer { isFollowingLoading = false }
+        defer {
+            isFollowingLoading = false
+            hasLoadedFollowingOnce = true
+        }
 
         do {
             let page = try await appState.api.users.fetchUserFollowing(userName: cleanedUserName, maxId: nil, limit: 40)
@@ -700,17 +711,22 @@ struct UserProfileScreen: View {
             followersUsers = []
             nextFollowersMaxId = nil
             canLoadMoreFollowers = true
+            hasLoadedFollowersOnce = false
         }
 
         let cleanedUserName = userName.trimmingPrefix("@")
         guard !cleanedUserName.isEmpty else {
             followersErrorMessage = nil
             canLoadMoreFollowers = false
+            hasLoadedFollowersOnce = true
             return
         }
 
         isFollowersLoading = true
-        defer { isFollowersLoading = false }
+        defer {
+            isFollowersLoading = false
+            hasLoadedFollowersOnce = true
+        }
 
         do {
             let page = try await appState.api.users.fetchUserFollowers(userName: cleanedUserName, maxId: nil, limit: 40)

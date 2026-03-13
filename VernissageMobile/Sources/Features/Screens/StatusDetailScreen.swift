@@ -713,7 +713,7 @@ struct StatusDetailScreen: View {
                             Text("Send")
                         }
                     }
-                    .fontWeight(.semibold)
+                    .buttonStyle(.glassProminent)
                     .disabled(isSendingReply || !isMeaningfulComment(replyText, for: target.status))
                 }
             }

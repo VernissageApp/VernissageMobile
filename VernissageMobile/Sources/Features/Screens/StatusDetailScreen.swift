@@ -24,6 +24,7 @@ struct StatusDetailScreen: View {
     @State private var isBookmarkProcessing = false
     @State private var isFeatureProcessing = false
     @State private var actionErrorMessage: String?
+    @State private var statusActionsFeedbackTrigger = false
 
     @State private var comments: [StatusCommentItem] = []
     @State private var isCommentsLoading = false
@@ -277,10 +278,14 @@ struct StatusDetailScreen: View {
                         statusActionTileIcon(systemName: "square.and.arrow.up", isActive: false)
                     }
                     .buttonStyle(.plain)
+                    .simultaneousGesture(TapGesture().onEnded {
+                        statusActionsFeedbackTrigger.toggle()
+                    })
                     .accessibilityLabel("Share")
                 }
             }
         }
+        .sensoryFeedback(.impact, trigger: statusActionsFeedbackTrigger)
     }
 
     private var statusInformationSection: some View {
@@ -385,7 +390,10 @@ struct StatusDetailScreen: View {
         accessibilityLabel: String,
         action: @escaping () -> Void
     ) -> some View {
-        Button(action: action) {
+        Button {
+            statusActionsFeedbackTrigger.toggle()
+            action()
+        } label: {
             statusActionTileIcon(systemName: systemName, isActive: isActive)
         }
         .buttonStyle(.plain)

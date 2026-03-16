@@ -1,57 +1,103 @@
 # Vernissage for iOS
 
-<img src="Resources/01.png" width="200" > <img src="Resources/02.png" width="200" > <img src="Resources/03.png" width="200" > <img src="Resources/04.png" width="200" >
+[![Swift](https://img.shields.io/badge/Language-Swift-orange.svg?style=flat)](https://www.swift.org)
+[![SwiftUI](https://img.shields.io/badge/Framework-SwiftUI-blue.svg?style=flat)](https://developer.apple.com/swiftui/)
+[![Platforms iOS](https://img.shields.io/badge/Platforms-iOS-lightgray.svg?style=flat)](https://developer.apple.com)
 
-**Vernissage** is a simple and intuitive **iOS client** for the Vernissage platform, focused on showcasing and sharing photos. With Vernissage, you can browse a timeline **dedicated to photos only** - no mixed media - so you can focus solely on discovering and enjoying beautiful photography.
+<p align="center">
+  <img src="Resources/01.png" width="200" alt="Vernissage for iOS screenshot 1">
+  <img src="Resources/02.png" width="200" alt="Vernissage for iOS screenshot 2">
+  <img src="Resources/03.png" width="200" alt="Vernissage for iOS screenshot 3">
+  <img src="Resources/04.png" width="200" alt="Vernissage for iOS screenshot 4">
+</p>
 
-The app features a **clean, minimalistic interface** designed to keep attention on the images. You can easily **like** and **comment** on photos, as well as **follow** other users to keep up with their latest posts.
+Native SwiftUI client for **Vernissage**, a federated, community-driven photo-sharing platform connected to the fediverse through **ActivityPub**.
 
-Whether you're a professional photographer, an amateur enthusiast, or simply someone who loves to discover and share stunning photos - Vernissage is for you.
+Vernissage is built for people who want a photo-first experience: no mixed-media feed, no ads, and no recommendation algorithm deciding what should be seen first. This app focuses on browsing, publishing, and managing photography on Vernissage servers from a native iPhone experience.
 
-Built entirely in **SwiftUI**. Native iOS client for **Vernissage** - a community-driven, ad-free, algorithm-free photo sharing platform built for photographers and connected to the fediverse via **ActivityPub**.
+## Highlights
 
-Vernissage isn’t one big website - it’s a constellation of independent servers that can still follow each other across the fediverse (Mastodon, Pixelfed, and more).
+- Native iOS app built entirely with SwiftUI
+- OAuth sign-in against supported Vernissage servers
+- Sign up flow for servers that allow registration
+- Photo-first timelines: private, featured, trending, local, and global
+- Search across users, hashtags, statuses, and direct profile/status URLs
+- Post composer with attachments, metadata, visibility, and content warnings
+- Notifications, profile management, account switching, and share extension support
 
----
+## Quick Links
 
-## Where to start
-
-- **Create an account:** https://vernissage.photos (or pick another server: https://joinvernissage.org/servers.html)
-- **Project website:** https://joinvernissage.org
-- **Documentation:** https://docs.joinvernissage.org
-- **Source code (ecosystem):**
-  - API server: https://github.com/VernissageApp/VernissageServer
-  - Web client: https://github.com/VernissageApp/VernissageWeb
-
----
+- Create an account: [vernissage.photos](https://vernissage.photos) or in other instance
+- Server directory: [joinvernissage.org/servers.html](https://joinvernissage.org/servers.html)
+- Project website: [joinvernissage.org](https://joinvernissage.org)
+- Documentation: [docs.joinvernissage.org](https://docs.joinvernissage.org)
+- API server: [VernissageServer](https://github.com/VernissageApp/VernissageServer)
+- Web client: [VernissageWeb](https://github.com/VernissageApp/VernissageWeb)
 
 ## Requirements
 
-- macOS with **Xcode** (latest stable recommended)
-- iOS Simulator or a physical iPhone
-- (Optional) A local Vernissage backend for development
+- macOS
+- Xcode with iOS 26 SDK support
+- iOS 26 simulator or a physical iPhone
+- Optional: access to a local or remote Vernissage server
 
----
+## Getting Started
 
-## Running the app (development)
+1. Clone the repository.
+2. Open `VernissageMobile.xcodeproj` in Xcode.
+3. Select the `VernissageMobile` scheme.
+4. Choose an iOS simulator or connected device.
+5. Build and run.
 
-1. Clone this repository.
-2. Open the project in Xcode.
-3. Select a simulator/device and press **Run**.
+### Signing
 
-### Configuration
+If you want to run the app on a physical device or use your own Apple team configuration:
 
-The app needs a **server base URL** (your “home” Vernissage server).
+- set your own Development Team in Xcode,
+- update bundle identifiers if your signing setup requires unique IDs,
+- keep the share extension target aligned with the main app target.
+
+### Connecting to a Server
+
+When the app launches, provide the base URL of your home Vernissage server.
 
 Typical examples:
+
 - `https://vernissage.photos`
 - `http://localhost:4200`
-- `https://<your-server-domain>`
+- `https://your-server.example`
 
----
+The iOS client is intended for **Vernissage servers**. If you are developing locally, a local Vernissage backend is enough to start working on authentication, timelines, search, and publishing flows.
+
+## Repository Layout
+
+The project follows a feature-oriented SwiftUI structure:
+
+- `VernissageMobile/Sources/App` - app entry point, root flow, tabs
+- `VernissageMobile/Sources/Core` - models, networking, persistent account state, utilities
+- `VernissageMobile/Sources/Features` - screens, sheets, view models, feature-specific support code
+- `VernissageMobile/Sources/Shared` - shared extensions, UI helpers, reusable utilities
+- `VernissageShareExtension` - iOS share extension
+- `Resources` - README screenshots and repository assets
+
+## Developer Notes
+
+- The app uses modern SwiftUI, Observation, and Swift Concurrency.
+- Networking is grouped by backend domain under `Core/Networking`.
+- The app supports multiple accounts stored locally and refreshed through OAuth.
+- Related product and protocol details live in the server and documentation repositories linked above.
 
 ## Contributing
 
-You can fork and clone repository. Change development team and bundle id. Do your changes and create a pull a request 👍.
+Contributions are welcome.
 
-Thank you in advance for any, even the smallest help, with the development of the project 💕!
+1. Fork and clone the repository.
+2. Keep changes focused and consistent with the existing project structure.
+3. Verify the app builds before opening a pull request.
+4. Open a pull request with a clear description of the change.
+
+If you need device builds, remember to update signing for both the main app and the share extension.
+
+## License
+
+This project is licensed under the [Apache License 2.0](LICENSE).

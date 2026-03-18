@@ -18,6 +18,7 @@ struct FollowButtonsSectionView: View {
 
     @State private var relationshipAfterAction: Relationship?
     @State private var isProcessing = false
+    @State private var isShowingUnfollowSheet = false
     @State private var relationshipRefreshTask: Task<Void, Never>?
 
     init(
@@ -118,6 +119,16 @@ struct FollowButtonsSectionView: View {
         .onDisappear {
             relationshipRefreshTask?.cancel()
         }
+        .sheet(isPresented: $isShowingUnfollowSheet) {
+            UserUnfollowSheet(
+                user: user,
+                onRelationshipChanged: { updatedRelationship in
+                    updateRelationship(updatedRelationship)
+                }
+            )
+            .presentationDetents([.fraction(0.58), .large])
+            .presentationDragIndicator(.visible)
+        }
     }
 
     @ViewBuilder
@@ -157,9 +168,9 @@ struct FollowButtonsSectionView: View {
             if shouldShowFollowButton {
                 relationshipActionButton(followButtonTitle, borderColor: .blue, action: follow)
             } else if updatedRelationship?.following == true {
-                relationshipActionButton(unfollowButtonTitle, borderColor: .red, action: unfollow)
+                relationshipActionButton(unfollowButtonTitle, borderColor: .red, action: showUnfollowSheet)
             } else {
-                relationshipActionButton(unfollowButtonTitle, borderColor: .orange, action: unfollow)
+                relationshipActionButton(unfollowButtonTitle, borderColor: .orange, action: showUnfollowSheet)
             }
         }
     }
@@ -170,9 +181,9 @@ struct FollowButtonsSectionView: View {
                 if shouldShowFollowButton {
                     relationshipActionButton(followButtonTitle, borderColor: .blue, action: follow)
                 } else if updatedRelationship?.following == true {
-                    relationshipActionButton(unfollowButtonTitle, borderColor: .red, action: unfollow)
+                    relationshipActionButton(unfollowButtonTitle, borderColor: .red, action: showUnfollowSheet)
                 } else {
-                    relationshipActionButton(unfollowButtonTitle, borderColor: .orange, action: unfollow)
+                    relationshipActionButton(unfollowButtonTitle, borderColor: .orange, action: showUnfollowSheet)
                 }
             }
 
@@ -232,20 +243,12 @@ struct FollowButtonsSectionView: View {
     }
 
     @MainActor
-    private func unfollow() async {
-        guard let userName = user.userName?.trimmingPrefix("@").nilIfEmpty else {
+    private func showUnfollowSheet() async {
+        guard user.userName?.trimmingPrefix("@").nilIfEmpty != nil else {
             return
         }
 
-        isProcessing = true
-        defer { isProcessing = false }
-
-        do {
-            let updated = try await appState.api.users.unfollow(userName: userName)
-            updateRelationship(updated)
-        } catch {
-            appState.showErrorToast((error as? LocalizedError)?.errorDescription ?? error.localizedDescription)
-        }
+        isShowingUnfollowSheet = true
     }
 
     @MainActor

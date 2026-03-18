@@ -4,13 +4,9 @@
 //  Licensed under the Apache License 2.0.
 //
 
-import SwiftUI
+import Foundation
 
-struct UserMuteRequestBody: Encodable {
-    let muteStatuses: Bool
-    let muteReblogs: Bool
-    let muteNotifications: Bool
+struct UnfollowRequestBody: Encodable {
     let removeStatusesFromTimeline: Bool
     let removeReblogsFromTimeline: Bool
-    let muteEnd: String?
 }

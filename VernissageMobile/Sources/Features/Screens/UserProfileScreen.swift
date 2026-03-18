@@ -271,7 +271,7 @@ struct UserProfileScreen: View {
                     }
                 }
                 .environment(appState)
-                .presentationDetents([.fraction(0.58), .large])
+                .presentationDetents([.fraction(0.75), .large])
                 .presentationDragIndicator(.visible)
             }
         }

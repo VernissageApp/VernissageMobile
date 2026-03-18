@@ -70,6 +70,7 @@
 		6EA3CB99BAEF20C271E44A2C /* Attachment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50A125CCD0BC516E9531FB4F /* Attachment.swift */; };
 		704E24C78D2FB2912A68C5BF /* ComposeParsedExifParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D4AFA294FAA3C39ABCEBBD4 /* ComposeParsedExifParser.swift */; };
 		7093EFFE34883B60EDF0F5DD /* UserMuteRequestBody.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1B9BDDB9571C677239E12503 /* UserMuteRequestBody.swift */; };
+		C5D8F1A23B4E5C7D9F0A1B2C /* UnfollowRequestBody.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7F3D12E8C4B4E2591A0F7D3 /* UnfollowRequestBody.swift */; };
 		755213305EFB1883FA2E43D6 /* FlexiField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6773C0D9DC0733234A23676D /* FlexiField.swift */; };
 		797D6C2B329E9CBE58EEB900 /* ReportsAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 64D6F2510F9FB298DA789B5C /* ReportsAPI.swift */; };
 		7A34C7C29E2330D9B44B466D /* JWTClaims.swift in Sources */ = {isa = PBXBuildFile; fileRef = FCEF3644224F22E899735EA6 /* JWTClaims.swift */; };
@@ -209,6 +210,7 @@
 		F86185392F4B900F00C3AFB8 /* User.swift in Sources */ = {isa = PBXBuildFile; fileRef = 402C31AA846D114CC581C25C /* User.swift */; };
 		F861853A2F4B900F00C3AFB8 /* UserBlockedDomainRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 655A95BF2F7CC1F7F45A07B2 /* UserBlockedDomainRequest.swift */; };
 		F861853B2F4B900F00C3AFB8 /* UserMuteRequestBody.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1B9BDDB9571C677239E12503 /* UserMuteRequestBody.swift */; };
+		B4C7E9A12D3F4B6C8E1A0D2F /* UnfollowRequestBody.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7F3D12E8C4B4E2591A0F7D3 /* UnfollowRequestBody.swift */; };
 		F861853C2F4B900F00C3AFB8 /* UserSetting.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8726757074BEC7A25FCD7317 /* UserSetting.swift */; };
 		F861853D2F4B900F00C3AFB8 /* APIClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF3543AEA1C6CB7BEE20701A /* APIClient.swift */; };
 		F861853E2F4B900F00C3AFB8 /* APIError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7DDB44E57C56026826925769 /* APIError.swift */; };
@@ -258,6 +260,7 @@
 		F861856A2F4B900F00C3AFB8 /* StatusTextTemplateSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 71AEEA17B88A9CAD39C502D7 /* StatusTextTemplateSheet.swift */; };
 		F861856B2F4B900F00C3AFB8 /* UserBlockDomainSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04A3B3315AD8D39362DCCDC6 /* UserBlockDomainSheet.swift */; };
 		F861856C2F4B900F00C3AFB8 /* UserMuteSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = F98E00CC4437D7C74A920E41 /* UserMuteSheet.swift */; };
+		E6F9A2B34C5D6E7F8A1B0C2D /* UserUnfollowSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2E4A1B39C7F4D1886E0F2A5 /* UserUnfollowSheet.swift */; };
 		F861856D2F4B900F00C3AFB8 /* ComposeError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24DD563DEE22048F3C26477A /* ComposeError.swift */; };
 		F861856E2F4B900F00C3AFB8 /* ComposeParsedExif.swift in Sources */ = {isa = PBXBuildFile; fileRef = 833E5E9A80245EB32FC89739 /* ComposeParsedExif.swift */; };
 		F861856F2F4B900F00C3AFB8 /* ComposeStatusAttachment.swift in Sources */ = {isa = PBXBuildFile; fileRef = D14CC86C59A704CEDE354E4A /* ComposeStatusAttachment.swift */; };
@@ -404,6 +407,7 @@
 		19AC32CC3FE4CF11A89EA58B /* NotificationsToolbarButtonView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationsToolbarButtonView.swift; sourceTree = "<group>"; };
 		19FA453E0E3C4F7BC4E8DB8F /* SharedBusinessCardMessageRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SharedBusinessCardMessageRequest.swift; sourceTree = "<group>"; };
 		1B9BDDB9571C677239E12503 /* UserMuteRequestBody.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserMuteRequestBody.swift; sourceTree = "<group>"; };
+		A7F3D12E8C4B4E2591A0F7D3 /* UnfollowRequestBody.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UnfollowRequestBody.swift; sourceTree = "<group>"; };
 		20021A35E4713BB53B931F50 /* InstanceInformationScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InstanceInformationScreen.swift; sourceTree = "<group>"; };
 		24DD563DEE22048F3C26477A /* ComposeError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ComposeError.swift; sourceTree = "<group>"; };
 		2568AEB43647E3B836487D74 /* FeaturedUsersViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeaturedUsersViewModel.swift; sourceTree = "<group>"; };
@@ -617,6 +621,7 @@
 		F8A8C35C2F46FEA50004F445 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		F9149D4AB441D6C77727E692 /* AddToolbarButtonView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddToolbarButtonView.swift; sourceTree = "<group>"; };
 		F98E00CC4437D7C74A920E41 /* UserMuteSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserMuteSheet.swift; sourceTree = "<group>"; };
+		D2E4A1B39C7F4D1886E0F2A5 /* UserUnfollowSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserUnfollowSheet.swift; sourceTree = "<group>"; };
 		F9C3792186672E057150EE82 /* AccountSwitcherToolbarAvatarButtonView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountSwitcherToolbarAvatarButtonView.swift; sourceTree = "<group>"; };
 		FB772D021FDE64E08A9EC3D5 /* NewStatusRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewStatusRequest.swift; sourceTree = "<group>"; };
 		FBF419A8127269988036724C /* InstanceAPI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InstanceAPI.swift; sourceTree = "<group>"; };
@@ -807,6 +812,7 @@
 				402C31AA846D114CC581C25C /* User.swift */,
 				655A95BF2F7CC1F7F45A07B2 /* UserBlockedDomainRequest.swift */,
 				1B9BDDB9571C677239E12503 /* UserMuteRequestBody.swift */,
+				A7F3D12E8C4B4E2591A0F7D3 /* UnfollowRequestBody.swift */,
 				8726757074BEC7A25FCD7317 /* UserSetting.swift */,
 				43C1B5B6F019D1E6DCE5AEB1 /* CuratedInstance.swift */,
 			);
@@ -1020,6 +1026,7 @@
 				71AEEA17B88A9CAD39C502D7 /* StatusTextTemplateSheet.swift */,
 				04A3B3315AD8D39362DCCDC6 /* UserBlockDomainSheet.swift */,
 				F98E00CC4437D7C74A920E41 /* UserMuteSheet.swift */,
+				D2E4A1B39C7F4D1886E0F2A5 /* UserUnfollowSheet.swift */,
 			);
 			path = Sheets;
 			sourceTree = "<group>";
@@ -1232,6 +1239,7 @@
 				F86185392F4B900F00C3AFB8 /* User.swift in Sources */,
 				F861853A2F4B900F00C3AFB8 /* UserBlockedDomainRequest.swift in Sources */,
 				F861853B2F4B900F00C3AFB8 /* UserMuteRequestBody.swift in Sources */,
+				B4C7E9A12D3F4B6C8E1A0D2F /* UnfollowRequestBody.swift in Sources */,
 				F861853C2F4B900F00C3AFB8 /* UserSetting.swift in Sources */,
 				A90000000000000000000002 /* RegisterUserRequest.swift in Sources */,
 				F861853D2F4B900F00C3AFB8 /* APIClient.swift in Sources */,
@@ -1296,6 +1304,7 @@
 				F861856A2F4B900F00C3AFB8 /* StatusTextTemplateSheet.swift in Sources */,
 				F861856B2F4B900F00C3AFB8 /* UserBlockDomainSheet.swift in Sources */,
 				F861856C2F4B900F00C3AFB8 /* UserMuteSheet.swift in Sources */,
+				E6F9A2B34C5D6E7F8A1B0C2D /* UserUnfollowSheet.swift in Sources */,
 				F861856D2F4B900F00C3AFB8 /* ComposeError.swift in Sources */,
 				F861856E2F4B900F00C3AFB8 /* ComposeParsedExif.swift in Sources */,
 				F86185CA2F4B900F00C3AFB8 /* ComposeAttachmentDropDelegate.swift in Sources */,
@@ -1461,6 +1470,7 @@
 				E8FC7E43F877CCF41969CE81 /* User.swift in Sources */,
 				BAEBF0162DB55FC4BC24A6BC /* UserBlockedDomainRequest.swift in Sources */,
 				7093EFFE34883B60EDF0F5DD /* UserMuteRequestBody.swift in Sources */,
+				C5D8F1A23B4E5C7D9F0A1B2C /* UnfollowRequestBody.swift in Sources */,
 				4AD64DB1DFA6CC78B6E047ED /* UserSetting.swift in Sources */,
 				0C8ACCB791136334F255ED7E /* APIClient.swift in Sources */,
 				814A3101171ADB9850BC476C /* APIError.swift in Sources */,

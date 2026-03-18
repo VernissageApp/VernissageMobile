@@ -73,15 +73,25 @@ final class UsersAPI {
         )
     }
 
-    func unfollow(userName: String) async throws -> Relationship {
+    func unfollow(
+        userName: String,
+        removeStatusesFromTimeline: Bool = false,
+        removeReblogsFromTimeline: Bool = false
+    ) async throws -> Relationship {
         let account = try appState.requireActiveAccount()
         let encodedName = encodeUserName(userName)
+        let payload = UnfollowRequestBody(
+            removeStatusesFromTimeline: removeStatusesFromTimeline,
+            removeReblogsFromTimeline: removeReblogsFromTimeline
+        )
 
         return try await appState.api.authorizedRequest(
             account: account,
             path: "/api/v1/users/@\(encodedName)/unfollow",
             method: "POST",
-            queryItems: []
+            queryItems: [],
+            additionalHeaders: ["Content-Type": "application/json"],
+            body: try JSONEncoder().encode(payload)
         )
     }
 
@@ -90,6 +100,8 @@ final class UsersAPI {
         muteStatuses: Bool,
         muteReblogs: Bool,
         muteNotifications: Bool,
+        removeStatusesFromTimeline: Bool,
+        removeReblogsFromTimeline: Bool,
         muteEnd: Date?
     ) async throws -> Relationship {
         let account = try appState.requireActiveAccount()
@@ -99,6 +111,8 @@ final class UsersAPI {
             muteStatuses: muteStatuses,
             muteReblogs: muteReblogs,
             muteNotifications: muteNotifications,
+            removeStatusesFromTimeline: removeStatusesFromTimeline,
+            removeReblogsFromTimeline: removeReblogsFromTimeline,
             muteEnd: muteEnd.map { Self.iso8601Formatter.string(from: $0) }
         )
 

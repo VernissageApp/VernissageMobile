@@ -16,6 +16,8 @@ struct UserMuteSheet: View {
     @State private var muteStatuses: Bool
     @State private var muteReblogs: Bool
     @State private var muteNotifications: Bool
+    @State private var removeStatusesFromTimeline = false
+    @State private var removeReblogsFromTimeline = false
     @State private var isMuteEndDateEnabled: Bool
     @State private var muteEndDate: Date
     @State private var isSubmitting = false
@@ -46,8 +48,18 @@ struct UserMuteSheet: View {
     var body: some View {
         NavigationStack {
             VStack(alignment: .leading, spacing: 16) {
+                Text("Muting statuses and reblogs only applies to your private photo timeline. The user's posts will still appear in the local and global timelines, as those timelines are visible to all users of the system.")
+                    .font(.footnote)
+                    .foregroundStyle(.secondary)
+
                 Toggle("Mute new statuses", isOn: $muteStatuses)
+                Toggle("Remove user's statuses", isOn: $removeStatusesFromTimeline)
+                    .disabled(!muteStatuses)
+                    .padding(.leading, 10)
                 Toggle("Mute reblogs", isOn: $muteReblogs)
+                Toggle("Remove user's reblogs", isOn: $removeReblogsFromTimeline)
+                    .disabled(!muteReblogs)
+                    .padding(.leading, 10)
                 Toggle("Mute notifications", isOn: $muteNotifications)
 
                 Divider()
@@ -114,6 +126,8 @@ struct UserMuteSheet: View {
                     muteStatuses: muteStatuses,
                     muteReblogs: muteReblogs,
                     muteNotifications: muteNotifications,
+                    removeStatusesFromTimeline: muteStatuses && removeStatusesFromTimeline,
+                    removeReblogsFromTimeline: muteReblogs && removeReblogsFromTimeline,
                     muteEnd: isMuteEndDateEnabled ? muteEndDate : nil
                 )
             } else {

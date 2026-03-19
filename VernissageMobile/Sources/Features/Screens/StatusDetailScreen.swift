@@ -11,6 +11,12 @@ import Translation
 #endif
 
 struct StatusDetailScreen: View {
+    private struct AttachmentViewerPayload: Identifiable {
+        let id = UUID()
+        let attachments: [Attachment]
+        let initialIndex: Int
+    }
+
     @Environment(AppState.self) private var appState
     @Environment(\.dismiss) private var dismiss
     @Environment(\.openURL) private var openURL
@@ -45,8 +51,7 @@ struct StatusDetailScreen: View {
     @State private var isShowingTranslateSheet = false
     @State private var translationSourceText = ""
     @State private var statusForEditing: Status?
-    @State private var isAttachmentViewerPresented = false
-    @State private var attachmentViewerInitialIndex = 0
+    @State private var attachmentViewerPayload: AttachmentViewerPayload?
     private let boostedByUser: User?
 
     private let maxCommentLength = 500
@@ -119,10 +124,10 @@ struct StatusDetailScreen: View {
 
     private var statusDetailNavigationLayer: some View {
         statusDetailSheetsLayer
-            .fullScreenCover(isPresented: $isAttachmentViewerPresented) {
+            .fullScreenCover(item: $attachmentViewerPayload) { payload in
                 StatusAttachmentViewerScreen(
-                    attachments: displayableAttachments,
-                    initialIndex: attachmentViewerInitialIndex
+                    attachments: payload.attachments,
+                    initialIndex: payload.initialIndex
                 )
             }
             .navigationDestination(item: $presentedUsersListKind) { kind in
@@ -201,7 +206,7 @@ struct StatusDetailScreen: View {
                 ForEach(displayableAttachments.indices, id: \.self) { index in
                     let attachment = displayableAttachments[index]
                     Button {
-                        openAttachmentViewer(at: index)
+                        openStatusAttachmentViewer(at: index)
                     } label: {
                         statusAttachmentView(for: attachment, fixedHeight: multiAttachmentHeight)
                     }
@@ -220,7 +225,7 @@ struct StatusDetailScreen: View {
             .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
         } else if let attachment = displayableAttachments.first {
             Button {
-                openAttachmentViewer(at: 0)
+                openStatusAttachmentViewer(at: 0)
             } label: {
                 statusAttachmentView(for: attachment, fixedHeight: singleAttachmentHeight)
             }
@@ -514,6 +519,9 @@ struct StatusDetailScreen: View {
                             comment: item.status,
                             isIndented: item.isIndented,
                             onOpenMarkdownURL: handleStatusMarkdownURL,
+                            onOpenAttachmentViewer: { attachments, initialIndex in
+                                openAttachmentViewer(attachments: attachments, at: initialIndex)
+                            },
                             onToggleFavourite: {
                                 Task {
                                     await toggleFavourite(for: item.status)
@@ -798,13 +806,19 @@ struct StatusDetailScreen: View {
         UIPasteboard.general.string = plainText
     }
 
-    private func openAttachmentViewer(at index: Int) {
-        guard !displayableAttachments.isEmpty else {
+    private func openStatusAttachmentViewer(at index: Int) {
+        openAttachmentViewer(attachments: displayableAttachments, at: index)
+    }
+
+    private func openAttachmentViewer(attachments: [Attachment], at index: Int) {
+        guard !attachments.isEmpty else {
             return
         }
 
-        attachmentViewerInitialIndex = min(max(index, 0), displayableAttachments.count - 1)
-        isAttachmentViewerPresented = true
+        attachmentViewerPayload = AttachmentViewerPayload(
+            attachments: attachments,
+            initialIndex: min(max(index, 0), attachments.count - 1)
+        )
     }
 
     @ViewBuilder

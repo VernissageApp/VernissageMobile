@@ -44,6 +44,7 @@ struct StatusComposeScreen: View {
     @State private var isCameraPickerPresented = false
     @State private var isFileImporterPresented = false
     @State private var selectedAttachmentSheet: ComposeAttachmentSheetSelection?
+    @State private var pendingAttachmentDeletionId: UUID?
     @State private var isEditingTemplate = false
     @State private var draggedAttachmentID: UUID?
 
@@ -251,6 +252,18 @@ struct StatusComposeScreen: View {
                     try await appState.api.settings.searchLocations(countryCode: countryCode, query: query)
                 } generateDescription: { attachmentId in
                     try await appState.api.attachments.describeAttachment(attachmentId: attachmentId)
+                } onDeleteAttachment: { attachmentId in
+                    guard pendingAttachmentDeletionId == nil else {
+                        return
+                    }
+
+                    pendingAttachmentDeletionId = attachmentId
+                    selectedAttachmentSheet = nil
+                    try? await Task.sleep(for: .milliseconds(900))
+                    await removeAttachment(attachmentId)
+                    if pendingAttachmentDeletionId == attachmentId {
+                        pendingAttachmentDeletionId = nil
+                    }
                 }
             } else {
                 EmptyView()
@@ -484,11 +497,22 @@ struct StatusComposeScreen: View {
                         ComposeAttachmentThumbnailView(
                             attachment: attachment,
                             onTap: {
+                                guard pendingAttachmentDeletionId != attachment.id else {
+                                    return
+                                }
                                 selectedAttachmentSheet = ComposeAttachmentSheetSelection(id: attachment.id)
                             },
                             onDelete: {
+                                guard pendingAttachmentDeletionId != attachment.id else {
+                                    return
+                                }
+
                                 Task {
+                                    pendingAttachmentDeletionId = attachment.id
                                     await removeAttachment(attachment.id)
+                                    if pendingAttachmentDeletionId == attachment.id {
+                                        pendingAttachmentDeletionId = nil
+                                    }
                                 }
                             }
                         )

@@ -14,6 +14,7 @@ struct ImageContextMenu: ViewModifier {
     @State private var currentStatus: Status
     @State private var actionErrorMessage: String?
     @State private var actionSuccessMessage: String?
+    @State private var contextMenuFeedbackTrigger = false
 
     init(status: Status) {
         _currentStatus = State(initialValue: status.mainStatus)
@@ -23,18 +24,21 @@ struct ImageContextMenu: ViewModifier {
         content
             .contextMenu {
                 Button {
+                    triggerContextMenuFeedback()
                     Task { await toggleReblog() }
                 } label: {
                     Label(currentStatus.reblogged == true ? "Unboost" : "Boost", systemImage: "arrow.2.squarepath")
                 }
 
                 Button {
+                    triggerContextMenuFeedback()
                     Task { await toggleFavourite() }
                 } label: {
                     Label(currentStatus.favourited == true ? "Unfavourite" : "Favourite", systemImage: currentStatus.favourited == true ? "star.fill" : "star")
                 }
 
                 Button {
+                    triggerContextMenuFeedback()
                     Task { await toggleBookmark() }
                 } label: {
                     Label(currentStatus.bookmarked == true ? "Unbookmark" : "Bookmark", systemImage: currentStatus.bookmarked == true ? "bookmark.fill" : "bookmark")
@@ -43,6 +47,7 @@ struct ImageContextMenu: ViewModifier {
                 Divider()
 
                 Button {
+                    triggerContextMenuFeedback()
                     openInBrowser()
                 } label: {
                     Label("Open in browser", systemImage: "safari")
@@ -50,6 +55,7 @@ struct ImageContextMenu: ViewModifier {
                 .disabled(currentStatus.shareURL?.nilIfEmpty == nil)
 
                 Button {
+                    triggerContextMenuFeedback()
                     copyLinkToPost()
                 } label: {
                     Label("Copy link to post", systemImage: "link")
@@ -60,6 +66,9 @@ struct ImageContextMenu: ViewModifier {
                     ShareLink(item: statusURL) {
                         Label("Share status", systemImage: "square.and.arrow.up")
                     }
+                    .simultaneousGesture(TapGesture().onEnded {
+                        triggerContextMenuFeedback()
+                    })
                 } else {
                     Button {} label: {
                         Label("Share status", systemImage: "square.and.arrow.up")
@@ -73,6 +82,9 @@ struct ImageContextMenu: ViewModifier {
                     ShareLink(item: imageURL) {
                         Label("Share image", systemImage: "photo")
                     }
+                    .simultaneousGesture(TapGesture().onEnded {
+                        triggerContextMenuFeedback()
+                    })
                 } else {
                     Button {} label: {
                         Label("Share image", systemImage: "photo")
@@ -81,6 +93,7 @@ struct ImageContextMenu: ViewModifier {
                 }
 
                 Button {
+                    triggerContextMenuFeedback()
                     Task { await saveImage() }
                 } label: {
                     Label("Save image", systemImage: "square.and.arrow.down")
@@ -91,6 +104,7 @@ struct ImageContextMenu: ViewModifier {
             }
             .errorAlertToast($actionErrorMessage)
             .successAlertToast($actionSuccessMessage)
+            .sensoryFeedback(.impact, trigger: contextMenuFeedbackTrigger)
     }
 
     private var statusShareURL: URL? {
@@ -127,6 +141,10 @@ struct ImageContextMenu: ViewModifier {
         }
 
         openURL(url)
+    }
+
+    private func triggerContextMenuFeedback() {
+        contextMenuFeedbackTrigger.toggle()
     }
 
     @MainActor

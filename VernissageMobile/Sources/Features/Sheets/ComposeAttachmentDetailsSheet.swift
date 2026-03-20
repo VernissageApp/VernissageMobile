@@ -13,6 +13,7 @@ struct ComposeAttachmentDetailsSheet: View {
     let isOpenAIEnabled: Bool
     let citySearch: (_ countryCode: String, _ query: String) async throws -> [Location]
     let generateDescription: (_ attachmentId: String) async throws -> String?
+    let onDeleteAttachment: (_ attachmentId: UUID) async -> Void
 
     @Environment(\.dismiss) private var dismiss
     @AppStorage(AppConstants.StorageKeys.composeAttachmentDetailsLicenseId) private var rememberedLicenseId = ""
@@ -27,6 +28,7 @@ struct ComposeAttachmentDetailsSheet: View {
     @State private var isGeneratingDescription = false
     @State private var citySearchTask: Task<Void, Never>?
     @State private var errorMessage: String?
+    @State private var isDeletingAttachment = false
     @State private var didApplyRememberedValues = false
     @State private var shouldIgnoreNextCityQueryChange = false
 
@@ -36,7 +38,8 @@ struct ComposeAttachmentDetailsSheet: View {
         countries: [Country],
         isOpenAIEnabled: Bool,
         citySearch: @escaping (_ countryCode: String, _ query: String) async throws -> [Location],
-        generateDescription: @escaping (_ attachmentId: String) async throws -> String?
+        generateDescription: @escaping (_ attachmentId: String) async throws -> String?,
+        onDeleteAttachment: @escaping (_ attachmentId: UUID) async -> Void
     ) {
         _attachment = attachment
         self.licenses = licenses
@@ -44,6 +47,7 @@ struct ComposeAttachmentDetailsSheet: View {
         self.isOpenAIEnabled = isOpenAIEnabled
         self.citySearch = citySearch
         self.generateDescription = generateDescription
+        self.onDeleteAttachment = onDeleteAttachment
         _cityQuery = State(initialValue: attachment.wrappedValue.cityName)
     }
 
@@ -231,6 +235,10 @@ struct ComposeAttachmentDetailsSheet: View {
                     exifRow(title: "Chemistry", isOn: $attachment.showChemistry, text: $attachment.chemistry)
                     exifRow(title: "Scanner", isOn: $attachment.showScanner, text: $attachment.scanner)
                     exifRow(title: "Create date", isOn: $attachment.showCreateDate, text: $attachment.createDate)
+                }
+
+                Section {
+                    deletePhotoButton
                 }
             }
             .navigationTitle("Photo details")
@@ -580,5 +588,37 @@ struct ComposeAttachmentDetailsSheet: View {
         rememberedCountryName = attachment.countryName?.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
         rememberedCityName = attachment.cityName.trimmingCharacters(in: .whitespacesAndNewlines)
         rememberedLocationId = attachment.locationId?.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
+    }
+
+    private var deletePhotoButton: some View {
+        Button(role: .destructive) {
+            Task {
+                await deletePhoto()
+            }
+        } label: {
+            if isDeletingAttachment {
+                ProgressView()
+                    .controlSize(.small)
+                    .frame(maxWidth: .infinity)
+            } else {
+                Text("Delete photo")
+                    .frame(maxWidth: .infinity)
+            }
+        }
+        .buttonStyle(.glassProminent)
+        .tint(.red)
+        .disabled(isDeletingAttachment)
+        .accessibilityHint("Removes this photo from your post draft.")
+    }
+
+    @MainActor
+    private func deletePhoto() async {
+        guard !isDeletingAttachment else {
+            return
+        }
+
+        isDeletingAttachment = true
+        let attachmentId = attachment.id
+        await onDeleteAttachment(attachmentId)
     }
 }

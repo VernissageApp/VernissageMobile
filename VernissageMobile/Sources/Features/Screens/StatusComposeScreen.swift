@@ -12,6 +12,7 @@ struct StatusComposeScreen: View {
     @Environment(AppState.self) private var appState
     @Environment(\.dismiss) private var dismiss
     @AppStorage(AppConstants.StorageKeys.composeSelectedCategoryId) private var rememberedSelectedCategoryId = ""
+    @AppStorage(AppConstants.StorageKeys.settingsWarnMissingAltText) private var warnMissingAltText = true
 
     let mode: StatusComposeMode
     let initialAttachmentURLs: [URL]
@@ -57,6 +58,7 @@ struct StatusComposeScreen: View {
     @State private var didLoadInitialData = false
     @State private var importedInitialAttachmentURLKeys: Set<String> = []
     @State private var isPublishing = false
+    @State private var isMissingAltTextAlertPresented = false
     @State private var errorMessage: String?
     @State private var successMessage: String?
     @State private var isResendingConfirmationEmail = false
@@ -168,6 +170,16 @@ struct StatusComposeScreen: View {
                     .background(.ultraThinMaterial)
                 }
             }
+        }
+        .alert("Missing ALT text", isPresented: $isMissingAltTextAlertPresented) {
+            Button("Publish") {
+                Task { await publishStatusNow() }
+            }
+
+            Button("Cancel", role: .cancel) {
+            }
+        } message: {
+            Text("Some attached photos do not have alternative text. Publish anyway?")
         }
         .onFirstAppear {
             await loadInitialDataIfNeeded()
@@ -1136,6 +1148,26 @@ struct StatusComposeScreen: View {
 
     @MainActor
     private func publishStatus() async {
+        guard canPublish else {
+            return
+        }
+
+        if warnMissingAltText == false {
+            await publishStatusNow()
+            return
+        }
+
+        let altIsMissingOnImage = attachments.contains(where: { $0.isAltMissing })
+        if altIsMissingOnImage {
+            isMissingAltTextAlertPresented = true
+            return
+        }
+
+        await publishStatusNow()
+    }
+
+    @MainActor
+    private func publishStatusNow() async {
         guard canPublish else {
             return
         }

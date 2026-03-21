@@ -12,6 +12,7 @@ enum AppConstants {
         static let settingsShowAlternativeText = "settings.showAlternativeText"
         static let settingsShowAvatarsOnTimeline = "settings.showAvatarsOnTimeline"
         static let settingsShowImageCountsOnTimeline = "settings.showImageCountsOnTimeline"
+        static let settingsWarnMissingAltText = "settings.warnMissingAltText"
         static let settingsAppIconName = "settings.appIconName"
 
         static let composeAttachmentDetailsLicenseId = "compose.attachmentDetails.licenseId"

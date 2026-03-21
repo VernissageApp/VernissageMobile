@@ -12,6 +12,7 @@ struct AppSettingsScreen: View {
     @AppStorage(AppConstants.StorageKeys.settingsShowAlternativeText) private var showAlternativeText = false
     @AppStorage(AppConstants.StorageKeys.settingsShowAvatarsOnTimeline) private var showAvatarsOnTimeline = false
     @AppStorage(AppConstants.StorageKeys.settingsShowImageCountsOnTimeline) private var showImageCountsOnTimeline = false
+    @AppStorage(AppConstants.StorageKeys.settingsWarnMissingAltText) private var warnMissingAltText = true
     @AppStorage(AppConstants.StorageKeys.settingsAppIconName) private var selectedAppIconName = AppIconOption.appIcon01.rawValue
 
     @State private var appIconErrorMessage: String?
@@ -65,6 +66,15 @@ struct AppSettingsScreen: View {
                     VStack(alignment: .leading) {
                         Text("Show image counts")
                         Text("Show image count on statuses with multiple images.")
+                            .font(.footnote)
+                            .foregroundStyle(.secondary)
+                    }
+                }
+
+                Toggle(isOn: $warnMissingAltText) {
+                    VStack(alignment: .leading) {
+                        Text("Warn before publishing without ALT text")
+                        Text("Show a warning if any attached photo has no alternative text.")
                             .font(.footnote)
                             .foregroundStyle(.secondary)
                     }

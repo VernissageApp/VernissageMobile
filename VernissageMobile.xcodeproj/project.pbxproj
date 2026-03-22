@@ -118,11 +118,12 @@
 		B27AA97C634E22C9B6A074A4 /* TrendingPeriodSelection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 86B5FADCF470A7339FE9F1DA /* TrendingPeriodSelection.swift */; };
 		B2F0A6B7F4DC8FEEF0A09467 /* KeychainStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = EA5AA0D27374ED6BB712ADED /* KeychainStore.swift */; };
 		B3C5F63B7405EEB3165D9E07 /* ComposeAttachmentThumbnailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37F56260AE7AF57F78F91276 /* ComposeAttachmentThumbnailView.swift */; };
-		B44A1E08D9074D2CA7E17401 /* ComposeAttachmentViewerScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = B44A1E08D9074D2CA7E16401 /* ComposeAttachmentViewerScreen.swift */; };
-		B44A1E08D9074D2CA7E17402 /* ComposeAttachmentViewerScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = B44A1E08D9074D2CA7E16401 /* ComposeAttachmentViewerScreen.swift */; };
 		B44A1E08D9074D2CA7E17403 /* ComposeAttachmentViewerPayload.swift in Sources */ = {isa = PBXBuildFile; fileRef = B44A1E08D9074D2CA7E16402 /* ComposeAttachmentViewerPayload.swift */; };
 		B44A1E08D9074D2CA7E17404 /* ComposeAttachmentViewerPayload.swift in Sources */ = {isa = PBXBuildFile; fileRef = B44A1E08D9074D2CA7E16402 /* ComposeAttachmentViewerPayload.swift */; };
 		B4C7E9A12D3F4B6C8E1A0D2F /* UnfollowRequestBody.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7F3D12E8C4B4E2591A0F7D3 /* UnfollowRequestBody.swift */; };
+		B54A1E08D9074D2CA7E17401 /* StatusAttachmentViewerScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = E842E611B270FF32C1C65287 /* StatusAttachmentViewerScreen.swift */; };
+		B54A1E08D9074D2CA7E17402 /* ZoomableAttachmentScrollView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 996A161C116C4AEAAC83BD30 /* ZoomableAttachmentScrollView.swift */; };
+		B54A1E08D9074D2CA7E17403 /* ZoomableStatusAttachmentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6926FB14A7C94EF01AEACED8 /* ZoomableStatusAttachmentView.swift */; };
 		B8659C04F3DAF0901B3DDC25 /* CharacterSet+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 634196EDBA808665D562BB22 /* CharacterSet+Extensions.swift */; };
 		BAEBF0162DB55FC4BC24A6BC /* UserBlockedDomainRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 655A95BF2F7CC1F7F45A07B2 /* UserBlockedDomainRequest.swift */; };
 		C046FED922803446C4266A9C /* AttachmentBlurHashPlaceholderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC3DAEA7229BBF69DDFC3B56 /* AttachmentBlurHashPlaceholderView.swift */; };
@@ -553,7 +554,6 @@
 		B175FDF1F0E742558BF76A88 /* View+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "View+Extensions.swift"; sourceTree = "<group>"; };
 		B1C2D3E4F5A60718293A4B5C /* HashtagTimelineViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HashtagTimelineViewModel.swift; sourceTree = "<group>"; };
 		B31953BA22EB5727CE00099A /* NotificationsCount.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationsCount.swift; sourceTree = "<group>"; };
-		B44A1E08D9074D2CA7E16401 /* ComposeAttachmentViewerScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ComposeAttachmentViewerScreen.swift; sourceTree = "<group>"; };
 		B44A1E08D9074D2CA7E16402 /* ComposeAttachmentViewerPayload.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ComposeAttachmentViewerPayload.swift; sourceTree = "<group>"; };
 		B5401A7843F0B8A5DC2B6F39 /* AppNotification.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppNotification.swift; sourceTree = "<group>"; };
 		B7C567764886C37942B70A49 /* CuratedInstancesAPI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CuratedInstancesAPI.swift; sourceTree = "<group>"; };
@@ -735,7 +735,6 @@
 				47363B9E9372B815DDD42E66 /* SearchScreen.swift */,
 				79B24C5BC598EB7FA231AD7A /* SharedBusinessCardDetailScreen.swift */,
 				EDFD1C15616A4B929FCD3178 /* SharedBusinessCardsScreen.swift */,
-				B44A1E08D9074D2CA7E16401 /* ComposeAttachmentViewerScreen.swift */,
 				E842E611B270FF32C1C65287 /* StatusAttachmentViewerScreen.swift */,
 				EA3FE85A36E9820EDBF100CE /* StatusComposeScreen.swift */,
 				345974CE8E0E4B9FA769228F /* StatusDetailScreen.swift */,
@@ -1288,7 +1287,6 @@
 				F86185522F4B900F00C3AFB8 /* SearchScreen.swift in Sources */,
 				F86185532F4B900F00C3AFB8 /* SharedBusinessCardDetailScreen.swift in Sources */,
 				F86185542F4B900F00C3AFB8 /* SharedBusinessCardsScreen.swift in Sources */,
-				B44A1E08D9074D2CA7E17401 /* ComposeAttachmentViewerScreen.swift in Sources */,
 				F86185552F4B900F00C3AFB8 /* StatusAttachmentViewerScreen.swift in Sources */,
 				F86185562F4B900F00C3AFB8 /* Bundle+Extensions.swift in Sources */,
 				F86185572F4B900F00C3AFB8 /* StatusComposeScreen.swift in Sources */,
@@ -1509,7 +1507,7 @@
 				F88152042F4858B40060ECD5 /* Bundle+Extensions.swift in Sources */,
 				57ACCFD9E45431A0E109A330 /* StatusComposeScreen.swift in Sources */,
 				991378DE3F76C02420F836F6 /* AddStatusPlaceholderSheet.swift in Sources */,
-				B44A1E08D9074D2CA7E17402 /* ComposeAttachmentViewerScreen.swift in Sources */,
+				B54A1E08D9074D2CA7E17401 /* StatusAttachmentViewerScreen.swift in Sources */,
 				FCBEDB873173ABF3B4D67C7D /* ComposeAttachmentDetailsSheet.swift in Sources */,
 				E9029CDF0601214600295AAA /* StatusTextTemplateSheet.swift in Sources */,
 				95B3194BEFA7CCCD6D041486 /* ComposeError.swift in Sources */,
@@ -1528,6 +1526,8 @@
 				C046FED922803446C4266A9C /* AttachmentBlurHashPlaceholderView.swift in Sources */,
 				B3C5F63B7405EEB3165D9E07 /* ComposeAttachmentThumbnailView.swift in Sources */,
 				445B752AE13E3D4CD54253B7 /* ComposeCameraPickerView.swift in Sources */,
+				B54A1E08D9074D2CA7E17402 /* ZoomableAttachmentScrollView.swift in Sources */,
+				B54A1E08D9074D2CA7E17403 /* ZoomableStatusAttachmentView.swift in Sources */,
 				C6D1E2F3A4B5061728394A5B /* AppConstants.swift in Sources */,
 				B8659C04F3DAF0901B3DDC25 /* CharacterSet+Extensions.swift in Sources */,
 				E565A69D5B2E82C47C875D54 /* Data+Extensions.swift in Sources */,
@@ -1683,7 +1683,7 @@
 				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
 				CODE_SIGN_ENTITLEMENTS = VernissageMobile/VernissageMobile.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 53;
+				CURRENT_PROJECT_VERSION = 54;
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = VernissageMobile/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = Vernissage;
@@ -1711,7 +1711,7 @@
 				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
 				CODE_SIGN_ENTITLEMENTS = VernissageMobile/VernissageMobile.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 53;
+				CURRENT_PROJECT_VERSION = 54;
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = VernissageMobile/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = Vernissage;
@@ -1737,7 +1737,7 @@
 				APPLICATION_EXTENSION_API_ONLY = YES;
 				CODE_SIGN_ENTITLEMENTS = VernissageShareExtension/VernissageShareExtension.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 53;
+				CURRENT_PROJECT_VERSION = 54;
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = VernissageShareExtension/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = VernissageShareExtension;
@@ -1765,7 +1765,7 @@
 				APPLICATION_EXTENSION_API_ONLY = YES;
 				CODE_SIGN_ENTITLEMENTS = VernissageShareExtension/VernissageShareExtension.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 53;
+				CURRENT_PROJECT_VERSION = 54;
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = VernissageShareExtension/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = VernissageShareExtension;

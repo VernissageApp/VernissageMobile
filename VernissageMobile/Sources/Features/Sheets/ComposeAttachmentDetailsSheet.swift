@@ -258,7 +258,7 @@ struct ComposeAttachmentDetailsSheet: View {
         }
         .errorAlertToast($errorMessage)
         .fullScreenCover(item: $attachmentViewerPayload) { payload in
-            ComposeAttachmentViewerScreen(
+            StatusAttachmentViewerScreen(
                 attachments: payload.attachments,
                 initialIndex: payload.initialIndex,
                 localImages: payload.localImages

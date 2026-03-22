@@ -11,15 +11,17 @@ struct StatusAttachmentViewerScreen: View {
 
     let attachments: [Attachment]
     let initialIndex: Int
+    let localImages: [Int: UIImage]
 
     @State private var selectedIndex: Int
     @State private var verticalDismissOffset: CGFloat = 0
     @State private var isCurrentAttachmentZoomed = false
     @State private var dominantBackgroundColors: [Int: UIColor] = [:]
 
-    init(attachments: [Attachment], initialIndex: Int) {
+    init(attachments: [Attachment], initialIndex: Int, localImages: [Int: UIImage] = [:]) {
         self.attachments = attachments
         self.initialIndex = initialIndex
+        self.localImages = localImages
 
         let maxIndex = max(attachments.count - 1, 0)
         _selectedIndex = State(initialValue: min(max(initialIndex, 0), maxIndex))
@@ -39,6 +41,7 @@ struct StatusAttachmentViewerScreen: View {
                         let attachment = attachments[index]
                         ZoomableStatusAttachmentView(
                             attachment: attachment,
+                            localImage: localImages[index],
                             backgroundColor: Color(uiColor: currentBackgroundColor)
                         ) { isZoomed in
                             guard selectedIndex == index else {

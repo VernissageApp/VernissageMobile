@@ -8,6 +8,7 @@ import SwiftUI
 
 struct ZoomableStatusAttachmentView: View {
     let attachment: Attachment
+    let localImage: UIImage?
     let backgroundColor: Color
     let onZoomStateChanged: (Bool) -> Void
     let onDominantColorChanged: (UIColor) -> Void
@@ -15,6 +16,7 @@ struct ZoomableStatusAttachmentView: View {
     var body: some View {
         ZoomableAttachmentScrollView(
             imageURLString: attachment.orginalImageURL,
+            localImage: localImage,
             blurHash: attachment.blurhash,
             onZoomStateChanged: onZoomStateChanged,
             onDominantColorChanged: onDominantColorChanged

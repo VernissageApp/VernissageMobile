@@ -9,6 +9,7 @@ import UIKit
 
 struct ZoomableAttachmentScrollView: UIViewRepresentable {
     let imageURLString: String?
+    let localImage: UIImage?
     let blurHash: String?
     let onZoomStateChanged: (Bool) -> Void
     let onDominantColorChanged: (UIColor) -> Void
@@ -30,7 +31,11 @@ struct ZoomableAttachmentScrollView: UIViewRepresentable {
         scrollView.bounces = true
 
         context.coordinator.attachImageView(to: scrollView)
-        context.coordinator.updateContent(imageURLString: imageURLString, blurHash: blurHash)
+        context.coordinator.updateContent(
+            imageURLString: imageURLString,
+            localImage: localImage,
+            blurHash: blurHash
+        )
 
         let doubleTap = UITapGestureRecognizer(target: context.coordinator, action: #selector(Coordinator.handleDoubleTap(_:)))
         doubleTap.numberOfTapsRequired = 2
@@ -41,7 +46,11 @@ struct ZoomableAttachmentScrollView: UIViewRepresentable {
 
     func updateUIView(_ uiView: UIScrollView, context: Context) {
         context.coordinator.parent = self
-        context.coordinator.updateContent(imageURLString: imageURLString, blurHash: blurHash)
+        context.coordinator.updateContent(
+            imageURLString: imageURLString,
+            localImage: localImage,
+            blurHash: blurHash
+        )
     }
 
     func makeCoordinator() -> Coordinator {
@@ -55,6 +64,7 @@ struct ZoomableAttachmentScrollView: UIViewRepresentable {
         private weak var imageView: UIImageView?
         private var imageTask: URLSessionDataTask?
         private var loadedURLString: String?
+        private var loadedLocalImageIdentifier: ObjectIdentifier?
         private var zoomState: Bool = false
         private var lastLayoutBoundsSize: CGSize = .zero
 
@@ -86,7 +96,7 @@ struct ZoomableAttachmentScrollView: UIViewRepresentable {
             relayoutImageIfNeeded(in: scrollView, preserveZoomScale: true)
         }
 
-        func updateContent(imageURLString: String?, blurHash: String?) {
+        func updateContent(imageURLString: String?, localImage: UIImage?, blurHash: String?) {
             guard let imageView, let scrollView else {
                 return
             }
@@ -95,17 +105,26 @@ struct ZoomableAttachmentScrollView: UIViewRepresentable {
                 relayoutImageIfNeeded(in: scrollView, preserveZoomScale: true)
             }
 
-            if loadedURLString == imageURLString {
+            let localImageIdentifier = localImage.map { ObjectIdentifier($0) }
+            if loadedURLString == imageURLString, loadedLocalImageIdentifier == localImageIdentifier {
                 return
             }
 
             imageTask?.cancel()
             loadedURLString = imageURLString
+            loadedLocalImageIdentifier = localImageIdentifier
 
             scrollView.minimumZoomScale = 1
             scrollView.maximumZoomScale = 4
             scrollView.setZoomScale(1, animated: false)
             notifyZoomStateIfNeeded(false)
+
+            if let localImage {
+                imageView.image = localImage
+                notifyDominantColorIfPossible(from: localImage)
+                relayoutImageIfNeeded(in: scrollView, preserveZoomScale: false)
+                return
+            }
 
             if let blurHash = blurHash?.nilIfEmpty,
                let placeholder = UIImage(blurHash: blurHash, size: CGSize(width: 64, height: 64), punch: 1) {

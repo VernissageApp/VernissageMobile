@@ -31,6 +31,7 @@ struct ComposeAttachmentDetailsSheet: View {
     @State private var isDeletingAttachment = false
     @State private var didApplyRememberedValues = false
     @State private var shouldIgnoreNextCityQueryChange = false
+    @State private var attachmentViewerPayload: ComposeAttachmentViewerPayload?
 
     init(
         attachment: Binding<ComposeStatusAttachment>,
@@ -256,6 +257,13 @@ struct ComposeAttachmentDetailsSheet: View {
             applyRememberedValuesIfNeeded()
         }
         .errorAlertToast($errorMessage)
+        .fullScreenCover(item: $attachmentViewerPayload) { payload in
+            ComposeAttachmentViewerScreen(
+                attachments: payload.attachments,
+                initialIndex: payload.initialIndex,
+                localImages: payload.localImages
+            )
+        }
     }
 
     private var sortedCountries: [Country] {
@@ -308,6 +316,23 @@ struct ComposeAttachmentDetailsSheet: View {
 
     @ViewBuilder
     private var attachmentPreviewThumbnail: some View {
+        if attachmentViewerAttachment != nil {
+            Button {
+                openAttachmentViewer()
+            } label: {
+                attachmentPreviewThumbnailContent
+            }
+            .buttonStyle(.plain)
+            .contentShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
+            .accessibilityLabel("Open photo")
+            .accessibilityHint("Shows this photo in full screen")
+        } else {
+            attachmentPreviewThumbnailContent
+        }
+    }
+
+    @ViewBuilder
+    private var attachmentPreviewThumbnailContent: some View {
         if let image = attachment.localImage {
             Image(uiImage: image)
                 .resizable()
@@ -324,6 +349,28 @@ struct ComposeAttachmentDetailsSheet: View {
                         .foregroundStyle(.secondary)
                 }
         }
+    }
+
+    private var attachmentViewerAttachment: Attachment? {
+        let remoteImageURL = attachment.remoteImageURL?.nilIfEmpty
+        guard remoteImageURL != nil || attachment.localImage != nil else {
+            return nil
+        }
+
+        let remoteAttachmentFile = remoteImageURL.map { imageURL in
+            AttachmentFile(url: imageURL, width: nil, height: nil, aspect: nil)
+        }
+
+        return Attachment(
+            id: attachment.serverId?.nilIfEmpty,
+            smallFile: remoteAttachmentFile,
+            originalFile: remoteAttachmentFile,
+            blurhash: attachment.blurhash?.nilIfEmpty,
+            description: attachment.altText.trimmingCharacters(in: .whitespacesAndNewlines).nilIfEmpty,
+            metadata: nil,
+            location: nil,
+            license: nil
+        )
     }
 
     private var attachmentFileSizeLabel: String {
@@ -588,6 +635,23 @@ struct ComposeAttachmentDetailsSheet: View {
         rememberedCountryName = attachment.countryName?.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
         rememberedCityName = attachment.cityName.trimmingCharacters(in: .whitespacesAndNewlines)
         rememberedLocationId = attachment.locationId?.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
+    }
+
+    private func openAttachmentViewer() {
+        guard let attachmentViewerAttachment else {
+            return
+        }
+
+        var localImages: [Int: UIImage] = [:]
+        if let localImage = attachment.localImage {
+            localImages[0] = localImage
+        }
+
+        attachmentViewerPayload = ComposeAttachmentViewerPayload(
+            attachments: [attachmentViewerAttachment],
+            initialIndex: 0,
+            localImages: localImages
+        )
     }
 
     private var deletePhotoButton: some View {

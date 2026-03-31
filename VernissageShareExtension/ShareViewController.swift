@@ -7,6 +7,7 @@
 import UIKit
 import SwiftUI
 import UniformTypeIdentifiers
+import ImageIO
 
 final class ShareViewController: UIViewController {
     private let composeSession = ShareComposeSession()
@@ -76,7 +77,8 @@ final class ShareViewController: UIViewController {
             return nil
         }
 
-        let fileName = "shared-\(UUID().uuidString).jpg"
+        let fileExtension = imageFileExtension(from: imageData) ?? AppConstants.MediaUpload.jpegFileExtension
+        let fileName = "shared-\(UUID().uuidString).\(fileExtension)"
         let destinationURL = directoryURL.appendingPathComponent(fileName)
         try imageData.write(to: destinationURL, options: .atomic)
 
@@ -121,6 +123,16 @@ final class ShareViewController: UIViewController {
                 continuation.resume(returning: data)
             }
         }
+    }
+
+    private func imageFileExtension(from data: Data) -> String? {
+        guard let source = CGImageSourceCreateWithData(data as CFData, nil),
+              let typeIdentifier = CGImageSourceGetType(source) as String?,
+              let type = UTType(typeIdentifier) else {
+            return nil
+        }
+
+        return type.preferredFilenameExtension
     }
 
     private func presentCompose() {

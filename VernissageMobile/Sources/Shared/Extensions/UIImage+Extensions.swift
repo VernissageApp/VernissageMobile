@@ -41,9 +41,10 @@ extension UIImage {
         return UIImage(cgImage: resizedCGImage)
     }
 
-    static func downsampledJpegData(
+    static func downsampledData(
         from fileURL: URL,
         maxPixelSize: Int,
+        outputType: UTType,
         compressionQuality: CGFloat = 0.85
     ) -> Data? {
         let sourceOptions = [kCGImageSourceShouldCache: false] as CFDictionary
@@ -65,7 +66,7 @@ extension UIImage {
         let data = NSMutableData()
         guard let destination = CGImageDestinationCreateWithData(
             data,
-            UTType.jpeg.identifier as CFString,
+            outputType.identifier as CFString,
             1,
             nil
         ) else {
@@ -82,6 +83,19 @@ extension UIImage {
         }
 
         return data as Data
+    }
+
+    static func downsampledJpegData(
+        from fileURL: URL,
+        maxPixelSize: Int,
+        compressionQuality: CGFloat = 0.85
+    ) -> Data? {
+        downsampledData(
+            from: fileURL,
+            maxPixelSize: maxPixelSize,
+            outputType: .jpeg,
+            compressionQuality: compressionQuality
+        )
     }
     
     var averageColor: UIColor? {
@@ -324,6 +338,52 @@ public extension UIImage {
         }
 
         return converted
+    }
+
+    func convertedToWebPData(compressionQuality: CGFloat = 0.9) -> Data? {
+        guard let sourceImage = CIImage(image: self, options: [.applyOrientationProperty: true]) else {
+            return Self.encodedData(from: cgImage, outputType: .webP, compressionQuality: compressionQuality)
+        }
+
+        let orientedImage = sourceImage.oriented(forExifOrientation: self.imageOrientation.exifOrientation)
+        let ciContext = CIContext(options: nil)
+
+        guard let cgImage = ciContext.createCGImage(orientedImage, from: orientedImage.extent) else {
+            return Self.encodedData(from: self.cgImage, outputType: .webP, compressionQuality: compressionQuality)
+        }
+
+        return Self.encodedData(from: cgImage, outputType: .webP, compressionQuality: compressionQuality)
+    }
+
+    private static func encodedData(
+        from cgImage: CGImage?,
+        outputType: UTType,
+        compressionQuality: CGFloat
+    ) -> Data? {
+        guard let cgImage else {
+            return nil
+        }
+
+        let data = NSMutableData()
+        guard let destination = CGImageDestinationCreateWithData(
+            data,
+            outputType.identifier as CFString,
+            1,
+            nil
+        ) else {
+            return nil
+        }
+
+        let properties = [
+            kCGImageDestinationLossyCompressionQuality: compressionQuality
+        ] as CFDictionary
+        CGImageDestinationAddImage(destination, cgImage, properties)
+
+        guard CGImageDestinationFinalize(destination) else {
+            return nil
+        }
+
+        return data as Data
     }
 
     private func resizedForBlurHash(maxLongestEdge: CGFloat) -> UIImage {

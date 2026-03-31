@@ -12,6 +12,8 @@ struct ComposeStatusAttachment: Identifiable, Equatable {
     var remoteImageURL: String?
     var localImage: UIImage?
     var resizedImageData: Data?
+    var uploadMimeType: String
+    var uploadFileExtension: String
     var blurhash: String?
     var isExistingAttachment: Bool
     var isUploading: Bool
@@ -102,6 +104,8 @@ struct ComposeStatusAttachment: Identifiable, Equatable {
             remoteImageURL: attachment.smallImageURL,
             localImage: nil,
             resizedImageData: nil,
+            uploadMimeType: AppConstants.MediaUpload.jpegMimeType,
+            uploadFileExtension: AppConstants.MediaUpload.jpegFileExtension,
             blurhash: attachment.blurhash,
             isExistingAttachment: true,
             isUploading: false,
@@ -145,7 +149,13 @@ struct ComposeStatusAttachment: Identifiable, Equatable {
         )
     }
 
-    static func local(image: UIImage, imageData: Data?, parsedExif: ComposeParsedExif) -> ComposeStatusAttachment {
+    static func local(
+        image: UIImage,
+        imageData: Data?,
+        parsedExif: ComposeParsedExif,
+        uploadMimeType: String = AppConstants.MediaUpload.jpegMimeType,
+        uploadFileExtension: String = AppConstants.MediaUpload.jpegFileExtension
+    ) -> ComposeStatusAttachment {
         let createDate = normalizedCreateDateString(parsedExif.createDate)
         let focalLength = normalizedFocalLengthString(parsedExif.focalLength)
         let focalLenIn35mmFilm = normalizedFocalLengthString(parsedExif.focalLenIn35mmFilm)
@@ -158,6 +168,8 @@ struct ComposeStatusAttachment: Identifiable, Equatable {
             remoteImageURL: nil,
             localImage: image,
             resizedImageData: imageData,
+            uploadMimeType: uploadMimeType,
+            uploadFileExtension: uploadFileExtension,
             blurhash: nil,
             isExistingAttachment: false,
             isUploading: false,

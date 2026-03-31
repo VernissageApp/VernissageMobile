@@ -916,7 +916,9 @@ struct StatusComposeScreen: View {
                 let localAttachment = ComposeStatusAttachment.local(
                     image: prepared.image,
                     imageData: prepared.data,
-                    parsedExif: parsedExif
+                    parsedExif: parsedExif,
+                    uploadMimeType: prepared.mimeType,
+                    uploadFileExtension: prepared.fileExtension
                 )
                 let attachmentId = localAttachment.id
                 attachments.append(localAttachment)
@@ -956,7 +958,9 @@ struct StatusComposeScreen: View {
         let attachment = ComposeStatusAttachment.local(
             image: prepared.image,
             imageData: prepared.data,
-            parsedExif: .init()
+            parsedExif: .init(),
+            uploadMimeType: prepared.mimeType,
+            uploadFileExtension: prepared.fileExtension
         )
         let attachmentId = attachment.id
         attachments.append(attachment)
@@ -1025,7 +1029,9 @@ struct StatusComposeScreen: View {
                 let localAttachment = ComposeStatusAttachment.local(
                     image: prepared.image,
                     imageData: prepared.data,
-                    parsedExif: parsedExif
+                    parsedExif: parsedExif,
+                    uploadMimeType: prepared.mimeType,
+                    uploadFileExtension: prepared.fileExtension
                 )
                 let attachmentId = localAttachment.id
                 attachments.append(localAttachment)
@@ -1089,8 +1095,8 @@ struct StatusComposeScreen: View {
         do {
             let uploaded = try await appState.api.attachments.uploadAttachment(
                 imageData: uploadData,
-                fileName: "photo-\(UUID().uuidString.prefix(8)).jpg",
-                mimeType: "image/jpeg"
+                fileName: "photo-\(UUID().uuidString.prefix(8)).\(attachments[index].uploadFileExtension)",
+                mimeType: attachments[index].uploadMimeType
             )
 
             if let safeIndex = attachments.firstIndex(where: { $0.id == attachmentId }) {
@@ -1386,37 +1392,127 @@ struct StatusComposeScreen: View {
         return image.resized(to: targetSize)
     }
 
-    private func preparedAttachmentPayload(fromFileURL fileURL: URL) -> (image: UIImage, data: Data)? {
-        let pixelLimit = max(1, Int(selectedMaxAttachmentLongestEdge.rounded()))
-        guard let downsampledData = UIImage.downsampledJpegData(from: fileURL, maxPixelSize: pixelLimit),
-              let downsampledImage = UIImage(data: downsampledData) else {
-            return nil
+    private func preparedAttachmentPayload(
+        fromFileURL fileURL: URL
+    ) -> (image: UIImage, data: Data, mimeType: String, fileExtension: String)? {
+        let preferredType = preferredUploadType(fromFileURL: fileURL)
+
+        if let preferredPayload = preparedAttachmentPayload(fromFileURL: fileURL, outputType: preferredType) {
+            return preferredPayload
         }
 
-        guard let convertedData = downsampledImage.convertToExtendedSRGBJpeg(),
-              let convertedImage = UIImage(data: convertedData) else {
-            return (downsampledImage, downsampledData)
+        if preferredType.conforms(to: .webP) {
+            return preparedAttachmentPayload(fromFileURL: fileURL, outputType: .jpeg)
         }
 
-        return (convertedImage, convertedData)
+        return nil
     }
 
-    private func preparedAttachmentPayload(from sourceData: Data) -> (image: UIImage, data: Data)? {
+    private func preparedAttachmentPayload(
+        from sourceData: Data
+    ) -> (image: UIImage, data: Data, mimeType: String, fileExtension: String)? {
         guard let image = UIImage(data: sourceData) else {
             return nil
         }
 
-        return preparedAttachmentPayload(from: image)
+        let preferredType: UTType = isWebPData(sourceData) ? .webP : .jpeg
+        return preparedAttachmentPayload(from: image, preferredUploadType: preferredType)
     }
 
-    private func preparedAttachmentPayload(from image: UIImage) -> (image: UIImage, data: Data)? {
+    private func preparedAttachmentPayload(
+        from image: UIImage
+    ) -> (image: UIImage, data: Data, mimeType: String, fileExtension: String)? {
+        preparedAttachmentPayload(from: image, preferredUploadType: .jpeg)
+    }
+
+    private func preparedAttachmentPayload(
+        from image: UIImage,
+        preferredUploadType: UTType
+    ) -> (image: UIImage, data: Data, mimeType: String, fileExtension: String)? {
         let resizedImage = resizedImageForAttachmentSelection(image)
+
+        if preferredUploadType.conforms(to: .webP),
+           let webPData = resizedImage.convertedToWebPData(),
+           let webPImage = UIImage(data: webPData) {
+            let descriptor = uploadDescriptor(for: .webP)
+            return (webPImage, webPData, descriptor.mimeType, descriptor.fileExtension)
+        }
+
         guard let convertedData = resizedImage.convertToExtendedSRGBJpeg(),
               let convertedImage = UIImage(data: convertedData) else {
             return nil
         }
 
-        return (convertedImage, convertedData)
+        let descriptor = uploadDescriptor(for: .jpeg)
+        return (convertedImage, convertedData, descriptor.mimeType, descriptor.fileExtension)
+    }
+
+    private func preparedAttachmentPayload(
+        fromFileURL fileURL: URL,
+        outputType: UTType
+    ) -> (image: UIImage, data: Data, mimeType: String, fileExtension: String)? {
+        let pixelLimit = max(1, Int(selectedMaxAttachmentLongestEdge.rounded()))
+        guard let downsampledData = UIImage.downsampledData(
+            from: fileURL,
+            maxPixelSize: pixelLimit,
+            outputType: outputType
+        ),
+        let downsampledImage = UIImage(data: downsampledData) else {
+            return nil
+        }
+
+        if outputType.conforms(to: .webP) {
+            let descriptor = uploadDescriptor(for: .webP)
+            return (downsampledImage, downsampledData, descriptor.mimeType, descriptor.fileExtension)
+        }
+
+        guard let convertedData = downsampledImage.convertToExtendedSRGBJpeg(),
+              let convertedImage = UIImage(data: convertedData) else {
+            let descriptor = uploadDescriptor(for: .jpeg)
+            return (downsampledImage, downsampledData, descriptor.mimeType, descriptor.fileExtension)
+        }
+
+        let descriptor = uploadDescriptor(for: .jpeg)
+        return (convertedImage, convertedData, descriptor.mimeType, descriptor.fileExtension)
+    }
+
+    private func preferredUploadType(fromFileURL fileURL: URL) -> UTType {
+        let contentType = (try? fileURL.resourceValues(forKeys: [.contentTypeKey]))?.contentType
+        if contentType?.conforms(to: .webP) == true {
+            return .webP
+        }
+
+        let fileExtension = fileURL.pathExtension.trimmingCharacters(in: .whitespacesAndNewlines)
+        if let extensionType = UTType(filenameExtension: fileExtension),
+           extensionType.conforms(to: .webP) {
+            return .webP
+        }
+
+        return .jpeg
+    }
+
+    private func uploadDescriptor(for type: UTType) -> (mimeType: String, fileExtension: String) {
+        if type.conforms(to: .webP) {
+            return (
+                mimeType: AppConstants.MediaUpload.webpMimeType,
+                fileExtension: AppConstants.MediaUpload.webpFileExtension
+            )
+        }
+
+        return (
+            mimeType: AppConstants.MediaUpload.jpegMimeType,
+            fileExtension: AppConstants.MediaUpload.jpegFileExtension
+        )
+    }
+
+    private func isWebPData(_ data: Data) -> Bool {
+        guard data.count >= 12 else {
+            return false
+        }
+
+        let riffSignature = Data([0x52, 0x49, 0x46, 0x46])
+        let webPSignature = Data([0x57, 0x45, 0x42, 0x50])
+        return data.prefix(4) == riffSignature && data.dropFirst(8).prefix(4) == webPSignature
     }
 
     @MainActor

@@ -27,6 +27,10 @@ enum AppConstants {
         static let longestEdge4K: CGFloat = 4096
         static let longestEdge2K: CGFloat = 2048
         static let profileMaxUploadBytes = 2 * 1024 * 1024
+        static let jpegMimeType = "image/jpeg"
+        static let webpMimeType = "image/webp"
+        static let jpegFileExtension = "jpg"
+        static let webpFileExtension = "webp"
     }
 
     enum OAuth {

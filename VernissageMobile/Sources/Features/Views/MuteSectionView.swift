@@ -22,6 +22,10 @@ struct MuteSectionView: View {
     }
 
     private var mutedScopeIcons: [String] {
+        guard relationship.blocked == false else {
+            return []
+        }
+
         var icons: [String] = []
 
         if relationship.mutedStatuses {
@@ -40,6 +44,10 @@ struct MuteSectionView: View {
     }
 
     private var accessibilityDescription: String {
+        if relationship.blocked {
+            return "Blocked"
+        }
+
         var items: [String] = []
 
         if relationship.mutedStatuses {
@@ -61,9 +69,13 @@ struct MuteSectionView: View {
         return "Muted \(items.joined(separator: ", "))"
     }
 
+    private var title: String {
+        relationship.blocked ? "Blocked" : "Muted"
+    }
+
     var body: some View {
         HStack(spacing: 6) {
-            Text("Muted")
+            Text(title)
                 .font(.subheadline)
                 .bold()
 

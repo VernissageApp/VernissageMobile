@@ -53,7 +53,10 @@ struct UserProfileScreen: View {
     @State private var isShowingDeleteAccount = false
     @State private var isShowingMuteAccount = false
     @State private var isShowingUserReport = false
+    @State private var isShowingUserBlockSheet = false
     @State private var isShowingBlockDomain = false
+    @State private var isMuteActionProcessing = false
+    @State private var isBlockActionProcessing = false
     @State private var isFeatureActionProcessing = false
     private let imagePrefetcher = ImagePrefetcher(destination: .diskCache)
 
@@ -134,6 +137,18 @@ struct UserProfileScreen: View {
 
     private var shouldShowBlockDomainAction: Bool {
         profile?.isLocal == false
+    }
+
+    private var isProfileMuted: Bool {
+        guard let relationship = profileRelationship else {
+            return false
+        }
+
+        return relationship.mutedStatuses || relationship.mutedReblogs || relationship.mutedNotifications
+    }
+
+    private var isProfileBlocked: Bool {
+        profileRelationship?.blocked == true
     }
 
     private var profileNavigationTitle: String {
@@ -283,6 +298,23 @@ struct UserProfileScreen: View {
                     .presentationDragIndicator(.visible)
             }
         }
+        .sheet(isPresented: $isShowingUserBlockSheet) {
+            if let profile {
+                UserBlockSheet(
+                    user: profile,
+                    onRelationshipChanged: { updatedRelationship in
+                        profileRelationship = updatedRelationship
+
+                        if let userId = updatedRelationship.userId?.nilIfEmpty ?? profile.id?.nilIfEmpty {
+                            relationshipsByUserID[userId] = updatedRelationship
+                        }
+                    }
+                )
+                .environment(appState)
+                .presentationDetents([.fraction(0.58), .large])
+                .presentationDragIndicator(.visible)
+            }
+        }
         .sheet(isPresented: $isShowingBlockDomain) {
             UserBlockDomainSheet(initialDomain: blockableDomain ?? "")
                 .environment(appState)
@@ -396,13 +428,6 @@ struct UserProfileScreen: View {
 
             Divider()
 
-            Button {
-                isShowingMuteAccount = true
-            } label: {
-                Label("Mute", systemImage: "speaker.slash")
-            }
-            .disabled(profile?.userName?.nilIfEmpty == nil)
-
             if canFeatureUser {
                 Button {
                     Task { await toggleFeatureForUser() }
@@ -419,6 +444,30 @@ struct UserProfileScreen: View {
                 Label("Report", systemImage: "flag")
             }
             .disabled(profile?.id?.nilIfEmpty == nil)
+
+            Button {
+                if isProfileMuted {
+                    Task { await unmuteUser() }
+                } else {
+                    isShowingMuteAccount = true
+                }
+            } label: {
+                Label(isProfileMuted ? "Unmute" : "Mute",
+                      systemImage: isProfileMuted ? "speaker.wave.2" : "speaker.slash")
+            }
+            .disabled(isMuteActionProcessing || profile?.userName?.nilIfEmpty == nil)
+
+            Button {
+                if isProfileBlocked {
+                    Task { await unblockUser() }
+                } else {
+                    isShowingUserBlockSheet = true
+                }
+            } label: {
+                Label(isProfileBlocked ? "Unblock user" : "Block user",
+                      systemImage: isProfileBlocked ? "hand.raised" : "hand.raised.slash")
+            }
+            .disabled(isBlockActionProcessing || profile?.userName?.nilIfEmpty == nil)
 
             if shouldShowBlockDomainAction {
                 Button {
@@ -444,6 +493,54 @@ struct UserProfileScreen: View {
 
     private func openBlockDomainSheet() {
         isShowingBlockDomain = true
+    }
+
+    @MainActor
+    private func unmuteUser() async {
+        guard let userName = profile?.userName?.trimmingPrefix("@").nilIfEmpty else {
+            return
+        }
+
+        isMuteActionProcessing = true
+        defer { isMuteActionProcessing = false }
+
+        do {
+            let updatedRelationship = try await appState.api.users.unmute(userName: userName)
+            profileRelationship = updatedRelationship
+
+            if let userId = updatedRelationship.userId?.nilIfEmpty ?? profile?.id?.nilIfEmpty {
+                relationshipsByUserID[userId] = updatedRelationship
+            }
+
+            errorMessage = nil
+            appState.showSuccessToast("Mute has been canceled.")
+        } catch {
+            errorMessage = (error as? LocalizedError)?.errorDescription ?? error.localizedDescription
+        }
+    }
+
+    @MainActor
+    private func unblockUser() async {
+        guard let userName = profile?.userName?.trimmingPrefix("@").nilIfEmpty else {
+            return
+        }
+
+        isBlockActionProcessing = true
+        defer { isBlockActionProcessing = false }
+
+        do {
+            let updatedRelationship = try await appState.api.users.unblockUser(userName: userName)
+            profileRelationship = updatedRelationship
+
+            if let userId = updatedRelationship.userId?.nilIfEmpty ?? profile?.id?.nilIfEmpty {
+                relationshipsByUserID[userId] = updatedRelationship
+            }
+
+            errorMessage = nil
+            appState.showSuccessToast("User has been unblocked.")
+        } catch {
+            errorMessage = (error as? LocalizedError)?.errorDescription ?? error.localizedDescription
+        }
     }
 
     @MainActor

@@ -87,7 +87,7 @@ struct ProfileOverviewCardView: View {
             return false
         }
 
-        return relationship.mutedStatuses || relationship.mutedReblogs || relationship.mutedNotifications
+        return relationship.blocked || relationship.mutedStatuses || relationship.mutedReblogs || relationship.mutedNotifications
     }
 
     var body: some View {

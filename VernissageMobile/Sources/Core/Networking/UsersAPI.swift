@@ -8,6 +8,10 @@ import Foundation
 
 @MainActor
 final class UsersAPI {
+    private struct UserBlockRequestBody: Encodable {
+        let reason: String?
+    }
+
     private unowned let appState: AppState
     private static let iso8601Formatter: ISO8601DateFormatter = {
         let formatter = ISO8601DateFormatter()
@@ -133,6 +137,33 @@ final class UsersAPI {
         return try await appState.api.authorizedRequest(
             account: account,
             path: "/api/v1/users/@\(encodedName)/unmute",
+            method: "POST",
+            queryItems: []
+        )
+    }
+
+    func blockUser(userName: String, reason: String?) async throws -> Relationship {
+        let account = try appState.requireActiveAccount()
+        let encodedName = encodeUserName(userName)
+        let payload = UserBlockRequestBody(reason: reason?.nilIfEmpty)
+
+        return try await appState.api.authorizedRequest(
+            account: account,
+            path: "/api/v1/users/@\(encodedName)/block",
+            method: "POST",
+            queryItems: [],
+            additionalHeaders: ["Content-Type": "application/json"],
+            body: try JSONEncoder().encode(payload)
+        )
+    }
+
+    func unblockUser(userName: String) async throws -> Relationship {
+        let account = try appState.requireActiveAccount()
+        let encodedName = encodeUserName(userName)
+
+        return try await appState.api.authorizedRequest(
+            account: account,
+            path: "/api/v1/users/@\(encodedName)/unblock",
             method: "POST",
             queryItems: []
         )

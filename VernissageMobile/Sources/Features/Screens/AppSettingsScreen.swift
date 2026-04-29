@@ -161,7 +161,7 @@ struct AppSettingsScreen: View {
             }
 
             Link(destination: URL(string: "https://mczachurski.dev/vernissage-ios/terms.html")!) {
-                Label("Terms of service", systemImage: "doc.text")
+                Label("Terms & Conditions", systemImage: "doc.text")
             }
 
             Link(destination: URL(string: "https://apps.apple.com/app/id6759335335?action=write-review")!) {

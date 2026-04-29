@@ -12,6 +12,7 @@ struct Relationship: Decodable {
     let followedBy: Bool
     let requested: Bool
     let requestedBy: Bool
+    let blocked: Bool
     let mutedStatuses: Bool
     let mutedReblogs: Bool
     let mutedNotifications: Bool
@@ -22,6 +23,7 @@ struct Relationship: Decodable {
         followedBy: Bool = false,
         requested: Bool = false,
         requestedBy: Bool = false,
+        blocked: Bool = false,
         mutedStatuses: Bool = false,
         mutedReblogs: Bool = false,
         mutedNotifications: Bool = false
@@ -31,6 +33,7 @@ struct Relationship: Decodable {
         self.followedBy = followedBy
         self.requested = requested
         self.requestedBy = requestedBy
+        self.blocked = blocked
         self.mutedStatuses = mutedStatuses
         self.mutedReblogs = mutedReblogs
         self.mutedNotifications = mutedNotifications
@@ -42,6 +45,7 @@ struct Relationship: Decodable {
         case followedBy
         case requested
         case requestedBy
+        case blocked
         case mutedStatuses
         case mutedReblogs
         case mutedNotifications
@@ -54,12 +58,13 @@ struct Relationship: Decodable {
         followedBy = try container.decodeIfPresent(Bool.self, forKey: .followedBy) ?? false
         requested = try container.decodeIfPresent(Bool.self, forKey: .requested) ?? false
         requestedBy = try container.decodeIfPresent(Bool.self, forKey: .requestedBy) ?? false
+        blocked = try container.decodeIfPresent(Bool.self, forKey: .blocked) ?? false
         mutedStatuses = try container.decodeIfPresent(Bool.self, forKey: .mutedStatuses) ?? false
         mutedReblogs = try container.decodeIfPresent(Bool.self, forKey: .mutedReblogs) ?? false
         mutedNotifications = try container.decodeIfPresent(Bool.self, forKey: .mutedNotifications) ?? false
     }
 
     var cacheKey: String {
-        "\(userId ?? "none")|\(following)|\(followedBy)|\(requested)|\(requestedBy)|\(mutedStatuses)|\(mutedReblogs)|\(mutedNotifications)"
+        "\(userId ?? "none")|\(following)|\(followedBy)|\(requested)|\(requestedBy)|\(blocked)|\(mutedStatuses)|\(mutedReblogs)|\(mutedNotifications)"
     }
 }

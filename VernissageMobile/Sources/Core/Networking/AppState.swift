@@ -31,12 +31,23 @@ final class AppState {
     }
 
     var activeTokenRoles: Set<String> {
-        guard let token = activeAccount?.accessToken,
-              let claims = JWTInspector.decodeClaims(from: token) else {
+        guard let claims = activeTokenClaims else {
             return []
         }
 
         return Set((claims.roles ?? []).map { $0.lowercased() })
+    }
+
+    var isActiveAccountMoved: Bool {
+        activeTokenClaims?.isMovedTo == true
+    }
+
+    private var activeTokenClaims: JWTClaims? {
+        guard let token = activeAccount?.accessToken else {
+            return nil
+        }
+
+        return JWTInspector.decodeClaims(from: token)
     }
 
     private let accountsKey = "accounts-json"

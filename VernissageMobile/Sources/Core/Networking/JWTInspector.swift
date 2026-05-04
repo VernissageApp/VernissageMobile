@@ -22,6 +22,7 @@ enum JWTInspector {
         let userName = object["userName"] as? String
         let name = object["name"] as? String
         let roles = object["roles"] as? [String]
+        let isMovedTo = object["isMovedTo"] as? Bool
 
         var expiration: Date?
         if let expNumber = object["exp"] as? Double {
@@ -30,6 +31,12 @@ enum JWTInspector {
             expiration = Date(timeIntervalSince1970: TimeInterval(expNumber))
         }
 
-        return JWTClaims(userName: userName, name: name, expiration: expiration, roles: roles)
+        return JWTClaims(
+            userName: userName,
+            name: name,
+            expiration: expiration,
+            roles: roles,
+            isMovedTo: isMovedTo
+        )
     }
 }

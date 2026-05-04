@@ -48,8 +48,16 @@ struct FollowButtonsSectionView: View {
         return signedInUserName == targetUserName
     }
 
+    private var isSignedInAccountMoved: Bool {
+        appState.isActiveAccountMoved
+    }
+
+    private var isViewedAccountMoved: Bool {
+        user.movedTo != nil
+    }
+
     private var canChangeRelationship: Bool {
-        !isCurrentUser
+        !isCurrentUser && !isSignedInAccountMoved && !isViewedAccountMoved
     }
 
     private var shouldShowApproveReject: Bool {
@@ -226,6 +234,11 @@ struct FollowButtonsSectionView: View {
 
     @MainActor
     private func follow() async {
+        guard canChangeRelationship else {
+            appState.showWarningToast("Follow and unfollow are not available because this account has been moved.")
+            return
+        }
+
         guard let userName = user.userName?.trimmingPrefix("@").nilIfEmpty else {
             return
         }
@@ -244,6 +257,11 @@ struct FollowButtonsSectionView: View {
 
     @MainActor
     private func showUnfollowSheet() async {
+        guard canChangeRelationship else {
+            appState.showWarningToast("Follow and unfollow are not available because this account has been moved.")
+            return
+        }
+
         guard user.userName?.trimmingPrefix("@").nilIfEmpty != nil else {
             return
         }

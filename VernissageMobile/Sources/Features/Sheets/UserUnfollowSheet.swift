@@ -22,8 +22,12 @@ struct UserUnfollowSheet: View {
         user.userName?.trimmingPrefix("@").nilIfEmpty
     }
 
+    private var isFollowActionBlocked: Bool {
+        appState.isActiveAccountMoved || user.movedTo != nil
+    }
+
     private var canSubmit: Bool {
-        !isSubmitting && normalizedUserName != nil
+        !isSubmitting && normalizedUserName != nil && !isFollowActionBlocked
     }
 
     var body: some View {
@@ -69,6 +73,11 @@ struct UserUnfollowSheet: View {
 
     @MainActor
     private func unfollow() async {
+        guard !isFollowActionBlocked else {
+            errorMessage = "Follow and unfollow are not available because this account has been moved."
+            return
+        }
+
         guard let userName = normalizedUserName else {
             errorMessage = "Cannot unfollow this user."
             return

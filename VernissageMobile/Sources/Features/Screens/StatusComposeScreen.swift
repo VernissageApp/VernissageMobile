@@ -104,6 +104,8 @@ struct StatusComposeScreen: View {
 
                     if shouldRestrictComposeForUnverifiedEmail {
                         emailVerificationWarningSection
+                    } else if shouldRestrictComposeForMovedAccount {
+                        movedAccountWarningSection
                     } else {
                         if commentsDisabled {
                             Text("COMMENTS WILL BE DISABLED")
@@ -158,7 +160,7 @@ struct StatusComposeScreen: View {
                 }
             }
             .safeAreaInset(edge: .bottom, spacing: 0) {
-                if !shouldRestrictComposeForUnverifiedEmail {
+                if !shouldRestrictCompose {
                     VStack(spacing: 0) {
                         if hasAutocompleteSuggestions {
                             autocompleteSuggestionsBar
@@ -185,14 +187,14 @@ struct StatusComposeScreen: View {
             await loadInitialDataIfNeeded()
             await importInitialAttachmentURLsIfNeeded(initialAttachmentURLs)
         }
-        .task(id: shouldRestrictComposeForUnverifiedEmail) {
-            guard !shouldRestrictComposeForUnverifiedEmail else {
+        .task(id: shouldRestrictCompose) {
+            guard !shouldRestrictCompose else {
                 isTextFocused = false
                 return
             }
 
             try? await Task.sleep(for: .milliseconds(200))
-            if !shouldRestrictComposeForUnverifiedEmail {
+            if !shouldRestrictCompose {
                 isTextFocused = true
             }
         }
@@ -385,6 +387,37 @@ struct StatusComposeScreen: View {
                 Text("Your current email: \(currentEmail)")
                     .font(.footnote)
                     .foregroundStyle(.secondary)
+            }
+        }
+        .padding(12)
+        .background(
+            RoundedRectangle(cornerRadius: 12, style: .continuous)
+                .fill(.orange.opacity(0.12))
+        )
+        .overlay(
+            RoundedRectangle(cornerRadius: 12, style: .continuous)
+                .stroke(.orange.opacity(0.5), lineWidth: 1)
+        )
+    }
+
+    private var movedAccountWarningSection: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            HStack(alignment: .top, spacing: 10) {
+                Image(systemName: "arrow.trianglehead.2.clockwise.rotate.90.circle.fill")
+                    .font(.title3)
+                    .foregroundStyle(.orange)
+                    .padding(.top, 2)
+
+                Text(
+                    """
+                    This account has been moved to another account.
+                    You can no longer add new photos or publish new content here.
+                    Please use the new account for future posts.
+                    """
+                )
+                .font(.footnote)
+                .foregroundStyle(.primary)
+                .fixedSize(horizontal: false, vertical: true)
             }
         }
         .padding(12)
@@ -661,6 +694,7 @@ struct StatusComposeScreen: View {
     private func photoSourceMenuContent() -> some View {
         Button {
             guard remainingAttachmentSlots > 0 else { return }
+            guard canAddMediaToNewStatus else { return }
             isPhotoPickerPresented = true
         } label: {
             Label("Photos library", systemImage: "photo")
@@ -668,6 +702,7 @@ struct StatusComposeScreen: View {
 
         Button {
             guard remainingAttachmentSlots > 0 else { return }
+            guard canAddMediaToNewStatus else { return }
             isCameraPickerPresented = true
         } label: {
             Label("Take photo", systemImage: "camera")
@@ -675,6 +710,7 @@ struct StatusComposeScreen: View {
 
         Button {
             guard remainingAttachmentSlots > 0 else { return }
+            guard canAddMediaToNewStatus else { return }
             isFileImporterPresented = true
         } label: {
             Label("Browse files", systemImage: "folder")
@@ -761,7 +797,7 @@ struct StatusComposeScreen: View {
     }
 
     private var canPublish: Bool {
-        if shouldRestrictComposeForUnverifiedEmail {
+        if shouldRestrictCompose {
             return false
         }
 
@@ -883,7 +919,7 @@ struct StatusComposeScreen: View {
 
     @MainActor
     private func handleSelectedPhotos(_ items: [PhotosPickerItem]) async {
-        guard !shouldRestrictComposeForUnverifiedEmail else {
+        guard canAddMediaToNewStatus else {
             return
         }
 
@@ -933,7 +969,7 @@ struct StatusComposeScreen: View {
 
     @MainActor
     private func handleCameraImage(_ image: UIImage?) async {
-        guard !shouldRestrictComposeForUnverifiedEmail else {
+        guard canAddMediaToNewStatus else {
             return
         }
 
@@ -984,7 +1020,7 @@ struct StatusComposeScreen: View {
 
     @MainActor
     private func handleSelectedFileURLs(_ urls: [URL], removeImportedFilesAtSource: Bool = false) async {
-        guard !shouldRestrictComposeForUnverifiedEmail else {
+        guard canAddMediaToNewStatus else {
             return
         }
 
@@ -1050,7 +1086,7 @@ struct StatusComposeScreen: View {
             return
         }
 
-        guard !shouldRestrictComposeForUnverifiedEmail else {
+        guard canAddMediaToNewStatus else {
             return
         }
 
@@ -1071,6 +1107,10 @@ struct StatusComposeScreen: View {
 
     @MainActor
     private func uploadAttachmentIfNeeded(attachmentId: UUID) async throws {
+        guard canAddMediaToNewStatus else {
+            return
+        }
+
         guard let index = attachments.firstIndex(where: { $0.id == attachmentId }) else {
             return
         }
@@ -1154,6 +1194,10 @@ struct StatusComposeScreen: View {
 
     @MainActor
     private func publishStatus() async {
+        guard canPublishNewStatus else {
+            return
+        }
+
         guard canPublish else {
             return
         }
@@ -1174,6 +1218,10 @@ struct StatusComposeScreen: View {
 
     @MainActor
     private func publishStatusNow() async {
+        guard canPublishNewStatus else {
+            return
+        }
+
         guard canPublish else {
             return
         }
@@ -1257,6 +1305,44 @@ struct StatusComposeScreen: View {
 
     private var shouldRestrictComposeForUnverifiedEmail: Bool {
         mode.editingStatus == nil && isEmailVerified == false
+    }
+
+    private var shouldRestrictComposeForMovedAccount: Bool {
+        mode.editingStatus == nil && appState.isActiveAccountMoved
+    }
+
+    private var shouldRestrictCompose: Bool {
+        shouldRestrictComposeForUnverifiedEmail || shouldRestrictComposeForMovedAccount
+    }
+
+    @MainActor
+    private var canAddMediaToNewStatus: Bool {
+        if shouldRestrictComposeForMovedAccount {
+            errorMessage = "This account has been moved, so adding media to a new post is not available."
+            return false
+        }
+
+        if shouldRestrictComposeForUnverifiedEmail {
+            errorMessage = "To upload photos, verify your email address first."
+            return false
+        }
+
+        return true
+    }
+
+    @MainActor
+    private var canPublishNewStatus: Bool {
+        if shouldRestrictComposeForMovedAccount {
+            errorMessage = "This account has been moved, so publishing new content is not available."
+            return false
+        }
+
+        if shouldRestrictComposeForUnverifiedEmail {
+            errorMessage = "To publish a status, please verify your email address first."
+            return false
+        }
+
+        return true
     }
 
     @MainActor

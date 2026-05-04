@@ -66,6 +66,10 @@ struct ProfileOverviewCardView: View {
         Array(latestFollowers.prefix(10))
     }
 
+    private var movedAccountDestinationLabel: String? {
+        profile.movedToAccountLabel
+    }
+
     private var flexiFieldsBackgroundColor: Color {
         Color(uiColor: .secondarySystemBackground)
     }
@@ -153,6 +157,24 @@ struct ProfileOverviewCardView: View {
                     .lineLimit(nil)
                     .fixedSize(horizontal: false, vertical: true)
                     .padding(.horizontal, 24)
+            }
+
+            if let movedAccountDestinationLabel {
+                VStack(spacing: 4) {
+                    Text("This account has moved to \(movedAccountDestinationLabel).")
+                        .font(.subheadline.weight(.semibold))
+                        .foregroundStyle(.orange)
+                        .multilineTextAlignment(.center)
+                        .fixedSize(horizontal: false, vertical: true)
+
+                    Text("Future updates are published from the new account.")
+                        .font(.footnote)
+                        .foregroundStyle(.secondary)
+                        .multilineTextAlignment(.center)
+                        .fixedSize(horizontal: false, vertical: true)
+                }
+                .padding(.horizontal, 16)
+                .accessibilityElement(children: .combine)
             }
 
             if let joinedText {

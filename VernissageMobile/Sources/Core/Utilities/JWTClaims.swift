@@ -11,4 +11,5 @@ struct JWTClaims {
     let name: String?
     let expiration: Date?
     let roles: [String]?
+    let isMovedTo: Bool?
 }

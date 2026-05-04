@@ -27,6 +27,7 @@ struct User: Decodable {
     let featured: Bool?
     let isSupporter: Bool?
     let isSupporterFlagEnabled: Bool?
+    let movedTo: MovedAccount?
     let fields: [FlexiField]?
     let createdAt: Date?
 
@@ -34,6 +35,15 @@ struct User: Decodable {
     let statusesCount: Int?
     let followersCount: Int?
     let followingCount: Int?
+
+    struct MovedAccount: Decodable {
+        let id: String?
+        let userName: String?
+        let account: String?
+        let name: String?
+        let url: String?
+        let activityPubProfile: String?
+    }
 }
 extension User {
     var uniquenessKey: String {
@@ -108,5 +118,21 @@ extension User {
         }
 
         return String(components.last ?? "").lowercased().nilIfEmpty
+    }
+
+    var movedToAccountLabel: String? {
+        if let movedToAccount = movedTo?.account?.nilIfEmpty {
+            if movedToAccount.hasPrefix("@") {
+                return movedToAccount
+            }
+
+            return "@\(movedToAccount)"
+        }
+
+        if let movedToUserName = movedTo?.userName?.trimmingPrefix("@").nilIfEmpty {
+            return "@\(movedToUserName)"
+        }
+
+        return nil
     }
 }

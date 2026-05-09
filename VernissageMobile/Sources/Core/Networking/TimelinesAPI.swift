@@ -101,7 +101,12 @@ final class TimelinesAPI {
         )
     }
 
-    func fetchUserStatuses(userName: String, maxId: String?, limit: Int) async throws -> LinkableResult<Status> {
+    func fetchUserStatuses(
+        userName: String,
+        maxId: String?,
+        limit: Int,
+        onlyPinned: Bool = false
+    ) async throws -> LinkableResult<Status> {
         let account = try appState.requireActiveAccount()
 
         let cleanedName = userName.trimmingPrefix("@")
@@ -110,6 +115,9 @@ final class TimelinesAPI {
         var queryItems = [URLQueryItem(name: "limit", value: "\(max(limit, 1))")]
         if let maxId = maxId?.nilIfEmpty {
             queryItems.append(URLQueryItem(name: "maxId", value: maxId))
+        }
+        if onlyPinned {
+            queryItems.append(URLQueryItem(name: "onlyPinned", value: "true"))
         }
 
         return try await appState.api.authorizedRequest(

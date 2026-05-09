@@ -584,7 +584,11 @@ struct UserProfileScreen: View {
                     NavigationLink {
                         StatusDetailScreen(status: status)
                     } label: {
-                        TimelinePhotoTileView(status: status, showsImageCountOverlay: true)
+                        TimelinePhotoTileView(
+                            status: status,
+                            showsImageCountOverlay: true,
+                            showsPinnedBadge: true
+                        )
                     }
                     .buttonStyle(.plain)
                     .onAppear {
@@ -714,9 +718,23 @@ struct UserProfileScreen: View {
         defer { isStatusesLoading = false }
 
         do {
-            let page = try await appState.api.timelines.fetchUserStatuses(userName: cleanedUserName, maxId: nil, limit: 40)
-            statuses = page.data
-            prefetch(statuses: page.data)
+            async let pinnedPage = appState.api.timelines.fetchUserStatuses(
+                userName: cleanedUserName,
+                maxId: nil,
+                limit: 40,
+                onlyPinned: true
+            )
+            async let regularPage = appState.api.timelines.fetchUserStatuses(
+                userName: cleanedUserName,
+                maxId: nil,
+                limit: 40
+            )
+
+            let (pinned, page) = try await (pinnedPage, regularPage)
+            let mergedStatuses = mergePinnedStatuses(pinned: pinned.data, regular: page.data)
+
+            statuses = mergedStatuses
+            prefetch(statuses: mergedStatuses)
             nextStatusesMaxId = page.maxId
             canLoadMoreStatuses = page.maxId != nil && !page.data.isEmpty
             statusesErrorMessage = nil
@@ -923,6 +941,25 @@ struct UserProfileScreen: View {
         let uniqueIncoming = incoming.filter { !existingIds.contains($0.id) }
         statuses.append(contentsOf: uniqueIncoming)
         return uniqueIncoming
+    }
+
+    private func mergePinnedStatuses(pinned: [Status], regular: [Status]) -> [Status] {
+        var mergedStatuses: [Status] = []
+        var seenIds = Set<String>()
+
+        for status in pinned {
+            if seenIds.insert(status.id).inserted {
+                mergedStatuses.append(status)
+            }
+        }
+
+        for status in regular {
+            if seenIds.insert(status.id).inserted {
+                mergedStatuses.append(status)
+            }
+        }
+
+        return mergedStatuses
     }
 
     private func appendUniqueUsers(_ incoming: [User], to destination: inout [User]) {

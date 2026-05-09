@@ -12,6 +12,7 @@ struct TimelinePhotoTileView: View {
     var showsAuthorOverlay: Bool = false
     var showsContentWarningOverlay: Bool = false
     var showsImageCountOverlay: Bool = false
+    var showsPinnedBadge: Bool = false
     @AppStorage(AppConstants.StorageKeys.settingsAlwaysShowNsfw) private var alwaysShowNsfw = false
     @AppStorage(AppConstants.StorageKeys.settingsShowAvatarsOnTimeline) private var showAvatarsOnTimeline = false
     @AppStorage(AppConstants.StorageKeys.settingsShowImageCountsOnTimeline) private var showImageCountsOnTimeline = false
@@ -38,6 +39,10 @@ struct TimelinePhotoTileView: View {
         showsImageCountOverlay && showImageCountsOnTimeline && mainStatus.imageAttachmentsCount > 1
     }
 
+    private var shouldShowPinnedBadge: Bool {
+        showsPinnedBadge && mainStatus.pinnedAt != nil
+    }
+
     private var resolvedAttachmentAspectRatio: CGFloat {
         let ratio = mainStatus.firstAttachmentAspectRatio ?? 1
         return min(max(ratio, 0.2), 5.0)
@@ -57,6 +62,13 @@ struct TimelinePhotoTileView: View {
                 TimelineAuthorOverlayView(user: user)
                     .padding(.top, 10)
                     .padding(.leading, 10)
+            }
+        }
+        .overlay(alignment: .topLeading) {
+            if shouldShowPinnedBadge {
+                pinnedBadge
+                    .padding(.top, 10)
+                    .padding(.leading, shouldShowAuthorOverlay ? 64 : 10)
             }
         }
         .overlay(alignment: .topTrailing) {
@@ -143,5 +155,18 @@ struct TimelinePhotoTileView: View {
         withAnimation(.easeInOut(duration: 0.28)) {
             imageOpacity = 1
         }
+    }
+
+    private var pinnedBadge: some View {
+        Label("Pinned", systemImage: "pin.fill")
+            .font(.caption2.weight(.semibold))
+            .foregroundStyle(.white.opacity(0.92))
+            .padding(.horizontal, 8)
+            .padding(.vertical, 5)
+            .background(
+                Capsule(style: .continuous)
+                    .fill(.black.opacity(0.55))
+            )
+            .accessibilityLabel("Pinned post")
     }
 }

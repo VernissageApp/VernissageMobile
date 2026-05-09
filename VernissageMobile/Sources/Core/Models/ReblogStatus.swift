@@ -28,6 +28,7 @@ struct ReblogStatus: Decodable {
     let reblogged: Bool?
     let bookmarked: Bool?
     let featured: Bool?
+    let pinnedAt: Date?
     let user: User?
     let attachments: [Attachment]?
     let category: StatusCategory?
@@ -57,6 +58,7 @@ extension ReblogStatus {
             reblogged: reblogged,
             bookmarked: bookmarked,
             featured: featured,
+            pinnedAt: pinnedAt,
             user: user,
             attachments: attachments,
             category: category

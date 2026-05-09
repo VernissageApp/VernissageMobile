@@ -29,6 +29,7 @@ struct StatusDetailScreen: View {
     @State private var isFavouriteProcessing = false
     @State private var isBookmarkProcessing = false
     @State private var isFeatureProcessing = false
+    @State private var isPinProcessing = false
     @State private var actionErrorMessage: String?
     @State private var statusActionsFeedbackTrigger = false
 
@@ -477,6 +478,10 @@ struct StatusDetailScreen: View {
         displayedStatus.user?.id?.nilIfEmpty != nil
     }
 
+    private var isStatusPinned: Bool {
+        displayedStatus.pinnedAt != nil
+    }
+
     private var isStatusOwner: Bool {
         guard let activeUserName = appState.activeAccount?.userName.trimmingPrefix("@").lowercased().nilIfEmpty,
               let statusUserName = displayedStatus.user?.userName?.trimmingPrefix("@").lowercased().nilIfEmpty else {
@@ -564,6 +569,7 @@ struct StatusDetailScreen: View {
     private var statusMoreMenuContent: some View {
         statusMoreMenuEditSection
         statusMoreMenuAudienceSection
+        statusMoreMenuPinSection
         statusMoreMenuLinksSection
         statusMoreMenuDeleteSection
     }
@@ -594,6 +600,23 @@ struct StatusDetailScreen: View {
             } label: {
                 Label("Favourited by", systemImage: "star")
             }
+
+            Divider()
+        }
+    }
+
+    @ViewBuilder
+    private var statusMoreMenuPinSection: some View {
+        if isStatusOwner {
+            Button {
+                Task { await togglePinned() }
+            } label: {
+                Label(
+                    isStatusPinned ? "Unpin" : "Pin",
+                    systemImage: isStatusPinned ? "pin.slash" : "pin"
+                )
+            }
+            .disabled(isPinProcessing)
 
             Divider()
         }
@@ -907,6 +930,29 @@ struct StatusDetailScreen: View {
 
         let action: StatusInteractionAction = displayedStatus.featured == true ? .unfeature : .feature
         await performAction(action)
+    }
+
+    @MainActor
+    private func togglePinned() async {
+        guard isStatusOwner else {
+            return
+        }
+
+        isPinProcessing = true
+        defer { isPinProcessing = false }
+
+        do {
+            if isStatusPinned {
+                displayedStatus = try await appState.api.statuses.unpin(statusId: displayedStatus.id)
+                appState.showSuccessToast("Status unpinned.")
+            } else {
+                displayedStatus = try await appState.api.statuses.pin(statusId: displayedStatus.id)
+                appState.showSuccessToast("Status pinned.")
+            }
+            actionErrorMessage = nil
+        } catch {
+            actionErrorMessage = (error as? LocalizedError)?.errorDescription ?? error.localizedDescription
+        }
     }
 
     @MainActor

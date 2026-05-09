@@ -29,6 +29,7 @@ struct Status: Decodable, Identifiable {
     let reblogged: Bool?
     let bookmarked: Bool?
     let featured: Bool?
+    let pinnedAt: Date?
     let user: User?
     let attachments: [Attachment]?
     let category: StatusCategory?
@@ -56,6 +57,7 @@ struct Status: Decodable, Identifiable {
         case reblogged
         case bookmarked
         case featured
+        case pinnedAt
         case user
         case attachments
         case category

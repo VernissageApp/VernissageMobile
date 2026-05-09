@@ -16,6 +16,7 @@ final class StatusesAPI {
 
     func updateStatusInteraction(statusId: String, action: StatusInteractionAction) async throws -> Status {
         let account = try appState.requireActiveAccount()
+        let encodedStatusId = encodeStatusId(statusId)
 
         var headers: [String: String] = [:]
         var body: Data?
@@ -27,12 +28,20 @@ final class StatusesAPI {
 
         return try await appState.api.authorizedRequest(
             account: account,
-            path: "/api/v1/statuses/\(statusId)/\(action.pathSuffix)",
+            path: "/api/v1/statuses/\(encodedStatusId)/\(action.pathSuffix)",
             method: "POST",
             queryItems: [],
             additionalHeaders: headers,
             body: body
         )
+    }
+
+    func pin(statusId: String) async throws -> Status {
+        try await updatePinState(statusId: statusId, action: "pin")
+    }
+
+    func unpin(statusId: String) async throws -> Status {
+        try await updatePinState(statusId: statusId, action: "unpin")
     }
 
     func fetchStatus(statusId: String) async throws -> Status {
@@ -157,4 +166,19 @@ final class StatusesAPI {
         )
     }
 
+    private func updatePinState(statusId: String, action: String) async throws -> Status {
+        let account = try appState.requireActiveAccount()
+        let encodedStatusId = encodeStatusId(statusId)
+
+        return try await appState.api.authorizedRequest(
+            account: account,
+            path: "/api/v1/statuses/\(encodedStatusId)/\(action)",
+            method: "POST",
+            queryItems: []
+        )
+    }
+
+    private func encodeStatusId(_ statusId: String) -> String {
+        statusId.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) ?? statusId
+    }
 }

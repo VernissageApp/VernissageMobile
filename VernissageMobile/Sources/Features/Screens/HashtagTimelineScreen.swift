@@ -68,6 +68,23 @@ struct HashtagTimelineScreen: View {
         }
         .navigationTitle("#\(hashtagName)")
         .navigationBarTitleDisplayMode(.inline)
+        .toolbar {
+            ToolbarItem(placement: .topBarTrailing) {
+                Button {
+                    Task {
+                        await viewModel.toggleHashtagFollow(using: appState)
+                    }
+                } label: {
+                    if viewModel.isFollowStateLoading || viewModel.isFollowActionProcessing {
+                        ProgressView()
+                            .controlSize(.small)
+                    } else {
+                        Text(viewModel.isFollowed ? "Unfollow" : "Follow")
+                    }
+                }
+                .disabled(viewModel.isFollowStateLoading || viewModel.isFollowActionProcessing)
+            }
+        }
         .onFirstAppear {
             await viewModel.load(using: appState)
         }

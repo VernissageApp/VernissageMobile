@@ -13,6 +13,9 @@ final class HashtagTimelineViewModel {
     private(set) var statuses: [Status] = []
     private(set) var isLoading = false
     private(set) var isLoadingMore = false
+    private(set) var isFollowActionProcessing = false
+    private(set) var isFollowStateLoading = false
+    private(set) var isFollowed = false
     var errorMessage: String?
 
     var photoStatuses: [Status] {
@@ -55,6 +58,7 @@ final class HashtagTimelineViewModel {
             statuses = page.data
             nextMaxId = page.maxId
             canLoadMore = page.maxId != nil && !page.data.isEmpty
+            await refreshFollowState(using: appState)
             errorMessage = nil
         } catch {
             if error.isCancellationLike {
@@ -97,6 +101,35 @@ final class HashtagTimelineViewModel {
         }
     }
 
+    func toggleHashtagFollow(using appState: AppState) async {
+        guard !isFollowActionProcessing else {
+            return
+        }
+
+        isFollowActionProcessing = true
+        defer { isFollowActionProcessing = false }
+
+        do {
+            if isFollowed {
+                try await appState.api.hashtags.unfollow(hashtagName: hashtagName)
+                isFollowed = false
+                appState.showSuccessToast("Hashtag has been unfollowed.")
+            } else {
+                try await appState.api.hashtags.follow(hashtagName: hashtagName)
+                isFollowed = true
+                appState.showSuccessToast("Hashtag has been followed.")
+            }
+
+            errorMessage = nil
+        } catch {
+            if error.isCancellationLike {
+                return
+            }
+
+            errorMessage = (error as? LocalizedError)?.errorDescription ?? error.localizedDescription
+        }
+    }
+
     private func appendUniqueStatuses(_ incoming: [Status]) {
         guard !incoming.isEmpty else {
             return
@@ -105,5 +138,28 @@ final class HashtagTimelineViewModel {
         let existingIds = Set(statuses.map(\.id))
         let uniqueIncoming = incoming.filter { !existingIds.contains($0.id) }
         statuses.append(contentsOf: uniqueIncoming)
+    }
+
+    private func refreshFollowState(using appState: AppState) async {
+        isFollowStateLoading = true
+        defer { isFollowStateLoading = false }
+
+        do {
+            let followedHashtags = try await appState.api.hashtags.fetchFollowedHashtags()
+            isFollowed = followedHashtags.contains { normalizedHashtagName($0.name) == normalizedHashtagName(hashtagName) }
+        } catch {
+            if error.isCancellationLike {
+                return
+            }
+
+            errorMessage = (error as? LocalizedError)?.errorDescription ?? error.localizedDescription
+        }
+    }
+
+    private func normalizedHashtagName(_ value: String) -> String {
+        value
+            .trimmingPrefix("#")
+            .trimmingCharacters(in: .whitespacesAndNewlines)
+            .lowercased()
     }
 }

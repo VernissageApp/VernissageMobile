@@ -12,6 +12,7 @@ final class APIServiceContainer {
 
     let timelines: TimelinesAPI
     let notifications: NotificationsAPI
+    let hashtags: HashtagsAPI
     let search: SearchAPI
     let statuses: StatusesAPI
     let attachments: AttachmentsAPI
@@ -25,6 +26,7 @@ final class APIServiceContainer {
         self.appState = appState
         timelines = TimelinesAPI(appState: appState)
         notifications = NotificationsAPI(appState: appState)
+        hashtags = HashtagsAPI(appState: appState)
         search = SearchAPI(appState: appState)
         statuses = StatusesAPI(appState: appState)
         attachments = AttachmentsAPI(appState: appState)

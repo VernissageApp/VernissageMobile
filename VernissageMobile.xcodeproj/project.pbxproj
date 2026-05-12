@@ -22,6 +22,7 @@
 		1A1908374B115DCC2F18FA03 /* JWTInspector.swift in Sources */ = {isa = PBXBuildFile; fileRef = DDEC8289493631BDD55E804F /* JWTInspector.swift */; };
 		1AC68D5C48D7EB2D4D360266 /* NewStatusRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB772D021FDE64E08A9EC3D5 /* NewStatusRequest.swift */; };
 		1AF5DDFF87DFBCEBB665BC0C /* NotificationsAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 882950693FF8337F91D9B656 /* NotificationsAPI.swift */; };
+		C1E9A4B62D7F4C8E9A0B1C2D /* HashtagsAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1E9A4B52D7F4C8E9A0B1C2D /* HashtagsAPI.swift */; };
 		1BA9F8319D69E281571B5EEE /* Country.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4638C4A70E51AAD74B6B2BA8 /* Country.swift */; };
 		1BCD992C791AA3DB89495917 /* UpdateProfileRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = BEC269DE710BF249F468BF6F /* UpdateProfileRequest.swift */; };
 		1BF7CFB2630F81B73AD3E497 /* ReportsAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 64D6F2510F9FB298DA789B5C /* ReportsAPI.swift */; };
@@ -73,6 +74,7 @@
 		755213305EFB1883FA2E43D6 /* FlexiField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6773C0D9DC0733234A23676D /* FlexiField.swift */; };
 		797D6C2B329E9CBE58EEB900 /* ReportsAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 64D6F2510F9FB298DA789B5C /* ReportsAPI.swift */; };
 		7A34C7C29E2330D9B44B466D /* JWTClaims.swift in Sources */ = {isa = PBXBuildFile; fileRef = FCEF3644224F22E899735EA6 /* JWTClaims.swift */; };
+		C1E9A4B72D7F4C8E9A0B1C2D /* HashtagsAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1E9A4B52D7F4C8E9A0B1C2D /* HashtagsAPI.swift */; };
 		7A3DDFE585D9DD8A9961B9B7 /* UIImage+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9EC66A90C9022865C92C553 /* UIImage+Extensions.swift */; };
 		7B860473449E8CC2DD822633 /* ContentWarningRequestBody.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30FD0B7BEE0A2880B5FC6BD2 /* ContentWarningRequestBody.swift */; };
 		7CD9A79836BAD8BF90FF050D /* InstanceAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = FBF419A8127269988036724C /* InstanceAPI.swift */; };
@@ -458,6 +460,7 @@
 		634196EDBA808665D562BB22 /* CharacterSet+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CharacterSet+Extensions.swift"; sourceTree = "<group>"; };
 		646F4F70C50DAC52221DCC02 /* ReportRequestBody.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReportRequestBody.swift; sourceTree = "<group>"; };
 		64D6F2510F9FB298DA789B5C /* ReportsAPI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReportsAPI.swift; sourceTree = "<group>"; };
+		C1E9A4B52D7F4C8E9A0B1C2D /* HashtagsAPI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HashtagsAPI.swift; sourceTree = "<group>"; };
 		655A95BF2F7CC1F7F45A07B2 /* UserBlockedDomainRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserBlockedDomainRequest.swift; sourceTree = "<group>"; };
 		65837BE4598D13DE716DB646 /* ReblogRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReblogRequest.swift; sourceTree = "<group>"; };
 		659DF4A83075A6C12BF5C7DF /* SharedBusinessCardSheetMode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SharedBusinessCardSheetMode.swift; sourceTree = "<group>"; };
@@ -706,6 +709,7 @@
 				A90000000000000000000013 /* RegistrationAPI.swift */,
 				675702344B860EF8B0092532 /* TimelinesAPI.swift */,
 				882950693FF8337F91D9B656 /* NotificationsAPI.swift */,
+				C1E9A4B52D7F4C8E9A0B1C2D /* HashtagsAPI.swift */,
 				E41AF75710729DE5D6D207C4 /* SearchAPI.swift */,
 				C9D86C52E0E04FC642D6B3F3 /* StatusesAPI.swift */,
 				F2B606AE53756832779EAD04 /* AttachmentsAPI.swift */,
@@ -1266,6 +1270,7 @@
 				A90000000000000000000003 /* RegistrationAPI.swift in Sources */,
 				2C214B010FE2913A49D09AA1 /* TimelinesAPI.swift in Sources */,
 				1AF5DDFF87DFBCEBB665BC0C /* NotificationsAPI.swift in Sources */,
+				C1E9A4B62D7F4C8E9A0B1C2D /* HashtagsAPI.swift in Sources */,
 				40C306DA8CE261759FE0BC32 /* SearchAPI.swift in Sources */,
 				8BBE56721A089A9DF8AD2A94 /* StatusesAPI.swift in Sources */,
 				AAC18D9A15A04C287C99E87D /* AttachmentsAPI.swift in Sources */,
@@ -1497,6 +1502,7 @@
 				36B6F58457D8D961933811F8 /* OAuthPresentationContextProvider.swift in Sources */,
 				DA2213434C35C27F805ADD82 /* TimelinesAPI.swift in Sources */,
 				3D0A3E1764F67CF907F6A5F1 /* NotificationsAPI.swift in Sources */,
+				C1E9A4B72D7F4C8E9A0B1C2D /* HashtagsAPI.swift in Sources */,
 				172CBD2DAEB3FDEE8FC74EA0 /* SearchAPI.swift in Sources */,
 				A9DE24B9B51C2E26C22FD9DA /* StatusesAPI.swift in Sources */,
 				E139E2DAF250CDB308D172C3 /* AttachmentsAPI.swift in Sources */,
@@ -1687,7 +1693,7 @@
 				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
 				CODE_SIGN_ENTITLEMENTS = VernissageMobile/VernissageMobile.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 0;
+				CURRENT_PROJECT_VERSION = 1;
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = VernissageMobile/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = Vernissage;
@@ -1697,7 +1703,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.1;
+				MARKETING_VERSION = 1.2.0;
 				PRODUCT_BUNDLE_IDENTIFIER = photos.vernissage.ios;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
@@ -1715,7 +1721,7 @@
 				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
 				CODE_SIGN_ENTITLEMENTS = VernissageMobile/VernissageMobile.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 0;
+				CURRENT_PROJECT_VERSION = 1;
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = VernissageMobile/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = Vernissage;
@@ -1725,7 +1731,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.1;
+				MARKETING_VERSION = 1.2.0;
 				PRODUCT_BUNDLE_IDENTIFIER = photos.vernissage.ios;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
@@ -1741,7 +1747,7 @@
 				APPLICATION_EXTENSION_API_ONLY = YES;
 				CODE_SIGN_ENTITLEMENTS = VernissageShareExtension/VernissageShareExtension.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 0;
+				CURRENT_PROJECT_VERSION = 1;
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = VernissageShareExtension/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = VernissageShareExtension;
@@ -1751,7 +1757,7 @@
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 1.1;
+				MARKETING_VERSION = 1.2.0;
 				PRODUCT_BUNDLE_IDENTIFIER = photos.vernissage.ios.share;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
@@ -1769,7 +1775,7 @@
 				APPLICATION_EXTENSION_API_ONLY = YES;
 				CODE_SIGN_ENTITLEMENTS = VernissageShareExtension/VernissageShareExtension.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 0;
+				CURRENT_PROJECT_VERSION = 1;
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = VernissageShareExtension/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = VernissageShareExtension;
@@ -1779,7 +1785,7 @@
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 1.1;
+				MARKETING_VERSION = 1.2.0;
 				PRODUCT_BUNDLE_IDENTIFIER = photos.vernissage.ios.share;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;

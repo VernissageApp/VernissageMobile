@@ -31,6 +31,7 @@ struct ReblogStatus: Decodable {
     let pinnedAt: Date?
     let user: User?
     let attachments: [Attachment]?
+    let tags: [Hashtag]?
     let category: StatusCategory?
 }
 extension ReblogStatus {
@@ -61,6 +62,7 @@ extension ReblogStatus {
             pinnedAt: pinnedAt,
             user: user,
             attachments: attachments,
+            tags: tags,
             category: category
         )
     }

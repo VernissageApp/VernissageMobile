@@ -41,6 +41,7 @@ struct StatusDetailScreen: View {
     @State private var isSendingReply = false
     @FocusState private var isReplyFieldFocused: Bool
     @State private var presentedUsersListKind: StatusUsersListKind?
+    @State private var followedTagsOnMainStatus: [String] = []
     @State private var categoryTimelineRoute: CategoryTimelineRoute?
     @State private var hashtagTimelineRoute: HashtagTimelineRoute?
     @State private var mentionedUserRoute: MentionedUserRoute?
@@ -338,6 +339,8 @@ struct StatusDetailScreen: View {
                     .foregroundStyle(.secondary)
             }
 
+            statusFollowedTagsSection
+
             if let attachment = selectedAttachmentForMetadata,
                attachment.hasDisplayableMetadata ||
                selectedAttachmentAltTextForDisplay != nil ||
@@ -445,6 +448,41 @@ struct StatusDetailScreen: View {
 
     private var statusCategoryName: String? {
         displayedStatus.category?.name?.nilIfEmpty
+    }
+
+    @ViewBuilder
+    private var statusFollowedTagsSection: some View {
+        if !followedTagsOnMainStatus.isEmpty {
+            VStack(alignment: .leading, spacing: 8) {
+                Text("Followed tags in this status")
+                    .font(.footnote.weight(.semibold))
+                    .foregroundStyle(.secondary)
+
+                LazyVGrid(
+                    columns: [GridItem(.adaptive(minimum: 110), spacing: 8, alignment: .leading)],
+                    alignment: .leading,
+                    spacing: 8
+                ) {
+                    ForEach(followedTagsOnMainStatus, id: \.self) { tagName in
+                        Button {
+                            hashtagTimelineRoute = HashtagTimelineRoute(hashtagName: tagName)
+                        } label: {
+                            Text("#\(tagName)")
+                                .font(.footnote.weight(.semibold))
+                                .lineLimit(1)
+                                .minimumScaleFactor(0.85)
+                                .padding(.horizontal, 10)
+                                .padding(.vertical, 6)
+                        }
+                        .buttonStyle(.plain)
+                        .foregroundStyle(.blue)
+                        .background(.blue.opacity(0.12), in: Capsule(style: .continuous))
+                        .contentShape(Capsule(style: .continuous))
+                        .accessibilityLabel("Hashtag \(tagName)")
+                    }
+                }
+            }
+        }
     }
 
     private var multiAttachmentHeight: CGFloat {
@@ -968,6 +1006,7 @@ struct StatusDetailScreen: View {
     @MainActor
     private func loadStatusDetail() async {
         await refreshStatusFromServer()
+        await refreshFollowedTagsOnMainStatus()
         await loadComments()
     }
 
@@ -977,6 +1016,19 @@ struct StatusDetailScreen: View {
             displayedStatus = try await appState.api.statuses.fetchStatus(statusId: displayedStatus.id)
         } catch {
             // Keep current snapshot when refresh fails.
+        }
+    }
+
+    @MainActor
+    private func refreshFollowedTagsOnMainStatus() async {
+        do {
+            let followedHashtags = try await appState.api.hashtags.fetchFollowedHashtags()
+            followedTagsOnMainStatus = intersectedHashtagNames(
+                statusHashtags: displayedStatus.mainStatus.tags ?? [],
+                followedHashtags: followedHashtags
+            )
+        } catch {
+            followedTagsOnMainStatus = []
         }
     }
 
@@ -1259,5 +1311,43 @@ struct StatusDetailScreen: View {
         }
 
         return nil
+    }
+
+    private func intersectedHashtagNames(statusHashtags: [Hashtag], followedHashtags: [Hashtag]) -> [String] {
+        guard !statusHashtags.isEmpty, !followedHashtags.isEmpty else {
+            return []
+        }
+
+        let followedHashtagKeys = Set(
+            followedHashtags
+                .map(\.name)
+                .map(\.normalizedHashtagComparisonKey)
+                .filter { !$0.isEmpty }
+        )
+
+        guard !followedHashtagKeys.isEmpty else {
+            return []
+        }
+
+        var output: [String] = []
+        var seenKeys: Set<String> = []
+
+        for hashtag in statusHashtags {
+            let originalName = hashtag.name
+                .trimmingPrefix("#")
+                .trimmingCharacters(in: .whitespacesAndNewlines)
+                .precomposedStringWithCompatibilityMapping
+
+            let key = originalName.normalizedHashtagComparisonKey
+            guard !key.isEmpty,
+                  followedHashtagKeys.contains(key),
+                  seenKeys.insert(key).inserted else {
+                continue
+            }
+
+            output.append(originalName)
+        }
+
+        return output
     }
 }

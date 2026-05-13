@@ -32,6 +32,7 @@ struct Status: Decodable, Identifiable {
     let pinnedAt: Date?
     let user: User?
     let attachments: [Attachment]?
+    let tags: [Hashtag]?
     let category: StatusCategory?
 
     enum CodingKeys: String, CodingKey {
@@ -60,6 +61,7 @@ struct Status: Decodable, Identifiable {
         case pinnedAt
         case user
         case attachments
+        case tags
         case category
     }
 }

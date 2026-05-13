@@ -107,6 +107,13 @@ extension String {
         normalizedSignedCoordinate(positiveSuffix: "E", negativeSuffix: "W")
     }
 
+    var normalizedHashtagComparisonKey: String {
+        trimmingPrefix("#")
+            .trimmingCharacters(in: .whitespacesAndNewlines)
+            .precomposedStringWithCompatibilityMapping
+            .uppercased()
+    }
+
     private func normalizedSignedCoordinate(positiveSuffix: Character, negativeSuffix: Character) -> String? {
         var value = replacingOccurrences(of: ",", with: ".")
             .trimmingCharacters(in: .whitespacesAndNewlines)

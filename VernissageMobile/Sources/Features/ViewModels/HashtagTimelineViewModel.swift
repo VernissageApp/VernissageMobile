@@ -146,7 +146,7 @@ final class HashtagTimelineViewModel {
 
         do {
             let followedHashtags = try await appState.api.hashtags.fetchFollowedHashtags()
-            isFollowed = followedHashtags.contains { normalizedHashtagName($0.name) == normalizedHashtagName(hashtagName) }
+            isFollowed = followedHashtags.contains { $0.name.normalizedHashtagComparisonKey == hashtagName.normalizedHashtagComparisonKey }
         } catch {
             if error.isCancellationLike {
                 return
@@ -154,12 +154,5 @@ final class HashtagTimelineViewModel {
 
             errorMessage = (error as? LocalizedError)?.errorDescription ?? error.localizedDescription
         }
-    }
-
-    private func normalizedHashtagName(_ value: String) -> String {
-        value
-            .trimmingPrefix("#")
-            .trimmingCharacters(in: .whitespacesAndNewlines)
-            .lowercased()
     }
 }

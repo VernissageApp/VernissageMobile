@@ -8,6 +8,15 @@ import SwiftUI
 
 struct SearchStatusRowView: View {
     let status: Status
+    let onOpenMarkdownURL: (URL) -> OpenURLAction.Result
+
+    init(
+        status: Status,
+        onOpenMarkdownURL: @escaping (URL) -> OpenURLAction.Result = { _ in .systemAction }
+    ) {
+        self.status = status
+        self.onOpenMarkdownURL = onOpenMarkdownURL
+    }
 
     var body: some View {
         if status.hasAttachment {
@@ -19,6 +28,9 @@ struct SearchStatusRowView: View {
                     MarkdownFormattedTextView(markdown)
                         .font(.body)
                         .foregroundStyle(.primary)
+                        .environment(\.openURL, OpenURLAction { url in
+                            onOpenMarkdownURL(url)
+                        })
                 }
             }
         } else {
@@ -46,6 +58,9 @@ struct SearchStatusRowView: View {
                         .font(.body)
                         .foregroundStyle(.primary)
                         .lineLimit(4)
+                        .environment(\.openURL, OpenURLAction { url in
+                            onOpenMarkdownURL(url)
+                        })
                 } else if let noteForDisplay = status.noteForDisplay, noteForDisplay.isEmpty == false {
                     Text("Cannot render text status.")
                         .font(.body)

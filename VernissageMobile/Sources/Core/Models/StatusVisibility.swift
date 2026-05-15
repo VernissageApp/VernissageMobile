@@ -8,6 +8,7 @@ import SwiftUI
 
 enum StatusVisibility: String, CaseIterable, Codable {
     case `public` = "public"
+    case quietPublic = "quietPublic"
     case followers = "followers"
     case mentioned = "mentioned"
 
@@ -15,6 +16,8 @@ enum StatusVisibility: String, CaseIterable, Codable {
         switch self {
         case .public:
             return "Everyone"
+        case .quietPublic:
+            return "Everyone (quiet)"
         case .followers:
             return "Followers only"
         case .mentioned:
@@ -26,6 +29,8 @@ enum StatusVisibility: String, CaseIterable, Codable {
         switch self {
         case .public:
             return "globe"
+        case .quietPublic:
+            return "speaker.slash"
         case .followers:
             return "lock"
         case .mentioned:

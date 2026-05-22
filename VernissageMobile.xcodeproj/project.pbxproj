@@ -128,6 +128,10 @@
 		B8659C04F3DAF0901B3DDC25 /* CharacterSet+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 634196EDBA808665D562BB22 /* CharacterSet+Extensions.swift */; };
 		BAEBF0162DB55FC4BC24A6BC /* UserBlockedDomainRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 655A95BF2F7CC1F7F45A07B2 /* UserBlockedDomainRequest.swift */; };
 		C046FED922803446C4266A9C /* AttachmentBlurHashPlaceholderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC3DAEA7229BBF69DDFC3B56 /* AttachmentBlurHashPlaceholderView.swift */; };
+		C0A200000000000000000001 /* NotificationGroup.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0A100000000000000000001 /* NotificationGroup.swift */; };
+		C0A200000000000000000002 /* NotificationListItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0A100000000000000000002 /* NotificationListItem.swift */; };
+		C0A200000000000000000003 /* NotificationGroupRowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0A100000000000000000003 /* NotificationGroupRowView.swift */; };
+		C0A200000000000000000004 /* NotificationStatusThumbnailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0A100000000000000000004 /* NotificationStatusThumbnailView.swift */; };
 		C1A200000000000000000001 /* CategoryTimelineRoute.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1A100000000000000000001 /* CategoryTimelineRoute.swift */; };
 		C1A200000000000000000002 /* HashtagTimelineRoute.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1A100000000000000000002 /* HashtagTimelineRoute.swift */; };
 		C1A200000000000000000003 /* MentionedUserRoute.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1A100000000000000000003 /* MentionedUserRoute.swift */; };
@@ -573,6 +577,10 @@
 		BE834B71F189045EB10A1EC7 /* InstanceRule.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InstanceRule.swift; sourceTree = "<group>"; };
 		BEC269DE710BF249F468BF6F /* UpdateProfileRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpdateProfileRequest.swift; sourceTree = "<group>"; };
 		BF3543AEA1C6CB7BEE20701A /* APIClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIClient.swift; sourceTree = "<group>"; };
+		C0A100000000000000000001 /* NotificationGroup.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationGroup.swift; sourceTree = "<group>"; };
+		C0A100000000000000000002 /* NotificationListItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationListItem.swift; sourceTree = "<group>"; };
+		C0A100000000000000000003 /* NotificationGroupRowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationGroupRowView.swift; sourceTree = "<group>"; };
+		C0A100000000000000000004 /* NotificationStatusThumbnailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationStatusThumbnailView.swift; sourceTree = "<group>"; };
 		C1A100000000000000000001 /* CategoryTimelineRoute.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CategoryTimelineRoute.swift; sourceTree = "<group>"; };
 		C1A100000000000000000002 /* HashtagTimelineRoute.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HashtagTimelineRoute.swift; sourceTree = "<group>"; };
 		C1A100000000000000000003 /* MentionedUserRoute.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MentionedUserRoute.swift; sourceTree = "<group>"; };
@@ -884,6 +892,8 @@
 				5965248E0EBA29FD72A723E9 /* EditorsContentSelection.swift */,
 				C1A100000000000000000002 /* HashtagTimelineRoute.swift */,
 				C1A100000000000000000003 /* MentionedUserRoute.swift */,
+				C0A100000000000000000001 /* NotificationGroup.swift */,
+				C0A100000000000000000002 /* NotificationListItem.swift */,
 				DF34D8994882AD1F70A38AE1 /* OtherTimelineSelection.swift */,
 				99322C4BF56D3F36433F6893 /* ProfileCollectionKind.swift */,
 				771109C3F74A6B4D42AD07A5 /* ProfileContentTab.swift */,
@@ -920,7 +930,9 @@
 				29C365EA2E98CBBAB85A96EA /* InstanceContactCompactRowView.swift */,
 				DB828527D20F787C99FFC214 /* MarkdownFormattedTextView.swift */,
 				D00A3434560159EAA69D8666 /* MetadataLineView.swift */,
+				C0A100000000000000000003 /* NotificationGroupRowView.swift */,
 				6C7B84C03DAE6C17C8B3B298 /* NotificationRowView.swift */,
+				C0A100000000000000000004 /* NotificationStatusThumbnailView.swift */,
 				19AC32CC3FE4CF11A89EA58B /* NotificationsToolbarButtonView.swift */,
 				B8C96C515F15A7C7DAA1F404 /* ProfileCollectionActionButtonView.swift */,
 				37EC62ED9627716C0B89F4B6 /* ProfileContentTabsView.swift */,
@@ -1345,6 +1357,8 @@
 				F861857D2F4B900F00C3AFB8 /* SharedBusinessCardDraft.swift in Sources */,
 				F861857E2F4B900F00C3AFB8 /* SharedBusinessCardSheetMode.swift in Sources */,
 				F861857F2F4B900F00C3AFB8 /* StatusCommentItem.swift in Sources */,
+				C0A200000000000000000001 /* NotificationGroup.swift in Sources */,
+				C0A200000000000000000002 /* NotificationListItem.swift in Sources */,
 				F86185802F4B900F00C3AFB8 /* StatusComposeMode.swift in Sources */,
 				F86185812F4B900F00C3AFB8 /* StatusInteractionAction.swift in Sources */,
 				F86185822F4B900F00C3AFB8 /* StatusUsersListKind.swift in Sources */,
@@ -1369,7 +1383,9 @@
 				F86185952F4B900F00C3AFB8 /* InstanceContactCompactRowView.swift in Sources */,
 				F86185962F4B900F00C3AFB8 /* MarkdownFormattedTextView.swift in Sources */,
 				F86185972F4B900F00C3AFB8 /* MetadataLineView.swift in Sources */,
+				C0A200000000000000000003 /* NotificationGroupRowView.swift in Sources */,
 				F86185982F4B900F00C3AFB8 /* NotificationRowView.swift in Sources */,
+				C0A200000000000000000004 /* NotificationStatusThumbnailView.swift in Sources */,
 				F86185992F4B900F00C3AFB8 /* NotificationsToolbarButtonView.swift in Sources */,
 				F861859A2F4B900F00C3AFB8 /* ProfileCollectionActionButtonView.swift in Sources */,
 				F861859B2F4B900F00C3AFB8 /* ProfileContentTabsView.swift in Sources */,
@@ -1703,7 +1719,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.4.0;
+				MARKETING_VERSION = 1.5.0;
 				PRODUCT_BUNDLE_IDENTIFIER = photos.vernissage.ios;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
@@ -1731,7 +1747,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.4.0;
+				MARKETING_VERSION = 1.5.0;
 				PRODUCT_BUNDLE_IDENTIFIER = photos.vernissage.ios;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
@@ -1757,7 +1773,7 @@
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 1.4.0;
+				MARKETING_VERSION = 1.5.0;
 				PRODUCT_BUNDLE_IDENTIFIER = photos.vernissage.ios.share;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
@@ -1785,7 +1801,7 @@
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 1.4.0;
+				MARKETING_VERSION = 1.5.0;
 				PRODUCT_BUNDLE_IDENTIFIER = photos.vernissage.ios.share;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;

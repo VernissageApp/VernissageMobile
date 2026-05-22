@@ -23,6 +23,22 @@ extension AppNotification {
         return AppNotificationType(rawValue: notificationType)
     }
 
+    var linkedStatus: Status? {
+        if let mainStatus, mainStatus.hasAttachment {
+            return mainStatus
+        }
+
+        if let status, status.hasAttachment {
+            return status
+        }
+
+        if let mainStatus {
+            return mainStatus
+        }
+
+        return status
+    }
+
     var displayText: String {
         switch typedNotificationType {
         case .mention:

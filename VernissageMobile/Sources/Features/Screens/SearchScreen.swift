@@ -203,7 +203,9 @@ struct SearchScreen: View {
                         NavigationLink {
                             StatusDetailScreen(status: status)
                         } label: {
-                            SearchStatusRowView(status: status)
+                            SearchStatusRowView(status: status) { url in
+                                handleStatusMarkdownURL(url)
+                            }
                         }
                         .buttonStyle(.plain)
                         .padding(12)
@@ -340,5 +342,32 @@ struct SearchScreen: View {
 
             hashtagStatusesByName[key] = []
         }
+    }
+
+    private func handleStatusMarkdownURL(_ url: URL) -> OpenURLAction.Result {
+        guard let hashtag = hashtagName(from: url) else {
+            return .systemAction
+        }
+
+        hashtagTimelineRoute = HashtagTimelineRoute(hashtagName: hashtag)
+        return .handled
+    }
+
+    private func hashtagName(from url: URL) -> String? {
+        if let fragment = url.fragment?.nilIfEmpty {
+            let normalizedFragment = fragment.trimmingPrefix("#")
+            if !normalizedFragment.isEmpty {
+                return normalizedFragment
+            }
+        }
+
+        let pathComponents = url.pathComponents
+        if pathComponents.contains(where: { $0.caseInsensitiveCompare("tags") == .orderedSame }),
+           let lastComponent = pathComponents.last?.nilIfEmpty {
+            let normalizedTag = lastComponent.trimmingPrefix("#")
+            return normalizedTag.nilIfEmpty
+        }
+
+        return nil
     }
 }

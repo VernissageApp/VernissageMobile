@@ -11,6 +11,7 @@ import Observation
 @Observable
 final class NotificationsViewModel {
     private(set) var notifications: [AppNotification] = []
+    private(set) var notificationItems: [NotificationListItem] = []
     private(set) var isLoading = false
     private(set) var isLoadingMore = false
     var errorMessage: String?
@@ -40,6 +41,7 @@ final class NotificationsViewModel {
         do {
             let page = try await appState.api.notifications.fetchNotifications(maxId: nil)
             notifications = page.data
+            notificationItems = makeNotificationItems(from: page.data)
             nextMaxId = page.maxId
             canLoadMore = page.maxId != nil && !page.data.isEmpty
             errorMessage = nil
@@ -59,7 +61,7 @@ final class NotificationsViewModel {
             return
         }
 
-        guard currentIndex == notifications.count - 1 else {
+        guard currentIndex == notificationItems.count - 1 else {
             return
         }
 
@@ -73,7 +75,8 @@ final class NotificationsViewModel {
 
         do {
             let page = try await appState.api.notifications.fetchNotifications(maxId: cursor)
-            appendUniqueNotifications(page.data)
+            let uniqueIncoming = appendUniqueNotifications(page.data)
+            notificationItems.append(contentsOf: makeNotificationItems(from: uniqueIncoming))
             nextMaxId = page.maxId
             canLoadMore = page.maxId != nil && !page.data.isEmpty
             errorMessage = nil
@@ -86,13 +89,60 @@ final class NotificationsViewModel {
         }
     }
 
-    private func appendUniqueNotifications(_ incoming: [AppNotification]) {
+    private func appendUniqueNotifications(_ incoming: [AppNotification]) -> [AppNotification] {
         guard !incoming.isEmpty else {
-            return
+            return []
         }
 
         var existingKeys = Set(notifications.map(\.uniquenessKey))
         let uniqueIncoming = incoming.filter { existingKeys.insert($0.uniquenessKey).inserted }
         notifications.append(contentsOf: uniqueIncoming)
+        return uniqueIncoming
+    }
+
+    private func makeNotificationItems(from pageNotifications: [AppNotification]) -> [NotificationListItem] {
+        var groupsByKey: [String: [AppNotification]] = [:]
+        var emittedGroupKeys = Set<String>()
+
+        for notification in pageNotifications {
+            guard let groupingKey = groupingKey(for: notification) else {
+                continue
+            }
+
+            groupsByKey[groupingKey, default: []].append(notification)
+        }
+
+        return pageNotifications.compactMap { notification in
+            guard let groupingKey = groupingKey(for: notification),
+                  let groupedNotifications = groupsByKey[groupingKey],
+                  groupedNotifications.count > 1 else {
+                return .notification(notification)
+            }
+
+            guard emittedGroupKeys.insert(groupingKey).inserted else {
+                return nil
+            }
+
+            return .group(NotificationGroup(notifications: groupedNotifications))
+        }
+    }
+
+    private func groupingKey(for notification: AppNotification) -> String? {
+        guard let notificationType = notification.typedNotificationType else {
+            return nil
+        }
+
+        switch notificationType {
+        case .follow:
+            return notificationType.rawValue
+        case .favourite, .reblog:
+            guard let linkedStatusId = notification.linkedStatus?.id.nilIfEmpty else {
+                return nil
+            }
+
+            return "\(notificationType.rawValue)|\(linkedStatusId)|\(notification.displayText)"
+        default:
+            return nil
+        }
     }
 }

@@ -31,14 +31,20 @@ struct NotificationsScreen: View {
                                            description: Text("Your notifications will appear here."))
                         .foregroundStyle(.white.opacity(0.9))
                 } else {
-                    ForEach(viewModel.notifications.indices, id: \.self) { index in
-                        let notification = viewModel.notifications[index]
-                        NotificationRowView(notification: notification)
-                            .onAppear {
-                                Task {
-                                    await viewModel.loadMoreIfNeeded(using: appState, currentIndex: index)
-                                }
+                    ForEach(Array(viewModel.notificationItems.enumerated()), id: \.element.id) { index, item in
+                        Group {
+                            switch item {
+                            case .notification(let notification):
+                                NotificationRowView(notification: notification)
+                            case .group(let group):
+                                NotificationGroupRowView(group: group)
                             }
+                        }
+                        .onAppear {
+                            Task {
+                                await viewModel.loadMoreIfNeeded(using: appState, currentIndex: index)
+                            }
+                        }
                     }
 
                     if viewModel.isLoadingMore {

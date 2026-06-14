@@ -18,15 +18,27 @@ struct RegisterAccountScreen: View {
     }
 
     private enum LocaleOption: String, CaseIterable, Identifiable {
-        case english = "en_US"
+        case englishUS = "en_US"
+        case englishGB = "en_GB"
+        case finnish = "fi_FI"
+        case french = "fr_FR"
+        case german = "de_DE"
         case polish = "pl_PL"
 
         var id: String { rawValue }
 
         var title: String {
             switch self {
-            case .english:
-                return "English (English)"
+            case .englishUS:
+                return "English US (English US)"
+            case .englishGB:
+                return "English GB (English GB)"
+            case .finnish:
+                return "Finnish (suomi)"
+            case .french:
+                return "French (français)"
+            case .german:
+                return "German (Deutsch)"
             case .polish:
                 return "Polish (polski)"
             }
@@ -62,7 +74,7 @@ struct RegisterAccountScreen: View {
     @State private var userName = ""
     @State private var email = ""
     @State private var name = ""
-    @State private var locale = LocaleOption.english
+    @State private var locale = LocaleOption.englishUS
     @State private var password = ""
     @State private var agreement = false
     @State private var inviteToken = ""

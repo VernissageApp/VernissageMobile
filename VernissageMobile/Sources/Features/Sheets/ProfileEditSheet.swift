@@ -182,7 +182,11 @@ struct ProfileEditSheet: View {
 
     private var localeOptions: [(code: String, label: String)] {
         var options: [(code: String, label: String)] = [
-            ("en_US", "English (English)"),
+            ("en_US", "English US (English US)"),
+            ("en_GB", "English GB (English GB)"),
+            ("fi_FI", "Finnish (suomi)"),
+            ("fr_FR", "French (français)"),
+            ("de_DE", "German (Deutsch)"),
             ("pl_PL", "Polish (polski)")
         ]
 

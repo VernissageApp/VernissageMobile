@@ -16,6 +16,7 @@ final class PushNotificationAppDelegate: NSObject, UIApplicationDelegate {
     override init() {
         super.init()
         Self.current = self
+        UNUserNotificationCenter.current().delegate = self
     }
 
     func application(_ application: UIApplication,
@@ -40,5 +41,22 @@ final class PushNotificationAppDelegate: NSObject, UIApplicationDelegate {
             tokenContinuation = continuation
             UIApplication.shared.registerForRemoteNotifications()
         }
+    }
+}
+
+extension PushNotificationAppDelegate: UNUserNotificationCenterDelegate {
+    nonisolated func userNotificationCenter(_ center: UNUserNotificationCenter,
+                                             willPresent notification: UNNotification) async -> UNNotificationPresentationOptions {
+        notifyPushNotificationReceived()
+        return [.badge, .banner, .list, .sound]
+    }
+
+    nonisolated func userNotificationCenter(_ center: UNUserNotificationCenter,
+                                             didReceive response: UNNotificationResponse) async {
+        notifyPushNotificationReceived()
+    }
+
+    nonisolated private func notifyPushNotificationReceived() {
+        NotificationCenter.default.post(name: .pushNotificationReceived, object: nil)
     }
 }

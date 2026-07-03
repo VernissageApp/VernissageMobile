@@ -171,6 +171,7 @@
 		C2012000000000000000000F /* WebPushNotification.swift in Sources */ = {isa = PBXBuildFile; fileRef = C2010000000000000000000F /* WebPushNotification.swift */; };
 		C20120000000000000000010 /* WebPushNotificationData.swift in Sources */ = {isa = PBXBuildFile; fileRef = C20100000000000000000010 /* WebPushNotificationData.swift */; };
 		C20120000000000000000011 /* WebPushDecryptor.swift in Sources */ = {isa = PBXBuildFile; fileRef = C20100000000000000000011 /* WebPushDecryptor.swift */; };
+		C20120000000000000000012 /* Notification+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = C20100000000000000000012 /* Notification+Extensions.swift */; };
 		C20220000000000000000001 /* KeychainStoreError.swift in Sources */ = {isa = PBXBuildFile; fileRef = C20100000000000000000006 /* KeychainStoreError.swift */; };
 		C20220000000000000000002 /* PushSubscription.swift in Sources */ = {isa = PBXBuildFile; fileRef = C20100000000000000000001 /* PushSubscription.swift */; };
 		C20220000000000000000003 /* PushNotificationSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = C20100000000000000000002 /* PushNotificationSettings.swift */; };
@@ -655,6 +656,7 @@
 		C2010000000000000000000F /* WebPushNotification.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebPushNotification.swift; sourceTree = "<group>"; };
 		C20100000000000000000010 /* WebPushNotificationData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebPushNotificationData.swift; sourceTree = "<group>"; };
 		C20100000000000000000011 /* WebPushDecryptor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebPushDecryptor.swift; sourceTree = "<group>"; };
+		C20100000000000000000012 /* Notification+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Notification+Extensions.swift"; sourceTree = "<group>"; };
 		C2EB5AC5BBC465732E97A88C /* PublicSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PublicSettings.swift; sourceTree = "<group>"; };
 		C2F80484378DAEDC016320B5 /* StatusBoostedByView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatusBoostedByView.swift; sourceTree = "<group>"; };
 		C3E3BBAD070DCBF9869BE9BE /* InstanceConfiguration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InstanceConfiguration.swift; sourceTree = "<group>"; };
@@ -1083,6 +1085,7 @@
 				11FA7CD8D8035E1511738F67 /* Date+Extensions.swift */,
 				6C409BDC3E5805C9623A1CA6 /* Error+Extensions.swift */,
 				A3DDF587B51E50AB3C32936E /* Image+Extensions.swift */,
+				C20100000000000000000012 /* Notification+Extensions.swift */,
 				CDD0233EE2F086CC7AD84322 /* Optional+Extensions.swift */,
 				2F496812C17AF1B8556CBE10 /* String+Extensions.swift */,
 				94FFC01A17A5D0B79DB96139 /* UIColor+Extensions.swift */,
@@ -1596,6 +1599,7 @@
 				C2012000000000000000000B /* PushNotificationSettingsViewModel.swift in Sources */,
 				C2012000000000000000000C /* PushNotificationSettingsSheet.swift in Sources */,
 				C20120000000000000000011 /* WebPushDecryptor.swift in Sources */,
+				C20120000000000000000012 /* Notification+Extensions.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -57,6 +57,8 @@ extension PushNotificationAppDelegate: UNUserNotificationCenterDelegate {
     }
 
     nonisolated private func notifyPushNotificationReceived() {
-        NotificationCenter.default.post(name: .pushNotificationReceived, object: nil)
+        Task { @MainActor in
+            NotificationCenter.default.post(name: .pushNotificationReceived, object: nil)
+        }
     }
 }

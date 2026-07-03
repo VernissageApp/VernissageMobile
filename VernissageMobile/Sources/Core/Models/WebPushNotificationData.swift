@@ -6,6 +6,6 @@
 
 import Foundation
 
-struct PagedResult<T: Decodable & Sendable>: Decodable, Sendable {
-    let data: [T]?
+struct WebPushNotificationData: Decodable {
+    let badgeCount: Int?
 }

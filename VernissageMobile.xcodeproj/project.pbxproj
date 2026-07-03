@@ -138,6 +138,45 @@
 		C1D2E3F4A5B60718293A4B5C /* MuteSectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1D2E3F4A5B60718293A4B5D /* MuteSectionView.swift */; };
 		C1E9A4B62D7F4C8E9A0B1C2D /* HashtagsAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1E9A4B52D7F4C8E9A0B1C2D /* HashtagsAPI.swift */; };
 		C1E9A4B72D7F4C8E9A0B1C2D /* HashtagsAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1E9A4B52D7F4C8E9A0B1C2D /* HashtagsAPI.swift */; };
+		C20020000000000000000001 /* NotificationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = C20010000000000000000002 /* NotificationService.swift */; };
+		C20020000000000000000002 /* VernissageNotificationServiceExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = C20010000000000000000001 /* VernissageNotificationServiceExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		C20020000000000000000003 /* KeychainStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = EA5AA0D27374ED6BB712ADED /* KeychainStore.swift */; };
+		C20020000000000000000004 /* PushSubscriptionKeyStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = C20100000000000000000007 /* PushSubscriptionKeyStore.swift */; };
+		C20020000000000000000005 /* StoredPushSubscription.swift in Sources */ = {isa = PBXBuildFile; fileRef = C20100000000000000000004 /* StoredPushSubscription.swift */; };
+		C20020000000000000000006 /* WebPushKeyMaterial.swift in Sources */ = {isa = PBXBuildFile; fileRef = C20100000000000000000003 /* WebPushKeyMaterial.swift */; };
+		C20020000000000000000007 /* WebPushRelayPayload.swift in Sources */ = {isa = PBXBuildFile; fileRef = C2010000000000000000000D /* WebPushRelayPayload.swift */; };
+		C20020000000000000000008 /* WebPushNotificationContent.swift in Sources */ = {isa = PBXBuildFile; fileRef = C2010000000000000000000E /* WebPushNotificationContent.swift */; };
+		C20020000000000000000009 /* WebPushNotification.swift in Sources */ = {isa = PBXBuildFile; fileRef = C2010000000000000000000F /* WebPushNotification.swift */; };
+		C2002000000000000000000A /* WebPushNotificationData.swift in Sources */ = {isa = PBXBuildFile; fileRef = C20100000000000000000010 /* WebPushNotificationData.swift */; };
+		C2002000000000000000000B /* PushNotificationError.swift in Sources */ = {isa = PBXBuildFile; fileRef = C20100000000000000000005 /* PushNotificationError.swift */; };
+		C2002000000000000000000C /* KeychainStoreError.swift in Sources */ = {isa = PBXBuildFile; fileRef = C20100000000000000000006 /* KeychainStoreError.swift */; };
+		C2002000000000000000000D /* AppConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8F1A2B3C4D5061728394A5B /* AppConstants.swift */; };
+		C2002000000000000000000E /* Data+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD9A408F57DD3EE82E50AEB8 /* Data+Extensions.swift */; };
+		C2002000000000000000000F /* WebPushDecryptor.swift in Sources */ = {isa = PBXBuildFile; fileRef = C20100000000000000000011 /* WebPushDecryptor.swift */; };
+		C20020000000000000000010 /* PushNotificationSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = C20100000000000000000002 /* PushNotificationSettings.swift */; };
+		C20120000000000000000001 /* PushSubscription.swift in Sources */ = {isa = PBXBuildFile; fileRef = C20100000000000000000001 /* PushSubscription.swift */; };
+		C20120000000000000000002 /* PushNotificationSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = C20100000000000000000002 /* PushNotificationSettings.swift */; };
+		C20120000000000000000003 /* WebPushKeyMaterial.swift in Sources */ = {isa = PBXBuildFile; fileRef = C20100000000000000000003 /* WebPushKeyMaterial.swift */; };
+		C20120000000000000000004 /* StoredPushSubscription.swift in Sources */ = {isa = PBXBuildFile; fileRef = C20100000000000000000004 /* StoredPushSubscription.swift */; };
+		C20120000000000000000005 /* PushNotificationError.swift in Sources */ = {isa = PBXBuildFile; fileRef = C20100000000000000000005 /* PushNotificationError.swift */; };
+		C20120000000000000000006 /* KeychainStoreError.swift in Sources */ = {isa = PBXBuildFile; fileRef = C20100000000000000000006 /* KeychainStoreError.swift */; };
+		C20120000000000000000007 /* PushSubscriptionKeyStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = C20100000000000000000007 /* PushSubscriptionKeyStore.swift */; };
+		C20120000000000000000008 /* PushSubscriptionsAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = C20100000000000000000008 /* PushSubscriptionsAPI.swift */; };
+		C20120000000000000000009 /* PushNotificationRegistrationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = C20100000000000000000009 /* PushNotificationRegistrationService.swift */; };
+		C2012000000000000000000A /* PushNotificationAppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = C2010000000000000000000A /* PushNotificationAppDelegate.swift */; };
+		C2012000000000000000000B /* PushNotificationSettingsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = C2010000000000000000000B /* PushNotificationSettingsViewModel.swift */; };
+		C2012000000000000000000C /* PushNotificationSettingsSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = C2010000000000000000000C /* PushNotificationSettingsSheet.swift */; };
+		C2012000000000000000000D /* WebPushRelayPayload.swift in Sources */ = {isa = PBXBuildFile; fileRef = C2010000000000000000000D /* WebPushRelayPayload.swift */; };
+		C2012000000000000000000E /* WebPushNotificationContent.swift in Sources */ = {isa = PBXBuildFile; fileRef = C2010000000000000000000E /* WebPushNotificationContent.swift */; };
+		C2012000000000000000000F /* WebPushNotification.swift in Sources */ = {isa = PBXBuildFile; fileRef = C2010000000000000000000F /* WebPushNotification.swift */; };
+		C20120000000000000000010 /* WebPushNotificationData.swift in Sources */ = {isa = PBXBuildFile; fileRef = C20100000000000000000010 /* WebPushNotificationData.swift */; };
+		C20120000000000000000011 /* WebPushDecryptor.swift in Sources */ = {isa = PBXBuildFile; fileRef = C20100000000000000000011 /* WebPushDecryptor.swift */; };
+		C20220000000000000000001 /* KeychainStoreError.swift in Sources */ = {isa = PBXBuildFile; fileRef = C20100000000000000000006 /* KeychainStoreError.swift */; };
+		C20220000000000000000002 /* PushSubscription.swift in Sources */ = {isa = PBXBuildFile; fileRef = C20100000000000000000001 /* PushSubscription.swift */; };
+		C20220000000000000000003 /* PushNotificationSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = C20100000000000000000002 /* PushNotificationSettings.swift */; };
+		C20220000000000000000004 /* WebPushKeyMaterial.swift in Sources */ = {isa = PBXBuildFile; fileRef = C20100000000000000000003 /* WebPushKeyMaterial.swift */; };
+		C20220000000000000000005 /* PushNotificationError.swift in Sources */ = {isa = PBXBuildFile; fileRef = C20100000000000000000005 /* PushNotificationError.swift */; };
+		C20220000000000000000006 /* PushSubscriptionsAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = C20100000000000000000008 /* PushSubscriptionsAPI.swift */; };
 		C2CDEE17C3DA49B9FAA9A2BF /* View+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = B175FDF1F0E742558BF76A88 /* View+Extensions.swift */; };
 		C5D8F1A23B4E5C7D9F0A1B2C /* UnfollowRequestBody.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7F3D12E8C4B4E2591A0F7D3 /* UnfollowRequestBody.swift */; };
 		C6D1E2F3A4B5061728394A5B /* AppConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8F1A2B3C4D5061728394A5B /* AppConstants.swift */; };
@@ -383,6 +422,13 @@
 			remoteGlobalIDString = B10070000000000000000001;
 			remoteInfo = VernissageShareExtension;
 		};
+		C20040000000000000000001 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = A10000131000000100000013 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = C20070000000000000000001;
+			remoteInfo = VernissageNotificationServiceExtension;
+		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -393,6 +439,7 @@
 			dstSubfolderSpec = 13;
 			files = (
 				B10020000000000000000003 /* VernissageShareExtension.appex in Embed Foundation Extensions */,
+				C20020000000000000000002 /* VernissageNotificationServiceExtension.appex in Embed Foundation Extensions */,
 			);
 			name = "Embed Foundation Extensions";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -587,6 +634,27 @@
 		C1D2E3F40516273849A5B6C7 /* ImageContextMenu.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageContextMenu.swift; sourceTree = "<group>"; };
 		C1D2E3F4A5B60718293A4B5D /* MuteSectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MuteSectionView.swift; sourceTree = "<group>"; };
 		C1E9A4B52D7F4C8E9A0B1C2D /* HashtagsAPI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HashtagsAPI.swift; sourceTree = "<group>"; };
+		C20010000000000000000001 /* VernissageNotificationServiceExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = VernissageNotificationServiceExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		C20010000000000000000002 /* NotificationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationService.swift; sourceTree = "<group>"; };
+		C20010000000000000000003 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		C20010000000000000000004 /* VernissageNotificationServiceExtension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = VernissageNotificationServiceExtension.entitlements; sourceTree = "<group>"; };
+		C20100000000000000000001 /* PushSubscription.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PushSubscription.swift; sourceTree = "<group>"; };
+		C20100000000000000000002 /* PushNotificationSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PushNotificationSettings.swift; sourceTree = "<group>"; };
+		C20100000000000000000003 /* WebPushKeyMaterial.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebPushKeyMaterial.swift; sourceTree = "<group>"; };
+		C20100000000000000000004 /* StoredPushSubscription.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoredPushSubscription.swift; sourceTree = "<group>"; };
+		C20100000000000000000005 /* PushNotificationError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PushNotificationError.swift; sourceTree = "<group>"; };
+		C20100000000000000000006 /* KeychainStoreError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeychainStoreError.swift; sourceTree = "<group>"; };
+		C20100000000000000000007 /* PushSubscriptionKeyStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PushSubscriptionKeyStore.swift; sourceTree = "<group>"; };
+		C20100000000000000000008 /* PushSubscriptionsAPI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PushSubscriptionsAPI.swift; sourceTree = "<group>"; };
+		C20100000000000000000009 /* PushNotificationRegistrationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PushNotificationRegistrationService.swift; sourceTree = "<group>"; };
+		C2010000000000000000000A /* PushNotificationAppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PushNotificationAppDelegate.swift; sourceTree = "<group>"; };
+		C2010000000000000000000B /* PushNotificationSettingsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PushNotificationSettingsViewModel.swift; sourceTree = "<group>"; };
+		C2010000000000000000000C /* PushNotificationSettingsSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PushNotificationSettingsSheet.swift; sourceTree = "<group>"; };
+		C2010000000000000000000D /* WebPushRelayPayload.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebPushRelayPayload.swift; sourceTree = "<group>"; };
+		C2010000000000000000000E /* WebPushNotificationContent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebPushNotificationContent.swift; sourceTree = "<group>"; };
+		C2010000000000000000000F /* WebPushNotification.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebPushNotification.swift; sourceTree = "<group>"; };
+		C20100000000000000000010 /* WebPushNotificationData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebPushNotificationData.swift; sourceTree = "<group>"; };
+		C20100000000000000000011 /* WebPushDecryptor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebPushDecryptor.swift; sourceTree = "<group>"; };
 		C2EB5AC5BBC465732E97A88C /* PublicSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PublicSettings.swift; sourceTree = "<group>"; };
 		C2F80484378DAEDC016320B5 /* StatusBoostedByView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatusBoostedByView.swift; sourceTree = "<group>"; };
 		C3E3BBAD070DCBF9869BE9BE /* InstanceConfiguration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InstanceConfiguration.swift; sourceTree = "<group>"; };
@@ -676,6 +744,13 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		C20060000000000000000001 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
@@ -696,6 +771,7 @@
 			isa = PBXGroup;
 			children = (
 				FCEF3644224F22E899735EA6 /* JWTClaims.swift */,
+				C20100000000000000000011 /* WebPushDecryptor.swift */,
 			);
 			path = Utilities;
 			sourceTree = "<group>";
@@ -714,6 +790,9 @@
 				7346F75D346FFF7C89BF486A /* OAuthAPI.swift */,
 				77220C8242DA375F71EEA304 /* OAuthCoordinator.swift */,
 				70A6B03BACC8707AC2843E5C /* OAuthPresentationContextProvider.swift */,
+				C20100000000000000000009 /* PushNotificationRegistrationService.swift */,
+				C20100000000000000000007 /* PushSubscriptionKeyStore.swift */,
+				C20100000000000000000008 /* PushSubscriptionsAPI.swift */,
 				A90000000000000000000013 /* RegistrationAPI.swift */,
 				675702344B860EF8B0092532 /* TimelinesAPI.swift */,
 				882950693FF8337F91D9B656 /* NotificationsAPI.swift */,
@@ -767,6 +846,7 @@
 				2568AEB43647E3B836487D74 /* FeaturedUsersViewModel.swift */,
 				B1C2D3E4F5A60718293A4B5C /* HashtagTimelineViewModel.swift */,
 				B9C0D1E2F30415263748596A /* CategoryTimelineViewModel.swift */,
+				C2010000000000000000000B /* PushNotificationSettingsViewModel.swift */,
 				5631801C286E3E47483C993D /* NotificationsViewModel.swift */,
 				04AA4FD88119912ADD03E16E /* StatusUsersListViewModel.swift */,
 				83488B6ED83E5F4CF6390DF5 /* TimelineViewModel.swift */,
@@ -806,6 +886,9 @@
 				91297C5F8F98391A62775A3C /* Location.swift */,
 				FB772D021FDE64E08A9EC3D5 /* NewStatusRequest.swift */,
 				B31953BA22EB5727CE00099A /* NotificationsCount.swift */,
+				C20100000000000000000002 /* PushNotificationSettings.swift */,
+				C20100000000000000000005 /* PushNotificationError.swift */,
+				C20100000000000000000001 /* PushSubscription.swift */,
 				FE5F86FA93A009171A2CF82C /* OAuthDynamicClientRegistrationRequest.swift */,
 				37B1ECFCCEBF741D0ABA535C /* OAuthDynamicClientRegistrationResponse.swift */,
 				447CAFF2EE3F576725A05076 /* OAuthTokenResponse.swift */,
@@ -821,6 +904,7 @@
 				944467CEC08552E2D51C5C98 /* SharedBusinessCardMessage.swift */,
 				19FA453E0E3C4F7BC4E8DB8F /* SharedBusinessCardMessageRequest.swift */,
 				2BEE34FBC3AD51F356E663D6 /* SharedBusinessCardRequest.swift */,
+				C20100000000000000000004 /* StoredPushSubscription.swift */,
 				A027E40035C83A69E0A654E1 /* Status.swift */,
 				4CEE2F2F6F28178E6EF98BD5 /* StatusCategory.swift */,
 				F45FE1813051B74D9E53909D /* StatusComposeRequest.swift */,
@@ -834,6 +918,12 @@
 				1B9BDDB9571C677239E12503 /* UserMuteRequestBody.swift */,
 				A7F3D12E8C4B4E2591A0F7D3 /* UnfollowRequestBody.swift */,
 				8726757074BEC7A25FCD7317 /* UserSetting.swift */,
+				C2010000000000000000000F /* WebPushNotification.swift */,
+				C2010000000000000000000E /* WebPushNotificationContent.swift */,
+				C20100000000000000000010 /* WebPushNotificationData.swift */,
+				C20100000000000000000003 /* WebPushKeyMaterial.swift */,
+				C2010000000000000000000D /* WebPushRelayPayload.swift */,
+				C20100000000000000000006 /* KeychainStoreError.swift */,
 				43C1B5B6F019D1E6DCE5AEB1 /* CuratedInstance.swift */,
 			);
 			path = Models;
@@ -843,6 +933,7 @@
 			isa = PBXGroup;
 			children = (
 				9C25A637CE700DB197BFDDB1 /* MainTabScreen.swift */,
+				C2010000000000000000000A /* PushNotificationAppDelegate.swift */,
 				E33B48E30A40D2F7CF10905F /* RootScreen.swift */,
 				9312BFB468D944AFD57A385A /* VernissageMobileApp.swift */,
 			);
@@ -1006,6 +1097,7 @@
 			children = (
 				A10000071000000100000007 /* VernissageMobile */,
 				B10030000000000000000001 /* VernissageShareExtension */,
+				C20030000000000000000001 /* VernissageNotificationServiceExtension */,
 				F8A8C35D2F4703AE0004F445 /* Resources */,
 				F8A8C35B2F46FEA50004F445 /* LICENSE */,
 				F8A8C35C2F46FEA50004F445 /* README.md */,
@@ -1029,6 +1121,7 @@
 			children = (
 				A10000041000000100000004 /* VernissageMobile.app */,
 				B10010000000000000000001 /* VernissageShareExtension.appex */,
+				C20010000000000000000001 /* VernissageNotificationServiceExtension.appex */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -1043,6 +1136,7 @@
 				8D8046055722414137993C52 /* ProfileAvatarSheet.swift */,
 				EEC7F9D7EFFFAF5CA40AC8E5 /* ProfileEditSheet.swift */,
 				B8E6D03030CFE862C41A0006 /* ProfileHeaderSheet.swift */,
+				C2010000000000000000000C /* PushNotificationSettingsSheet.swift */,
 				711E780BE3F7B889F554B39A /* ProfileQRCodeSheet.swift */,
 				7EF44DFD9FD38928314F4858 /* SharedBusinessCardQRCodeSheet.swift */,
 				D7160EBD08AD76A9B6D658A6 /* SharedBusinessCardSheet.swift */,
@@ -1082,6 +1176,16 @@
 			path = VernissageShareExtension;
 			sourceTree = "<group>";
 		};
+		C20030000000000000000001 /* VernissageNotificationServiceExtension */ = {
+			isa = PBXGroup;
+			children = (
+				C20010000000000000000002 /* NotificationService.swift */,
+				C20010000000000000000003 /* Info.plist */,
+				C20010000000000000000004 /* VernissageNotificationServiceExtension.entitlements */,
+			);
+			path = VernissageNotificationServiceExtension;
+			sourceTree = "<group>";
+		};
 		F3CD11B717AB1DC5AF37D141 /* Sources */ = {
 			isa = PBXGroup;
 			children = (
@@ -1109,6 +1213,7 @@
 			);
 			dependencies = (
 				B10050000000000000000001 /* PBXTargetDependency */,
+				C20050000000000000000001 /* PBXTargetDependency */,
 			);
 			name = VernissageMobile;
 			packageProductDependencies = (
@@ -1144,6 +1249,25 @@
 			productReference = B10010000000000000000001 /* VernissageShareExtension.appex */;
 			productType = "com.apple.product-type.app-extension";
 		};
+		C20070000000000000000001 /* VernissageNotificationServiceExtension */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = C20080000000000000000003 /* Build configuration list for PBXNativeTarget "VernissageNotificationServiceExtension" */;
+			buildPhases = (
+				C20060000000000000000003 /* Sources */,
+				C20060000000000000000001 /* Frameworks */,
+				C20060000000000000000002 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = VernissageNotificationServiceExtension;
+			packageProductDependencies = (
+			);
+			productName = VernissageNotificationServiceExtension;
+			productReference = C20010000000000000000001 /* VernissageNotificationServiceExtension.appex */;
+			productType = "com.apple.product-type.app-extension";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -1158,6 +1282,9 @@
 						CreatedOnToolsVersion = 26.0;
 					};
 					B10070000000000000000001 = {
+						CreatedOnToolsVersion = 26.0;
+					};
+					C20070000000000000000001 = {
 						CreatedOnToolsVersion = 26.0;
 					};
 				};
@@ -1182,6 +1309,7 @@
 			targets = (
 				A10000091000000100000009 /* VernissageMobile */,
 				B10070000000000000000001 /* VernissageShareExtension */,
+				C20070000000000000000001 /* VernissageNotificationServiceExtension */,
 			);
 		};
 /* End PBXProject section */
@@ -1202,6 +1330,13 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		C20060000000000000000002 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
@@ -1210,6 +1345,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				F86185052F4B900F00C3AFB8 /* MainTabScreen.swift in Sources */,
+				C2012000000000000000000A /* PushNotificationAppDelegate.swift in Sources */,
 				F86185062F4B900F00C3AFB8 /* RootScreen.swift in Sources */,
 				F86185072F4B900F00C3AFB8 /* VernissageMobileApp.swift in Sources */,
 				F86185082F4B900F00C3AFB8 /* AppNotification.swift in Sources */,
@@ -1225,6 +1361,16 @@
 				F86185122F4B900F00C3AFB8 /* AttachmentUpdateRequest.swift in Sources */,
 				F86185132F4B900F00C3AFB8 /* BusinessCard.swift in Sources */,
 				A90000000000000000000001 /* BooleanResult.swift in Sources */,
+				C20120000000000000000006 /* KeychainStoreError.swift in Sources */,
+				C20120000000000000000005 /* PushNotificationError.swift in Sources */,
+				C20120000000000000000002 /* PushNotificationSettings.swift in Sources */,
+				C20120000000000000000001 /* PushSubscription.swift in Sources */,
+				C20120000000000000000004 /* StoredPushSubscription.swift in Sources */,
+				C20120000000000000000003 /* WebPushKeyMaterial.swift in Sources */,
+				C2012000000000000000000F /* WebPushNotification.swift in Sources */,
+				C2012000000000000000000E /* WebPushNotificationContent.swift in Sources */,
+				C20120000000000000000010 /* WebPushNotificationData.swift in Sources */,
+				C2012000000000000000000D /* WebPushRelayPayload.swift in Sources */,
 				F86185142F4B900F00C3AFB8 /* Category.swift in Sources */,
 				F86185152F4B900F00C3AFB8 /* ContentWarningRequestBody.swift in Sources */,
 				F86185162F4B900F00C3AFB8 /* Country.swift in Sources */,
@@ -1439,11 +1585,17 @@
 				E1F2A3B4C5D60718293A4B5C /* AppToastModifier.swift in Sources */,
 				F86185C32F4B900F00C3AFB8 /* CuratedInstance.swift in Sources */,
 				F86185C42F4B900F00C3AFB8 /* CuratedInstancesAPI.swift in Sources */,
+				C20120000000000000000009 /* PushNotificationRegistrationService.swift in Sources */,
+				C20120000000000000000007 /* PushSubscriptionKeyStore.swift in Sources */,
+				C20120000000000000000008 /* PushSubscriptionsAPI.swift in Sources */,
 				F86185C52F4B900F00C3AFB8 /* CuratedInstanceCardView.swift in Sources */,
 				F86185C62F4B900F00C3AFB8 /* HashtagTimelineScreen.swift in Sources */,
 				F86185C72F4B900F00C3AFB8 /* HashtagTimelineViewModel.swift in Sources */,
 				F86185C82F4B900F00C3AFB8 /* CategoryTimelineScreen.swift in Sources */,
 				F86185C92F4B900F00C3AFB8 /* CategoryTimelineViewModel.swift in Sources */,
+				C2012000000000000000000B /* PushNotificationSettingsViewModel.swift in Sources */,
+				C2012000000000000000000C /* PushNotificationSettingsSheet.swift in Sources */,
+				C20120000000000000000011 /* WebPushDecryptor.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1511,6 +1663,11 @@
 				A31EAF2C765024FB2ECBFBD3 /* AppState.swift in Sources */,
 				5D5724BE8B99DA14CEF6354F /* DateParser.swift in Sources */,
 				1A1908374B115DCC2F18FA03 /* JWTInspector.swift in Sources */,
+				C20220000000000000000001 /* KeychainStoreError.swift in Sources */,
+				C20220000000000000000005 /* PushNotificationError.swift in Sources */,
+				C20220000000000000000003 /* PushNotificationSettings.swift in Sources */,
+				C20220000000000000000002 /* PushSubscription.swift in Sources */,
+				C20220000000000000000004 /* WebPushKeyMaterial.swift in Sources */,
 				B2F0A6B7F4DC8FEEF0A09467 /* KeychainStore.swift in Sources */,
 				4B56E0368B85B9D478789715 /* MultipartFormDataBuilder.swift in Sources */,
 				62ADBDCAD3D9392A0B541A0E /* OAuthAPI.swift in Sources */,
@@ -1527,6 +1684,7 @@
 				0F8840F4D500D0BAE307926E /* BusinessCardsAPI.swift in Sources */,
 				7CD9A79836BAD8BF90FF050D /* InstanceAPI.swift in Sources */,
 				1BF7CFB2630F81B73AD3E497 /* ReportsAPI.swift in Sources */,
+				C20220000000000000000006 /* PushSubscriptionsAPI.swift in Sources */,
 				1CA81F1E7FD4CC650FFA818C /* URLSanitizer.swift in Sources */,
 				28EAD7C29B755BB0FA158FAB /* StoredAccount.swift in Sources */,
 				7A34C7C29E2330D9B44B466D /* JWTClaims.swift in Sources */,
@@ -1575,6 +1733,28 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		C20060000000000000000003 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				C20020000000000000000001 /* NotificationService.swift in Sources */,
+				C2002000000000000000000D /* AppConstants.swift in Sources */,
+				C2002000000000000000000E /* Data+Extensions.swift in Sources */,
+				C2002000000000000000000C /* KeychainStoreError.swift in Sources */,
+				C20020000000000000000003 /* KeychainStore.swift in Sources */,
+				C2002000000000000000000B /* PushNotificationError.swift in Sources */,
+				C20020000000000000000010 /* PushNotificationSettings.swift in Sources */,
+				C20020000000000000000004 /* PushSubscriptionKeyStore.swift in Sources */,
+				C20020000000000000000005 /* StoredPushSubscription.swift in Sources */,
+				C20020000000000000000006 /* WebPushKeyMaterial.swift in Sources */,
+				C2002000000000000000000F /* WebPushDecryptor.swift in Sources */,
+				C20020000000000000000009 /* WebPushNotification.swift in Sources */,
+				C20020000000000000000008 /* WebPushNotificationContent.swift in Sources */,
+				C2002000000000000000000A /* WebPushNotificationData.swift in Sources */,
+				C20020000000000000000007 /* WebPushRelayPayload.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
@@ -1582,6 +1762,11 @@
 			isa = PBXTargetDependency;
 			target = B10070000000000000000001 /* VernissageShareExtension */;
 			targetProxy = B10040000000000000000001 /* PBXContainerItemProxy */;
+		};
+		C20050000000000000000001 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = C20070000000000000000001 /* VernissageNotificationServiceExtension */;
+			targetProxy = C20040000000000000000001 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -1719,7 +1904,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.5.2;
+				MARKETING_VERSION = 1.6.0;
 				PRODUCT_BUNDLE_IDENTIFIER = photos.vernissage.ios;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
@@ -1747,7 +1932,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.5.2;
+				MARKETING_VERSION = 1.6.0;
 				PRODUCT_BUNDLE_IDENTIFIER = photos.vernissage.ios;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
@@ -1773,7 +1958,7 @@
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 1.5.2;
+				MARKETING_VERSION = 1.6.0;
 				PRODUCT_BUNDLE_IDENTIFIER = photos.vernissage.ios.share;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
@@ -1801,12 +1986,68 @@
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 1.5.2;
+				MARKETING_VERSION = 1.6.0;
 				PRODUCT_BUNDLE_IDENTIFIER = photos.vernissage.ios.share;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "SHARE_EXTENSION $(inherited)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Release;
+		};
+		C20080000000000000000001 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				APPLICATION_EXTENSION_API_ONLY = YES;
+				CODE_SIGN_ENTITLEMENTS = VernissageNotificationServiceExtension/VernissageNotificationServiceExtension.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = VernissageNotificationServiceExtension/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = "Vernissage Notifications";
+				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 1.6.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "photos.vernissage.ios.notification-service";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "NOTIFICATION_SERVICE_EXTENSION $(inherited)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Debug;
+		};
+		C20080000000000000000002 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				APPLICATION_EXTENSION_API_ONLY = YES;
+				CODE_SIGN_ENTITLEMENTS = VernissageNotificationServiceExtension/VernissageNotificationServiceExtension.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = VernissageNotificationServiceExtension/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = "Vernissage Notifications";
+				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 1.6.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "photos.vernissage.ios.notification-service";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "NOTIFICATION_SERVICE_EXTENSION $(inherited)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = 1;
@@ -1839,6 +2080,15 @@
 			buildConfigurations = (
 				B10080000000000000000001 /* Debug */,
 				B10080000000000000000002 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		C20080000000000000000003 /* Build configuration list for PBXNativeTarget "VernissageNotificationServiceExtension" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				C20080000000000000000001 /* Debug */,
+				C20080000000000000000002 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

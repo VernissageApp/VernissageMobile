@@ -6,6 +6,8 @@
 
 import Foundation
 
-struct PagedResult<T: Decodable & Sendable>: Decodable, Sendable {
-    let data: [T]?
+struct WebPushNotification: Decodable {
+    let title: String?
+    let body: String?
+    let data: WebPushNotificationData?
 }

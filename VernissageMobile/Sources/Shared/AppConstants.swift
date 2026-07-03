@@ -39,6 +39,17 @@ enum AppConstants {
         static let scope = "read write profile"
     }
 
+    enum PushNotifications {
+        static let relayBaseURL = "https://vernissage-relay.fly.dev"
+        static let relayPath = "/push"
+        static let keychainService = "photos.vernissage.ios.webpush"
+        static let keychainAccessGroup = "B2U9FEKYP8.photos.vernissage.ios.push"
+        static let developmentEnvironment = "development"
+        static let productionEnvironment = "production"
+        static let fallbackTitle = "Vernissage"
+        static let fallbackBody = "New notification"
+    }
+
     enum Toast {
         static let visibleDurationSeconds: Double = 5
         static let maxSubtitleLines = 6

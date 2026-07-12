@@ -21,6 +21,7 @@ final class APIServiceContainer {
     let businessCards: BusinessCardsAPI
     let instance: InstanceAPI
     let reports: ReportsAPI
+    let pushSubscriptions: PushSubscriptionsAPI
 
     init(appState: AppState) {
         self.appState = appState
@@ -35,9 +36,10 @@ final class APIServiceContainer {
         businessCards = BusinessCardsAPI(appState: appState)
         instance = InstanceAPI(appState: appState)
         reports = ReportsAPI(appState: appState)
+        pushSubscriptions = PushSubscriptionsAPI(appState: appState)
     }
 
-    func authorizedRequest<T: Decodable>(
+    func authorizedRequest<T: Decodable & Sendable>(
         account: StoredAccount,
         path: String,
         method: String = "GET",

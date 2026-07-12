@@ -6,6 +6,6 @@
 
 import Foundation
 
-struct PagedResult<T: Decodable & Sendable>: Decodable, Sendable {
-    let data: [T]?
+extension Notification.Name {
+    static let pushNotificationReceived = Notification.Name("photos.vernissage.pushNotificationReceived")
 }

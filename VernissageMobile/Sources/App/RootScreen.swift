@@ -46,5 +46,10 @@ struct RootScreen: View {
                 await appState.refreshUnreadNotificationsCount()
             }
         }
+        .onReceive(NotificationCenter.default.publisher(for: .pushNotificationReceived)) { _ in
+            Task {
+                await appState.refreshUnreadNotificationsCount()
+            }
+        }
     }
 }

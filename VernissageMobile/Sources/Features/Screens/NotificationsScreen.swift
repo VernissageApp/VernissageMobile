@@ -10,6 +10,7 @@ struct NotificationsScreen: View {
     @Environment(AppState.self) private var appState
     @State private var viewModel = NotificationsViewModel()
     @State private var refreshFeedbackTrigger = false
+    @State private var isPushSettingsPresented = false
 
     var body: some View {
         @Bindable var bindableViewModel = viewModel
@@ -59,6 +60,18 @@ struct NotificationsScreen: View {
         }
         .navigationTitle("Notifications")
         .navigationBarTitleDisplayMode(.inline)
+        .toolbar {
+            ToolbarItem(placement: .topBarTrailing) {
+                Button("Notification settings", systemImage: "gearshape") {
+                    isPushSettingsPresented = true
+                }
+            }
+        }
+        .sheet(isPresented: $isPushSettingsPresented) {
+            PushNotificationSettingsSheet()
+                .presentationDetents([.large])
+                .presentationDragIndicator(.visible)
+        }
         .onFirstAppear {
             let didLoad = await viewModel.load(using: appState)
             guard didLoad else {

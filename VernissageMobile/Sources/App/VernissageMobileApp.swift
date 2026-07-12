@@ -9,6 +9,7 @@ import Nuke
 
 @main
 struct VernissageMobileApp: App {
+    @UIApplicationDelegateAdaptor(PushNotificationAppDelegate.self) private var pushNotificationAppDelegate
     @State private var appState = AppState()
 
     private static let imagePipelineCacheName = "photos.vernissage.vernissage.data-cache"

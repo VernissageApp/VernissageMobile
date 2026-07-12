@@ -9,32 +9,23 @@ import SwiftUI
 struct NotificationsToolbarButtonView: View {
     @Environment(AppState.self) private var appState
 
-    private var badgeCount: Int? {
-        let count = appState.unreadNotificationsCount
-        guard count > 0 else {
-            return nil
-        }
-
-        return count > 99 ? 99 : count
+    private var hasUnreadNotifications: Bool {
+        appState.unreadNotificationsCount > 0
     }
 
     var body: some View {
         NavigationLink {
             NotificationsScreen()
         } label: {
-            ZStack(alignment: .topTrailing) {
-                Image(systemName: "bell")
-                    .font(.system(size: 15, weight: .semibold))
-                    .foregroundStyle(.primary)
-                    .frame(width: 32, height: 32)
-            }
-            .frame(width: 32, height: 32)
+            Image(systemName: hasUnreadNotifications ? "bell.badge" : "bell")
+                .font(.system(size: 15, weight: .semibold))
+                .symbolRenderingMode(.palette)
+                .foregroundStyle(hasUnreadNotifications ? .red : .primary, .primary)
+                .frame(width: 32, height: 32)
         }
         .frame(width: 44, height: 44)
         .buttonStyle(.plain)
         .accessibilityLabel("Notifications")
-        .applyIfLet(badgeCount) { view, count in
-            view.badge(count)
-        }
+        .accessibilityValue(hasUnreadNotifications ? "Unread notifications" : "No unread notifications")
     }
 }

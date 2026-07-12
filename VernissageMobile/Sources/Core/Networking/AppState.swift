@@ -6,6 +6,7 @@
 
 import Foundation
 import Observation
+import UserNotifications
 
 @MainActor
 @Observable
@@ -193,14 +194,25 @@ final class AppState {
     func refreshUnreadNotificationsCount() async {
         guard activeAccount != nil else {
             unreadNotificationsCount = 0
+            await updateApplicationBadgeCount(0)
             return
         }
 
         do {
             let count = try await api.notifications.fetchNotificationsCount()
-            self.unreadNotificationsCount = max(0, count.amount ?? 0)
+            let normalizedCount = max(0, count.amount ?? 0)
+            unreadNotificationsCount = normalizedCount
+            await updateApplicationBadgeCount(normalizedCount)
         } catch {
             // Keep the current badge state when counter refresh fails.
+        }
+    }
+
+    private func updateApplicationBadgeCount(_ count: Int) async {
+        do {
+            try await UNUserNotificationCenter.current().setBadgeCount(count)
+        } catch {
+            // Keep the existing system badge when the app cannot update it.
         }
     }
 

@@ -33,7 +33,7 @@ enum APIClient {
         return decoder
     }()
 
-    static func requestJSON<T: Decodable>(
+    static func requestJSON<T: Decodable & Sendable>(
         baseURL: URL,
         path: String,
         method: String,

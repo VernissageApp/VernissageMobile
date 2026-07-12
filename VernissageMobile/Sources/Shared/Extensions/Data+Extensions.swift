@@ -4,7 +4,7 @@
 //  Licensed under the Apache License 2.0.
 //
 
-import SwiftUI
+import Foundation
 
 extension Data {
     init?(base64URLEncoded string: String) {
@@ -22,5 +22,12 @@ extension Data {
 
     mutating func appendUtf8(_ value: String) {
         append(Data(value.utf8))
+    }
+
+    func base64URLEncodedString() -> String {
+        base64EncodedString()
+            .replacingOccurrences(of: "+", with: "-")
+            .replacingOccurrences(of: "/", with: "_")
+            .replacingOccurrences(of: "=", with: "")
     }
 }

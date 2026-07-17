@@ -122,6 +122,10 @@ struct EditorsScreen: View {
         } else {
             LazyVStack(spacing: 8) {
                 ForEach(photosViewModel.photoStatuses, id: \.id) { status in
+                    if status.id == photosViewModel.caughtUpMarkerStatusID {
+                        TimelineCaughtUpView()
+                    }
+
                     NavigationLink {
                         StatusDetailScreen(status: status)
                     } label: {

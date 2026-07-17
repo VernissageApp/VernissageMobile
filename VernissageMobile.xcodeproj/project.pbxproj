@@ -191,6 +191,10 @@
 		D520EC3483A61CA119907983 /* OAuthDynamicClientRegistrationRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = FE5F86FA93A009171A2CF82C /* OAuthDynamicClientRegistrationRequest.swift */; };
 		D52F13E40EC3ED9342CF1F1E /* InstanceAttachmentsConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB20F2FF8C84EBB75E11CD3F /* InstanceAttachmentsConfiguration.swift */; };
 		D6F46F3F84B917F98482E992 /* InstanceRule.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE834B71F189045EB10A1EC7 /* InstanceRule.swift */; };
+		D71710000000000000000001 /* TimelineMarker.swift in Sources */ = {isa = PBXBuildFile; fileRef = D71700000000000000000001 /* TimelineMarker.swift */; };
+		D71710000000000000000002 /* TimelineMarkerTimeline.swift in Sources */ = {isa = PBXBuildFile; fileRef = D71700000000000000000002 /* TimelineMarkerTimeline.swift */; };
+		D71710000000000000000003 /* TimelineMarkersAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = D71700000000000000000003 /* TimelineMarkersAPI.swift */; };
+		D71710000000000000000004 /* TimelineCaughtUpView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D71700000000000000000004 /* TimelineCaughtUpView.swift */; };
 		D7E1F2A3B4C5061728394A5B /* AppConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8F1A2B3C4D5061728394A5B /* AppConstants.swift */; };
 		D84BDB16F488AFE52EAB3CCB /* SettingsAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF9D26D02EB51E0E7FA7E341 /* SettingsAPI.swift */; };
 		D89041B3411DF3CC4F2BECBA /* OAuthDynamicClientRegistrationResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37B1ECFCCEBF741D0ABA535C /* OAuthDynamicClientRegistrationResponse.swift */; };
@@ -672,6 +676,10 @@
 		D471114D33CA28EB1D3625FB /* UpdateProfileFlexiField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpdateProfileFlexiField.swift; sourceTree = "<group>"; };
 		D4C902C2788040D8D0F01FE5 /* ComposeAttachmentDetailsSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ComposeAttachmentDetailsSheet.swift; sourceTree = "<group>"; };
 		D7160EBD08AD76A9B6D658A6 /* SharedBusinessCardSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SharedBusinessCardSheet.swift; sourceTree = "<group>"; };
+		D71700000000000000000001 /* TimelineMarker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimelineMarker.swift; sourceTree = "<group>"; };
+		D71700000000000000000002 /* TimelineMarkerTimeline.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimelineMarkerTimeline.swift; sourceTree = "<group>"; };
+		D71700000000000000000003 /* TimelineMarkersAPI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimelineMarkersAPI.swift; sourceTree = "<group>"; };
+		D71700000000000000000004 /* TimelineCaughtUpView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimelineCaughtUpView.swift; sourceTree = "<group>"; };
 		DB828527D20F787C99FFC214 /* MarkdownFormattedTextView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MarkdownFormattedTextView.swift; sourceTree = "<group>"; };
 		DC3DAEA7229BBF69DDFC3B56 /* AttachmentBlurHashPlaceholderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AttachmentBlurHashPlaceholderView.swift; sourceTree = "<group>"; };
 		DC766B2930578D016893631A /* InstanceStatusesConfiguration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InstanceStatusesConfiguration.swift; sourceTree = "<group>"; };
@@ -797,6 +805,7 @@
 				C20100000000000000000008 /* PushSubscriptionsAPI.swift */,
 				A90000000000000000000013 /* RegistrationAPI.swift */,
 				675702344B860EF8B0092532 /* TimelinesAPI.swift */,
+				D71700000000000000000003 /* TimelineMarkersAPI.swift */,
 				882950693FF8337F91D9B656 /* NotificationsAPI.swift */,
 				C1E9A4B52D7F4C8E9A0B1C2D /* HashtagsAPI.swift */,
 				E41AF75710729DE5D6D207C4 /* SearchAPI.swift */,
@@ -917,6 +926,8 @@
 				0532E8E065095340FFDF4C1E /* UploadedAttachment.swift */,
 				402C31AA846D114CC581C25C /* User.swift */,
 				655A95BF2F7CC1F7F45A07B2 /* UserBlockedDomainRequest.swift */,
+				D71700000000000000000001 /* TimelineMarker.swift */,
+				D71700000000000000000002 /* TimelineMarkerTimeline.swift */,
 				1B9BDDB9571C677239E12503 /* UserMuteRequestBody.swift */,
 				A7F3D12E8C4B4E2591A0F7D3 /* UnfollowRequestBody.swift */,
 				8726757074BEC7A25FCD7317 /* UserSetting.swift */,
@@ -1043,6 +1054,7 @@
 				E94EE05605675988CA362E0F /* SettingsToolbarButtonView.swift */,
 				C2F80484378DAEDC016320B5 /* StatusBoostedByView.swift */,
 				721D2311329E1ACBC3B3924D /* StatusDetailCommentRowView.swift */,
+				D71700000000000000000004 /* TimelineCaughtUpView.swift */,
 				4A28D21DBD8495BF2D343E88 /* TimelineAuthorOverlayView.swift */,
 				AB6F3F2D5DA757ADD0D618B2 /* TimelineContentWarningOverlayView.swift */,
 				E808926E6797E4F5162219F2 /* TimelineImageCountOverlayView.swift */,
@@ -1347,6 +1359,10 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D71710000000000000000001 /* TimelineMarker.swift in Sources */,
+				D71710000000000000000002 /* TimelineMarkerTimeline.swift in Sources */,
+				D71710000000000000000003 /* TimelineMarkersAPI.swift in Sources */,
+				D71710000000000000000004 /* TimelineCaughtUpView.swift in Sources */,
 				F86185052F4B900F00C3AFB8 /* MainTabScreen.swift in Sources */,
 				C2012000000000000000000A /* PushNotificationAppDelegate.swift in Sources */,
 				F86185062F4B900F00C3AFB8 /* RootScreen.swift in Sources */,
@@ -1908,7 +1924,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.6.0;
+				MARKETING_VERSION = 1.7.0;
 				PRODUCT_BUNDLE_IDENTIFIER = photos.vernissage.ios;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
@@ -1936,7 +1952,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.6.0;
+				MARKETING_VERSION = 1.7.0;
 				PRODUCT_BUNDLE_IDENTIFIER = photos.vernissage.ios;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
@@ -1962,7 +1978,7 @@
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 1.6.0;
+				MARKETING_VERSION = 1.7.0;
 				PRODUCT_BUNDLE_IDENTIFIER = photos.vernissage.ios.share;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
@@ -1990,7 +2006,7 @@
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 1.6.0;
+				MARKETING_VERSION = 1.7.0;
 				PRODUCT_BUNDLE_IDENTIFIER = photos.vernissage.ios.share;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
@@ -2018,7 +2034,7 @@
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 1.6.0;
+				MARKETING_VERSION = 1.7.0;
 				PRODUCT_BUNDLE_IDENTIFIER = "photos.vernissage.ios.notification-service";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
@@ -2046,7 +2062,7 @@
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 1.6.0;
+				MARKETING_VERSION = 1.7.0;
 				PRODUCT_BUNDLE_IDENTIFIER = "photos.vernissage.ios.notification-service";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;

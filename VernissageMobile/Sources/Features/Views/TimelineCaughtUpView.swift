@@ -7,8 +7,7 @@
 import SwiftUI
 
 struct TimelineCaughtUpView: View {
-    @Environment(\.colorScheme) private var colorScheme
-    @ScaledMetric(relativeTo: .largeTitle) private var iconSize = 64.0
+    @ScaledMetric(relativeTo: .largeTitle) private var iconSize = 66.0
 
     var body: some View {
         VStack(spacing: 0) {
@@ -16,6 +15,12 @@ struct TimelineCaughtUpView: View {
                 .resizable()
                 .scaledToFit()
                 .frame(width: iconSize, height: iconSize)
+                .padding(9)
+                .glassEffect(
+                    .regular.tint(Color.primary.opacity(0.10)),
+                    in: .circle
+                )
+                .shadow(color: .black.opacity(0.14), radius: 12, x: 0, y: 5)
                 .accessibilityHidden(true)
 
             Text("You're all caught up")
@@ -23,7 +28,7 @@ struct TimelineCaughtUpView: View {
                 .bold()
                 .foregroundStyle(.primary)
                 .multilineTextAlignment(.center)
-                .padding(.top, 12)
+                .padding(.top, 16)
 
             Text("You've seen all new photos.")
                 .font(.subheadline)
@@ -48,22 +53,11 @@ struct TimelineCaughtUpView: View {
                     .frame(height: 1)
                     .accessibilityHidden(true)
             }
-            .padding(.top, 20)
+            .padding(.top, 24)
         }
         .frame(maxWidth: .infinity, alignment: .center)
         .padding(.horizontal, 24)
-        .padding(.vertical, 20)
-        .background(
-            colorScheme == .dark ? Color.white.opacity(0.09) : Color.secondary.opacity(0.06),
-            in: .rect(cornerRadius: 16)
-        )
-        .overlay {
-            RoundedRectangle(cornerRadius: 16)
-                .stroke(.tertiary, lineWidth: 1)
-                .accessibilityHidden(true)
-        }
-        .padding(.horizontal, 16)
-        .padding(.vertical, 8)
+        .padding(.vertical, 24)
         .accessibilityElement(children: .combine)
     }
 }

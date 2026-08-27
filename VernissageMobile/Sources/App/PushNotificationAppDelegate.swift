@@ -46,19 +46,24 @@ final class PushNotificationAppDelegate: NSObject, UIApplicationDelegate {
 
 extension PushNotificationAppDelegate: UNUserNotificationCenterDelegate {
     nonisolated func userNotificationCenter(_ center: UNUserNotificationCenter,
-                                             willPresent notification: UNNotification) async -> UNNotificationPresentationOptions {
-        notifyPushNotificationReceived()
-        return [.badge, .banner, .list, .sound]
+                                             willPresent notification: UNNotification,
+                                             withCompletionHandler completionHandler: @escaping @Sendable (UNNotificationPresentationOptions) -> Void) {
+        Task { @MainActor in
+            notifyPushNotificationReceived()
+            completionHandler([.badge, .banner, .list, .sound])
+        }
     }
 
     nonisolated func userNotificationCenter(_ center: UNUserNotificationCenter,
-                                             didReceive response: UNNotificationResponse) async {
-        notifyPushNotificationReceived()
+                                             didReceive response: UNNotificationResponse,
+                                             withCompletionHandler completionHandler: @escaping @Sendable () -> Void) {
+        Task { @MainActor in
+            notifyPushNotificationReceived()
+            completionHandler()
+        }
     }
 
-    nonisolated private func notifyPushNotificationReceived() {
-        Task { @MainActor in
-            NotificationCenter.default.post(name: .pushNotificationReceived, object: nil)
-        }
+    private func notifyPushNotificationReceived() {
+        NotificationCenter.default.post(name: .pushNotificationReceived, object: nil)
     }
 }

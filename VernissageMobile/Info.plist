@@ -53,10 +53,10 @@
 	<true/>
 	<key>UILaunchScreen</key>
 	<dict>
-		<key>UIImageName</key>
-		<string>SplashLogo</string>
 		<key>UIColorName</key>
 		<string>SplashColor</string>
+		<key>UIImageName</key>
+		<string>SplashLogo</string>
 	</dict>
 	<key>UISupportedInterfaceOrientations</key>
 	<array>

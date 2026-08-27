@@ -64,6 +64,10 @@ struct OtherTimelineScreen: View {
                     } else {
                         LazyVStack(spacing: 8) {
                             ForEach(activeViewModel.photoStatuses, id: \.id) { status in
+                                if status.id == activeViewModel.caughtUpMarkerStatusID {
+                                    TimelineCaughtUpView()
+                                }
+
                                 NavigationLink {
                                     StatusDetailScreen(status: status)
                                 } label: {

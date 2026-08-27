@@ -12,6 +12,7 @@ import Nuke
 @Observable
 final class TimelineViewModel {
     private(set) var statuses: [Status] = []
+    private(set) var caughtUpMarkerStatusID: String?
     private(set) var isLoading = false
     private(set) var isLoadingMore = false
     var errorMessage: String?
@@ -28,6 +29,21 @@ final class TimelineViewModel {
 
     init(kind: TimelineKind) {
         self.kind = kind
+    }
+
+    private var markerTimeline: TimelineMarkerTimeline? {
+        switch kind {
+        case .privateHome:
+            .private
+        case .local:
+            .local
+        case .editorsChoice:
+            .featured
+        case .global:
+            .federated
+        case .trending:
+            nil
+        }
     }
 
     func load(using appState: AppState, forceRefresh: Bool = false) async {
@@ -49,15 +65,22 @@ final class TimelineViewModel {
         }
 
         do {
+            async let previousMarkerStatusID = fetchPreviousMarkerStatusID(using: appState)
             let page = try await appState.api.timelines.fetchTimeline(
                 kind: kind,
                 maxId: nil
             )
+            let markerStatusID = await previousMarkerStatusID
+            let latestPhotoStatusID = page.data.first(where: \.hasAttachment)?.id
+
             statuses = page.data
+            caughtUpMarkerStatusID = markerStatusID == latestPhotoStatusID ? nil : markerStatusID
             prefetch(statuses: page.data)
             nextMaxId = page.maxId
             canLoadMore = page.maxId != nil && !page.data.isEmpty
             errorMessage = nil
+
+            await updateMarkerIfNeeded(using: appState, statusID: latestPhotoStatusID)
         } catch {
             if error.isCancellationLike {
                 return
@@ -120,5 +143,36 @@ final class TimelineViewModel {
         }
 
         imagePrefetcher.startPrefetching(with: imageURLs)
+    }
+
+    private func fetchPreviousMarkerStatusID(using appState: AppState) async -> String? {
+        guard let markerTimeline else {
+            return nil
+        }
+
+        do {
+            return try await TimelineMarkersAPI(appState: appState)
+                .fetchMarker(for: markerTimeline)?
+                .statusId
+        } catch {
+            return nil
+        }
+    }
+
+    private func updateMarkerIfNeeded(using appState: AppState, statusID: String?) async {
+        guard !Task.isCancelled,
+              let markerTimeline,
+              let statusID else {
+            return
+        }
+
+        do {
+            try await TimelineMarkersAPI(appState: appState).updateMarker(
+                for: markerTimeline,
+                statusId: statusID
+            )
+        } catch {
+            // Marker synchronization is best-effort and must not prevent the timeline from loading.
+        }
     }
 }

@@ -8,6 +8,7 @@ import FoundationModels
 import UIKit
 
 struct LocalAltTextGenerator {
+#if canImport(FoundationModels, _version: 2.0)
     static var isAvailable: Bool {
         guard #available(iOS 27.0, *) else {
             return false
@@ -47,4 +48,13 @@ struct LocalAltTextGenerator {
 
         return response.content.trimmingCharacters(in: .whitespacesAndNewlines).nilIfEmpty
     }
+#else
+    static var isAvailable: Bool {
+        false
+    }
+
+    static func generate(for _: UIImage) async throws -> String? {
+        nil
+    }
+#endif
 }

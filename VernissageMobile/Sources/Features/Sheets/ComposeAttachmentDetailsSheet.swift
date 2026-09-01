@@ -63,7 +63,7 @@ struct ComposeAttachmentDetailsSheet: View {
                     }
                 }
 
-                if isOpenAIEnabled {
+                if canGenerateAltText {
                     Section {
                         VStack(alignment: .leading, spacing: 8) {
                             Button {
@@ -83,10 +83,10 @@ struct ComposeAttachmentDetailsSheet: View {
                                 }
                                 .frame(maxWidth: .infinity, alignment: .leading)
                             }
-                            .buttonStyle(.borderedProminent)
-                            .disabled(attachment.serverId?.nilIfEmpty == nil || attachment.isUploading || isGeneratingDescription)
+                            .buttonStyle(.glassProminent)
+                            .disabled(isAltTextGenerationDisabled)
 
-                            Text("Feature powered by OpenAI.")
+                            Text(altTextGenerationFootnote)
                                 .font(.caption)
                                 .foregroundStyle(.secondary)
                         }
@@ -268,6 +268,30 @@ struct ComposeAttachmentDetailsSheet: View {
 
     private var sortedCountries: [Country] {
         countries.sorted { ($0.name ?? "") < ($1.name ?? "") }
+    }
+
+    private var usesLocalAltTextGenerator: Bool {
+        attachment.localImage != nil && LocalAltTextGenerator.isAvailable
+    }
+
+    private var canGenerateAltText: Bool {
+        usesLocalAltTextGenerator || isOpenAIEnabled
+    }
+
+    private var isAltTextGenerationDisabled: Bool {
+        if usesLocalAltTextGenerator {
+            return isGeneratingDescription
+        }
+
+        return attachment.serverId?.nilIfEmpty == nil || attachment.isUploading || isGeneratingDescription
+    }
+
+    private var altTextGenerationFootnote: String {
+        if usesLocalAltTextGenerator {
+            return "Powered by an on-device model. Your photo isn't sent to a third-party AI service."
+        }
+
+        return "Feature powered by OpenAI."
     }
 
     private var uploadResolutionFootnoteText: String? {
@@ -573,6 +597,11 @@ struct ComposeAttachmentDetailsSheet: View {
             return
         }
 
+        if usesLocalAltTextGenerator, let image = attachment.localImage {
+            await generateAltTextLocally(for: image)
+            return
+        }
+
         guard let attachmentId = attachment.serverId?.nilIfEmpty else {
             errorMessage = "Photo must be uploaded before generating ALT text."
             return
@@ -591,6 +620,24 @@ struct ComposeAttachmentDetailsSheet: View {
             }
 
             attachment.altText = generated
+            errorMessage = nil
+        } catch {
+            errorMessage = (error as? LocalizedError)?.errorDescription ?? error.localizedDescription
+        }
+    }
+
+    @MainActor
+    private func generateAltTextLocally(for image: UIImage) async {
+        isGeneratingDescription = true
+        defer { isGeneratingDescription = false }
+
+        do {
+            guard let generatedDescription = try await LocalAltTextGenerator.generate(for: image) else {
+                errorMessage = "The on-device model cannot generate ALT text for this photo."
+                return
+            }
+
+            attachment.altText = generatedDescription
             errorMessage = nil
         } catch {
             errorMessage = (error as? LocalizedError)?.errorDescription ?? error.localizedDescription

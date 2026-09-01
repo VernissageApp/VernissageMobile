@@ -7,26 +7,18 @@
 import SwiftUI
 
 struct MainTabScreen: View {
-    private enum MainTab: Hashable {
-        case privateHome
-        case editors
-        case trending
-        case other
-        case search
-    }
-
     @Environment(AppState.self) private var appState
     @State private var showAccountSwitcher = false
-    @State private var selectedTab: MainTab = .privateHome
-    @State private var selectedOtherTimeline: OtherTimelineSelection = .local
+    @State private var selectedTab: MainTabSelection = .timelines
+    @State private var selectedTimeline: TimelineSelection = .privateHome
 
     var body: some View {
         TabView(selection: $selectedTab) {
-            Tab("Private", systemImage: "person", value: .privateHome) {
-                TimelineScreen(kind: .privateHome,
-                               title: "Your timeline",
-                               subtitle: "Your personal collection of photos, created based on posts from users you follow.",
-                                showAccountSwitcher: $showAccountSwitcher)
+            Tab("Timelines", systemImage: "photo.stack", value: .timelines) {
+                TimelinesScreen(
+                    selectedTimeline: $selectedTimeline,
+                    showAccountSwitcher: $showAccountSwitcher
+                )
             }
 
             Tab("Featured", systemImage: "star.circle", value: .editors) {
@@ -37,11 +29,8 @@ struct MainTabScreen: View {
                 TrendingScreen(showAccountSwitcher: $showAccountSwitcher)
             }
 
-            Tab("Timelines", systemImage: "photo.stack", value: .other) {
-                OtherTimelineScreen(
-                    selectedTimeline: $selectedOtherTimeline,
-                    showAccountSwitcher: $showAccountSwitcher
-                )
+            Tab("Explore", systemImage: "safari.fill", value: .explore) {
+                ExploreScreen(showAccountSwitcher: $showAccountSwitcher)
             }
 
             Tab("Search", systemImage: "magnifyingglass", value: .search, role: .search) {

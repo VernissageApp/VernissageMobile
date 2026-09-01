@@ -146,22 +146,24 @@ final class TimelinesAPI {
     }
 
     func fetchCategoryStatuses(category: String, maxId: String?, limit: Int) async throws -> LinkableResult<Status> {
-        let account = try appState.requireActiveAccount()
-
-        let cleanedName = category
-            .trimmingPrefix("#")
-            .trimmingCharacters(in: .whitespacesAndNewlines)
-
-        var queryItems = [URLQueryItem(name: "limit", value: "\(max(limit, 1))")]
-        if let maxId = maxId?.nilIfEmpty {
-            queryItems.append(URLQueryItem(name: "maxId", value: maxId))
-        }
-
-        return try await appState.api.authorizedRequest(
-            account: account,
-            path: "/api/v1/timelines/category/\(cleanedName)",
-            queryItems: queryItems
+        try await fetchExploreStatuses(
+            pathComponent: "category",
+            name: category.trimmingPrefix("#"),
+            maxId: maxId,
+            limit: limit
         )
+    }
+
+    func fetchCameraStatuses(camera: String, maxId: String?, limit: Int) async throws -> LinkableResult<Status> {
+        try await fetchExploreStatuses(pathComponent: "camera", name: camera, maxId: maxId, limit: limit)
+    }
+
+    func fetchLensStatuses(lens: String, maxId: String?, limit: Int) async throws -> LinkableResult<Status> {
+        try await fetchExploreStatuses(pathComponent: "lens", name: lens, maxId: maxId, limit: limit)
+    }
+
+    func fetchFilmStatuses(film: String, maxId: String?, limit: Int) async throws -> LinkableResult<Status> {
+        try await fetchExploreStatuses(pathComponent: "film", name: film, maxId: maxId, limit: limit)
     }
 
     func fetchFavourites(maxId: String?, limit: Int) async throws -> LinkableResult<Status> {
@@ -190,6 +192,31 @@ final class TimelinesAPI {
         return try await appState.api.authorizedRequest(
             account: account,
             path: "/api/v1/bookmarks",
+            queryItems: queryItems
+        )
+    }
+
+    private func fetchExploreStatuses(
+        pathComponent: String,
+        name: String,
+        maxId: String?,
+        limit: Int
+    ) async throws -> LinkableResult<Status> {
+        let account = try appState.requireActiveAccount()
+        let cleanedName = name.trimmingCharacters(in: .whitespacesAndNewlines)
+
+        var queryItems = [
+            URLQueryItem(name: "limit", value: "\(max(limit, 1))"),
+            URLQueryItem(name: "onlyLocal", value: "false")
+        ]
+        if let maxId = maxId?.nilIfEmpty {
+            queryItems.append(URLQueryItem(name: "maxId", value: maxId))
+        }
+
+        return try await appState.api.authorizedRequest(
+            account: account,
+            path: "/api/v1/timelines/\(pathComponent)",
+            pathComponents: [cleanedName],
             queryItems: queryItems
         )
     }

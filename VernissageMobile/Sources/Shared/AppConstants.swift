@@ -7,6 +7,11 @@
 import CoreGraphics
 
 enum AppConstants {
+    enum Explore {
+        static let listPageSize = 100
+        static let statusesLimit = 10
+    }
+
     enum StorageKeys {
         static let settingsAlwaysShowNsfw = "settings.alwaysShowNsfw"
         static let settingsShowAlternativeText = "settings.showAlternativeText"

@@ -53,12 +53,14 @@ struct StatusComposeScreen: View {
     @State private var hashtagSuggestions: [Hashtag] = []
     @State private var autocompleteMode: ComposeAutocompleteMode?
     @State private var autocompleteTask: Task<Void, Never>?
+    @State private var hashtagGenerationTask: Task<Void, Never>?
 
     @State private var isLoadingInitialData = false
     @State private var didLoadInitialData = false
     @State private var importedInitialAttachmentURLKeys: Set<String> = []
     @State private var isPublishing = false
     @State private var isMissingAltTextAlertPresented = false
+    @State private var isGeneratingHashtags = false
     @State private var errorMessage: String?
     @State private var successMessage: String?
     @State private var isResendingConfirmationEmail = false
@@ -173,6 +175,27 @@ struct StatusComposeScreen: View {
                 }
             }
         }
+        .overlay {
+            if isGeneratingHashtags {
+                VStack(spacing: 12) {
+                    ProgressView()
+                        .controlSize(.large)
+
+                    VStack(spacing: 2) {
+                        Text("Generating hashtags")
+                            .font(.headline)
+                        Text("Analyzing photos using the local model.")
+                            .font(.subheadline)
+                            .foregroundStyle(.secondary)
+                    }
+                }
+                .padding(.horizontal, 32)
+                .padding(.vertical, 24)
+                .background(.regularMaterial, in: .rect(cornerRadius: 16))
+                .accessibilityElement(children: .combine)
+                .accessibilityLabel("Generating hashtags. Analyzing photos using the local model.")
+            }
+        }
         .alert("Missing ALT text", isPresented: $isMissingAltTextAlertPresented) {
             Button("Publish") {
                 Task { await publishStatusNow() }
@@ -200,6 +223,7 @@ struct StatusComposeScreen: View {
         }
         .onDisappear {
             autocompleteTask?.cancel()
+            hashtagGenerationTask?.cancel()
         }
         .onChange(of: statusText, initial: false) { _, newValue in
             if newValue.count > maxStatusCharacters {
@@ -614,11 +638,14 @@ struct StatusComposeScreen: View {
     }
 
     private var composerToolbar: some View {
-        HStack(spacing: 14) {
+        HStack(spacing: 10) {
             Menu {
                 photoSourceMenuContent()
             } label: {
-                composerToolbarIconLabel(systemName: "photo.on.rectangle")
+                composerToolbarIconLabel(
+                    systemName: "photo.on.rectangle",
+                    accessibilityLabel: "Add photo"
+                )
             }
             .buttonStyle(.plain)
             .disabled(remainingAttachmentSlots <= 0)
@@ -628,7 +655,10 @@ struct StatusComposeScreen: View {
                     isSensitive.toggle()
                 }
             } label: {
-                composerToolbarIconLabel(systemName: isSensitive ? "exclamationmark.square.fill" : "exclamationmark.square")
+                composerToolbarIconLabel(
+                    systemName: isSensitive ? "exclamationmark.square.fill" : "exclamationmark.square",
+                    accessibilityLabel: isSensitive ? "Remove sensitive content marking" : "Mark as sensitive content"
+                )
             }
             .buttonStyle(.plain)
 
@@ -637,37 +667,65 @@ struct StatusComposeScreen: View {
                     commentsDisabled.toggle()
                 }
             } label: {
-                composerToolbarIconLabel(systemName: commentsDisabled ? "person.2.slash.fill" : "person.2.fill")
+                composerToolbarIconLabel(
+                    systemName: commentsDisabled ? "person.2.slash.fill" : "person.2.fill",
+                    accessibilityLabel: commentsDisabled ? "Enable comments" : "Disable comments"
+                )
             }
             .buttonStyle(.plain)
 
             Button {
                 insertComposerToken("#")
             } label: {
-                composerToolbarIconLabel(systemName: "number")
+                composerToolbarIconLabel(
+                    systemName: "number",
+                    accessibilityLabel: "Insert hashtag"
+                )
             }
             .buttonStyle(.plain)
 
             Button {
                 insertComposerToken("@")
             } label: {
-                composerToolbarIconLabel(systemName: "at")
+                composerToolbarIconLabel(
+                    systemName: "at",
+                    accessibilityLabel: "Insert mention"
+                )
             }
             .buttonStyle(.plain)
 
             Button {
                 insertStatusTemplate()
             } label: {
-                composerToolbarIconLabel(systemName: "text.badge.plus")
+                composerToolbarIconLabel(
+                    systemName: "list.clipboard.fill",
+                    accessibilityLabel: "Insert status template"
+                )
             }
             .buttonStyle(.plain)
 
             Button {
                 isEditingTemplate = true
             } label: {
-                composerToolbarIconLabel(systemName: "pencil")
+                composerToolbarIconLabel(
+                    systemName: "pencil.and.list.clipboard",
+                    accessibilityLabel: "Edit status template"
+                )
             }
             .buttonStyle(.plain)
+
+            if canShowHashtagGenerator {
+                Button {
+                    startHashtagGeneration()
+                } label: {
+                    composerToolbarIconLabel(
+                        systemName: "bubbles.and.sparkles",
+                        accessibilityLabel: "Generate hashtags"
+                    )
+                }
+                .buttonStyle(.plain)
+                .disabled(!canGenerateHashtags)
+            }
 
             Spacer(minLength: 0)
 
@@ -684,10 +742,14 @@ struct StatusComposeScreen: View {
         .dynamicTypeSize(.xSmall ... .large)
     }
 
-    private func composerToolbarIconLabel(systemName: String) -> some View {
+    private func composerToolbarIconLabel(
+        systemName: String,
+        accessibilityLabel: LocalizedStringKey
+    ) -> some View {
         Image(systemName: systemName)
             .frame(width: 28, height: 28)
             .contentShape(Rectangle())
+            .accessibilityLabel(Text(accessibilityLabel))
     }
 
     @ViewBuilder
@@ -787,6 +849,16 @@ struct StatusComposeScreen: View {
         maxStatusCharacters - statusText.count
     }
 
+    private var canGenerateHashtags: Bool {
+        canShowHashtagGenerator && !isGeneratingHashtags
+    }
+
+    private var canShowHashtagGenerator: Bool {
+        LocalHashtagGenerator.isAvailable
+            && !attachments.isEmpty
+            && attachments.allSatisfy { $0.localImage != nil }
+    }
+
     private var selectedCategoryName: String {
         if let selectedCategoryId,
            let selectedCategory = categories.first(where: { $0.id == selectedCategoryId }) {
@@ -801,7 +873,7 @@ struct StatusComposeScreen: View {
             return false
         }
 
-        if isPublishing || isLoadingInitialData {
+        if isPublishing || isLoadingInitialData || isGeneratingHashtags {
             return false
         }
 
@@ -1301,6 +1373,95 @@ struct StatusComposeScreen: View {
         statusText += statusTextTemplate
         isTextFocused = true
         scheduleAutocomplete()
+    }
+
+    private func startHashtagGeneration() {
+        guard canGenerateHashtags else {
+            return
+        }
+
+        hashtagGenerationTask?.cancel()
+        hashtagGenerationTask = Task {
+            await generateHashtags()
+        }
+    }
+
+    @MainActor
+    private func generateHashtags() async {
+        guard canGenerateHashtags else {
+            return
+        }
+
+        let images = attachments.compactMap(\.localImage)
+        let altTexts = attachments.map(\.altText)
+        let statusTextContext = statusText
+
+        isGeneratingHashtags = true
+        defer { isGeneratingHashtags = false }
+
+        do {
+            let generatedHashtags = try await LocalHashtagGenerator.generate(
+                images: images,
+                altTexts: altTexts,
+                statusText: statusTextContext
+            )
+            try Task.checkCancellation()
+
+            guard !generatedHashtags.isEmpty else {
+                errorMessage = "The local model did not generate any hashtags."
+                return
+            }
+
+            let existingHashtags = Set(
+                LocalHashtagGenerator.extractHashtags(from: statusText).map { $0.lowercased() }
+            )
+            let newHashtags = generatedHashtags.filter { !existingHashtags.contains($0.lowercased()) }
+
+            guard !newHashtags.isEmpty else {
+                errorMessage = "The local model did not generate any new hashtags."
+                return
+            }
+
+            guard appendGeneratedHashtags(newHashtags) else {
+                errorMessage = "There is not enough room in the status text to add generated hashtags."
+                return
+            }
+
+            isTextFocused = true
+            scheduleAutocomplete()
+        } catch is CancellationError {
+        } catch {
+            errorMessage = (error as? LocalizedError)?.errorDescription ?? error.localizedDescription
+        }
+    }
+
+    @discardableResult
+    private func appendGeneratedHashtags(_ generatedHashtags: [String]) -> Bool {
+        var updatedText = statusText
+        while updatedText.last?.isWhitespace == true {
+            updatedText.removeLast()
+        }
+
+        var appendedHashtagCount = 0
+        for hashtag in generatedHashtags {
+            let separator = appendedHashtagCount == 0
+                ? (updatedText.isEmpty ? "" : "\n\n")
+                : " "
+
+            guard updatedText.count + separator.count + hashtag.count <= maxStatusCharacters else {
+                continue
+            }
+
+            updatedText += separator + hashtag
+            appendedHashtagCount += 1
+        }
+
+        guard appendedHashtagCount > 0 else {
+            return false
+        }
+
+        statusText = updatedText
+        return true
     }
 
     private var shouldRestrictComposeForUnverifiedEmail: Bool {

@@ -39,6 +39,10 @@ enum AppConstants {
         static let webpFileExtension = "webp"
     }
 
+    enum LocalModel {
+        static let maximumHashtagCount = 10
+    }
+
     enum OAuth {
         static let clientName = "Vernissage iOS"
         static let redirectURI = "vernissage-mobile://oauth-callback"

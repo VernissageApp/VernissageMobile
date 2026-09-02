@@ -102,6 +102,10 @@
 		A1C2D3E4F5A60718293A4B5C /* UserBlockSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1C2D3E4F5A60718293A4B5B /* UserBlockSheet.swift */; };
 		A27A00000000000000000001 /* LocalAltTextGenerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = A27A00000000000000000003 /* LocalAltTextGenerator.swift */; };
 		A27A00000000000000000002 /* LocalAltTextGenerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = A27A00000000000000000003 /* LocalAltTextGenerator.swift */; };
+		A27A00000000000000000004 /* LocalHashtagGenerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = A27A00000000000000000006 /* LocalHashtagGenerator.swift */; };
+		A27A00000000000000000005 /* LocalHashtagGenerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = A27A00000000000000000006 /* LocalHashtagGenerator.swift */; };
+		A27A00000000000000000007 /* LocalHashtagSuggestionResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = A27A00000000000000000009 /* LocalHashtagSuggestionResponse.swift */; };
+		A27A00000000000000000008 /* LocalHashtagSuggestionResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = A27A00000000000000000009 /* LocalHashtagSuggestionResponse.swift */; };
 		A2F721B0311995B389D100F3 /* APIServiceContainer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03969DDC1E93B673D31B2F16 /* APIServiceContainer.swift */; };
 		A31EAF2C765024FB2ECBFBD3 /* AppState.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB5A20D9A0EC4B1B7F8540F0 /* AppState.swift */; };
 		A491D889E2BE1CC8A1BC0328 /* Relationship.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0870DA50088C9CF6E4CF05D1 /* Relationship.swift */; };
@@ -609,6 +613,8 @@
 		A1D2C3E4F5A60718293A4B5C /* HashtagTimelineScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HashtagTimelineScreen.swift; sourceTree = "<group>"; };
 		A25A845D39846779B59F3E91 /* FollowButtonsSectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FollowButtonsSectionView.swift; sourceTree = "<group>"; };
 		A27A00000000000000000003 /* LocalAltTextGenerator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalAltTextGenerator.swift; sourceTree = "<group>"; };
+		A27A00000000000000000006 /* LocalHashtagGenerator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalHashtagGenerator.swift; sourceTree = "<group>"; };
+		A27A00000000000000000009 /* LocalHashtagSuggestionResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalHashtagSuggestionResponse.swift; sourceTree = "<group>"; };
 		A2FB2AFF179E17E9B14FA887 /* AddAccountMode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddAccountMode.swift; sourceTree = "<group>"; };
 		A3DDF587B51E50AB3C32936E /* Image+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Image+Extensions.swift"; sourceTree = "<group>"; };
 		A44F880501089BCBAC355807 /* License.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = License.swift; sourceTree = "<group>"; };
@@ -806,6 +812,8 @@
 				833E5E9A80245EB32FC89739 /* ComposeParsedExif.swift */,
 				D14CC86C59A704CEDE354E4A /* ComposeStatusAttachment.swift */,
 				A27A00000000000000000003 /* LocalAltTextGenerator.swift */,
+				A27A00000000000000000006 /* LocalHashtagGenerator.swift */,
+				A27A00000000000000000009 /* LocalHashtagSuggestionResponse.swift */,
 				C8D4A1B42E6F4D7C9A0B1C2D /* RegistrationFieldStyle.swift */,
 				05375712EA549F9177D6398E /* ReplySheetTarget.swift */,
 			);
@@ -1557,6 +1565,8 @@
 				F86185CA2F4B900F00C3AFB8 /* ComposeAttachmentDropDelegate.swift in Sources */,
 				F861856F2F4B900F00C3AFB8 /* ComposeStatusAttachment.swift in Sources */,
 				A27A00000000000000000001 /* LocalAltTextGenerator.swift in Sources */,
+				A27A00000000000000000004 /* LocalHashtagGenerator.swift in Sources */,
+				A27A00000000000000000007 /* LocalHashtagSuggestionResponse.swift in Sources */,
 				F86185702F4B900F00C3AFB8 /* ReplySheetTarget.swift in Sources */,
 				F86185712F4B900F00C3AFB8 /* AddAccountMode.swift in Sources */,
 				B44A1E08D9074D2CA7E17403 /* ComposeAttachmentViewerPayload.swift in Sources */,
@@ -1786,6 +1796,8 @@
 				3F1A2B3C4D5E6F708192A3B4 /* ComposeAttachmentDropDelegate.swift in Sources */,
 				4F3D8AA0809323F5B13945CE /* ComposeStatusAttachment.swift in Sources */,
 				A27A00000000000000000002 /* LocalAltTextGenerator.swift in Sources */,
+				A27A00000000000000000005 /* LocalHashtagGenerator.swift in Sources */,
+				A27A00000000000000000008 /* LocalHashtagSuggestionResponse.swift in Sources */,
 				B44A1E08D9074D2CA7E17404 /* ComposeAttachmentViewerPayload.swift in Sources */,
 				CA3C20874DEE4549424615EE /* ComposeAttachmentSheetSelection.swift in Sources */,
 				943D8B0D97D35C5649F8B498 /* ComposeAutocompleteMode.swift in Sources */,

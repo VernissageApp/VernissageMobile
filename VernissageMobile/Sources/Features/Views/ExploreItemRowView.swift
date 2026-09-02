@@ -15,10 +15,13 @@ struct ExploreItemRowView: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
             HStack(alignment: .firstTextBaseline, spacing: 8) {
-                Text(item.name)
-                    .font(.title3)
-                    .bold()
-                    .lineLimit(2)
+                NavigationLink(value: ExploreTimelineRoute(item: item, selection: selection)) {
+                    Text(item.name)
+                        .font(.title3.weight(.semibold))
+                        .foregroundStyle(.blue)
+                        .lineLimit(2)
+                }
+                .buttonStyle(.plain)
 
                 if let amount = item.amount {
                     Text(amount, format: .number)

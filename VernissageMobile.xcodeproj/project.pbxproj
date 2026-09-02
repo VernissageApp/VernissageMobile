@@ -397,6 +397,9 @@
 		E90100000000000000000009 /* ExploreItemRowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E90000000000000000000009 /* ExploreItemRowView.swift */; };
 		E9010000000000000000000A /* ExploreContentListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E9000000000000000000000A /* ExploreContentListView.swift */; };
 		E9010000000000000000000B /* ExploreScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = E9000000000000000000000B /* ExploreScreen.swift */; };
+		E9010000000000000000000C /* ExploreTimelineRoute.swift in Sources */ = {isa = PBXBuildFile; fileRef = E9000000000000000000000C /* ExploreTimelineRoute.swift */; };
+		E9010000000000000000000D /* ExploreTimelineViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = E9000000000000000000000D /* ExploreTimelineViewModel.swift */; };
+		E9010000000000000000000E /* ExploreTimelineScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = E9000000000000000000000E /* ExploreTimelineScreen.swift */; };
 		E90200000000000000000001 /* ExploreItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = E90000000000000000000001 /* ExploreItem.swift */; };
 		E90200000000000000000002 /* CategoriesAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = E90000000000000000000002 /* CategoriesAPI.swift */; };
 		E90200000000000000000003 /* CamerasAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = E90000000000000000000003 /* CamerasAPI.swift */; };
@@ -713,6 +716,9 @@
 		E90000000000000000000009 /* ExploreItemRowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExploreItemRowView.swift; sourceTree = "<group>"; };
 		E9000000000000000000000A /* ExploreContentListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExploreContentListView.swift; sourceTree = "<group>"; };
 		E9000000000000000000000B /* ExploreScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExploreScreen.swift; sourceTree = "<group>"; };
+		E9000000000000000000000C /* ExploreTimelineRoute.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExploreTimelineRoute.swift; sourceTree = "<group>"; };
+		E9000000000000000000000D /* ExploreTimelineViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExploreTimelineViewModel.swift; sourceTree = "<group>"; };
+		E9000000000000000000000E /* ExploreTimelineScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExploreTimelineScreen.swift; sourceTree = "<group>"; };
 		DF448A57353D41FE49D86945 /* ProfileScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileScreen.swift; sourceTree = "<group>"; };
 		E0FC459088CC1705D18C3279 /* MultipartFormDataBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultipartFormDataBuilder.swift; sourceTree = "<group>"; };
 		E2397278DB42A5E0AF792742 /* HashtagSearchRowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HashtagSearchRowView.swift; sourceTree = "<group>"; };
@@ -863,6 +869,7 @@
 				9789CE239979714A8DCEFE6B /* AppSettingsScreen.swift */,
 				4D3E17B42669C83B69ED4D7A /* EditorsScreen.swift */,
 				E9000000000000000000000B /* ExploreScreen.swift */,
+				E9000000000000000000000E /* ExploreTimelineScreen.swift */,
 				A1D2C3E4F5A60718293A4B5C /* HashtagTimelineScreen.swift */,
 				A8B9C0D1E2F3041526374859 /* CategoryTimelineScreen.swift */,
 				20021A35E4713BB53B931F50 /* InstanceInformationScreen.swift */,
@@ -887,6 +894,7 @@
 		233D4380E471A7E29BCEC089 /* ViewModels */ = {
 			isa = PBXGroup;
 			children = (
+				E9000000000000000000000D /* ExploreTimelineViewModel.swift */,
 				E90000000000000000000008 /* ExploreViewModel.swift */,
 				2568AEB43647E3B836487D74 /* FeaturedUsersViewModel.swift */,
 				B1C2D3E4F5A60718293A4B5C /* HashtagTimelineViewModel.swift */,
@@ -1030,6 +1038,7 @@
 				9D4AFA294FAA3C39ABCEBBD4 /* ComposeParsedExifParser.swift */,
 				5965248E0EBA29FD72A723E9 /* EditorsContentSelection.swift */,
 				E90000000000000000000006 /* ExploreContentSelection.swift */,
+				E9000000000000000000000C /* ExploreTimelineRoute.swift */,
 				C1A100000000000000000002 /* HashtagTimelineRoute.swift */,
 				C1A100000000000000000003 /* MentionedUserRoute.swift */,
 				C0A100000000000000000001 /* NotificationGroup.swift */,
@@ -1509,6 +1518,7 @@
 				F861854B2F4B900F00C3AFB8 /* AppSettingsScreen.swift in Sources */,
 				F861854C2F4B900F00C3AFB8 /* EditorsScreen.swift in Sources */,
 				E9010000000000000000000B /* ExploreScreen.swift in Sources */,
+				E9010000000000000000000E /* ExploreTimelineScreen.swift in Sources */,
 				F861854D2F4B900F00C3AFB8 /* InstanceInformationScreen.swift in Sources */,
 				F861854E2F4B900F00C3AFB8 /* NotificationsScreen.swift in Sources */,
 				F861854F2F4B900F00C3AFB8 /* TimelinesScreen.swift in Sources */,
@@ -1556,6 +1566,7 @@
 				C1A200000000000000000001 /* CategoryTimelineRoute.swift in Sources */,
 				F86185752F4B900F00C3AFB8 /* EditorsContentSelection.swift in Sources */,
 				E90100000000000000000006 /* ExploreContentSelection.swift in Sources */,
+				E9010000000000000000000C /* ExploreTimelineRoute.swift in Sources */,
 				C1A200000000000000000002 /* HashtagTimelineRoute.swift in Sources */,
 				C1A200000000000000000003 /* MentionedUserRoute.swift in Sources */,
 				E90100000000000000000007 /* MainTabSelection.swift in Sources */,
@@ -1577,6 +1588,7 @@
 				F86185832F4B900F00C3AFB8 /* TimelineKind.swift in Sources */,
 				F86185842F4B900F00C3AFB8 /* TrendingContentSelection.swift in Sources */,
 				F86185852F4B900F00C3AFB8 /* TrendingPeriodSelection.swift in Sources */,
+				E9010000000000000000000D /* ExploreTimelineViewModel.swift in Sources */,
 				E90100000000000000000008 /* ExploreViewModel.swift in Sources */,
 				F86185862F4B900F00C3AFB8 /* FeaturedUsersViewModel.swift in Sources */,
 				F86185872F4B900F00C3AFB8 /* NotificationsViewModel.swift in Sources */,

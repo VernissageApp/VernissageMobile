@@ -10,6 +10,7 @@ enum AppConstants {
     enum Explore {
         static let listPageSize = 100
         static let statusesLimit = 10
+        static let timelinePageSize = 40
     }
 
     enum StorageKeys {

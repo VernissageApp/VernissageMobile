@@ -98,6 +98,9 @@ struct ExploreScreen: View {
             .navigationDestination(isPresented: $isShowingProfile) {
                 ProfileScreen(showAccountSwitcher: $showAccountSwitcher)
             }
+            .navigationDestination(for: ExploreTimelineRoute.self) { route in
+                ExploreTimelineScreen(item: route.item, selection: route.selection)
+            }
             .onFirstAppear {
                 await loadSelectedContent()
             }

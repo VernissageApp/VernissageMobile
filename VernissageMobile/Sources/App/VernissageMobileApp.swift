@@ -33,6 +33,7 @@ struct VernissageMobileApp: App {
     }()
 
     init() {
+        UserDefaults.standard.set(false, forKey: AppConstants.StorageKeys.settingsAlwaysShowNsfw)
         Self.configureImagePipelineIfNeeded()
     }
 

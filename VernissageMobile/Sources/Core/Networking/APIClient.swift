@@ -36,6 +36,7 @@ enum APIClient {
     static func requestJSON<T: Decodable & Sendable>(
         baseURL: URL,
         path: String,
+        pathComponents: [String] = [],
         method: String,
         queryItems: [URLQueryItem] = [],
         headers: [String: String] = [:],
@@ -43,6 +44,7 @@ enum APIClient {
     ) async throws -> T {
         let request = try makeRequest(baseURL: baseURL,
                                       path: path,
+                                      pathComponents: pathComponents,
                                       method: method,
                                       queryItems: queryItems,
                                       headers: headers,
@@ -76,6 +78,7 @@ enum APIClient {
         let request = try makeRequest(
             baseURL: baseURL,
             path: path,
+            pathComponents: [],
             method: method,
             queryItems: queryItems,
             headers: headers,
@@ -96,12 +99,16 @@ enum APIClient {
     private static func makeRequest(
         baseURL: URL,
         path: String,
+        pathComponents: [String],
         method: String,
         queryItems: [URLQueryItem],
         headers: [String: String],
         body: Data?
     ) throws -> URLRequest {
-        var components = URLComponents(url: baseURL.appending(path: path), resolvingAgainstBaseURL: false)
+        let pathURL = pathComponents.reduce(baseURL.appending(path: path)) { url, component in
+            url.appending(component: component)
+        }
+        var components = URLComponents(url: pathURL, resolvingAgainstBaseURL: false)
         components?.queryItems = queryItems.isEmpty ? nil : queryItems
 
         guard let url = components?.url else {

@@ -8,7 +8,6 @@ import SwiftUI
 import UIKit
 
 struct AppSettingsScreen: View {
-    @AppStorage(AppConstants.StorageKeys.settingsAlwaysShowNsfw) private var alwaysShowNsfw = false
     @AppStorage(AppConstants.StorageKeys.settingsShowAlternativeText) private var showAlternativeText = false
     @AppStorage(AppConstants.StorageKeys.settingsShowAvatarsOnTimeline) private var showAvatarsOnTimeline = false
     @AppStorage(AppConstants.StorageKeys.settingsShowImageCountsOnTimeline) private var showImageCountsOnTimeline = false
@@ -35,15 +34,6 @@ struct AppSettingsScreen: View {
     var body: some View {
         List {
             Section("Media settings") {
-                Toggle(isOn: $alwaysShowNsfw) {
-                    VStack(alignment: .leading) {
-                        Text("Always show NSFW", comment: "Always show NSFW")
-                        Text("Force show all NFSW (sensitive) media without warnings.", comment: "Force show all NFSW (sensitive) media without warnings.")
-                            .font(.footnote)
-                            .foregroundStyle(.secondary)
-                    }
-                }
-                
                 Toggle(isOn: $showAlternativeText) {
                     VStack(alignment: .leading) {
                         Text("Show alternative text", comment: "Show alternative text")

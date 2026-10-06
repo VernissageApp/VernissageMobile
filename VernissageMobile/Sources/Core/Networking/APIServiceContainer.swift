@@ -11,6 +11,10 @@ final class APIServiceContainer {
     private unowned let appState: AppState
 
     let timelines: TimelinesAPI
+    let categories: CategoriesAPI
+    let cameras: CamerasAPI
+    let lenses: LensesAPI
+    let films: FilmsAPI
     let notifications: NotificationsAPI
     let hashtags: HashtagsAPI
     let search: SearchAPI
@@ -26,6 +30,10 @@ final class APIServiceContainer {
     init(appState: AppState) {
         self.appState = appState
         timelines = TimelinesAPI(appState: appState)
+        categories = CategoriesAPI(appState: appState)
+        cameras = CamerasAPI(appState: appState)
+        lenses = LensesAPI(appState: appState)
+        films = FilmsAPI(appState: appState)
         notifications = NotificationsAPI(appState: appState)
         hashtags = HashtagsAPI(appState: appState)
         search = SearchAPI(appState: appState)
@@ -42,6 +50,7 @@ final class APIServiceContainer {
     func authorizedRequest<T: Decodable & Sendable>(
         account: StoredAccount,
         path: String,
+        pathComponents: [String] = [],
         method: String = "GET",
         queryItems: [URLQueryItem],
         additionalHeaders: [String: String] = [:],
@@ -55,6 +64,7 @@ final class APIServiceContainer {
             return try await APIClient.requestJSON(
                 baseURL: URLSanitizer.sanitizeBaseURL(account.instanceURL),
                 path: path,
+                pathComponents: pathComponents,
                 method: method,
                 queryItems: queryItems,
                 headers: headers,
@@ -72,6 +82,7 @@ final class APIServiceContainer {
                 return try await APIClient.requestJSON(
                     baseURL: URLSanitizer.sanitizeBaseURL(refreshed.instanceURL),
                     path: path,
+                    pathComponents: pathComponents,
                     method: method,
                     queryItems: queryItems,
                     headers: refreshedHeaders,

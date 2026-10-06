@@ -6,34 +6,36 @@
 
 import SwiftUI
 
-struct OtherTimelineScreen: View {
+struct TimelinesScreen: View {
     @Environment(AppState.self) private var appState
+    @State private var privateViewModel = TimelineViewModel(kind: .privateHome)
     @State private var localViewModel = TimelineViewModel(kind: .local)
     @State private var globalViewModel = TimelineViewModel(kind: .global)
-    @State private var hasCompletedInitialLocalLoad = false
-    @State private var hasCompletedInitialGlobalLoad = false
+    @State private var completedInitialLoads: Set<TimelineSelection> = []
+    @State private var viewModelsAccountID: UUID?
     @State private var isShowingProfile = false
     @State private var refreshFeedbackTrigger = false
     @State private var showAddSheet = false
 
-    @Binding private var selectedTimeline: OtherTimelineSelection
+    @Binding private var selectedTimeline: TimelineSelection
     @Binding private var showAccountSwitcher: Bool
 
-    init(selectedTimeline: Binding<OtherTimelineSelection>,
+    init(selectedTimeline: Binding<TimelineSelection>,
          showAccountSwitcher: Binding<Bool>) {
         _selectedTimeline = selectedTimeline
         _showAccountSwitcher = showAccountSwitcher
     }
     
     var body: some View {
+        @Bindable var bindablePrivateViewModel = privateViewModel
         @Bindable var bindableLocalViewModel = localViewModel
         @Bindable var bindableGlobalViewModel = globalViewModel
 
         NavigationStack {
             ScrollView {
                 LazyVStack(spacing: 12) {
-                    Picker("Other timeline", selection: $selectedTimeline) {
-                        ForEach(OtherTimelineSelection.allCases, id: \.self) { item in
+                    Picker("Timeline", selection: $selectedTimeline) {
+                        ForEach(TimelineSelection.allCases, id: \.self) { item in
                             Text(item.label).tag(item)
                         }
                     }
@@ -98,7 +100,7 @@ struct OtherTimelineScreen: View {
                     }
                 }
             }
-            .navigationTitle(selectedTimeline.kind == .local ? "Local timeline": "Global timeline")
+            .navigationTitle(selectedTimeline.navigationTitle)
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .topBarLeading) {
@@ -122,20 +124,13 @@ struct OtherTimelineScreen: View {
             .navigationDestination(isPresented: $isShowingProfile) {
                 ProfileScreen(showAccountSwitcher: $showAccountSwitcher)
             }
-            .onFirstAppear(id: selectedTimeline) {
-                await activeViewModel.load(using: appState)
-                markInitialLoadCompleted(for: selectedTimeline)
+            .task(id: timelineLoadTaskID) {
+                await loadSelectedTimelineIfNeeded()
             }
             .refreshable {
-                await activeViewModel.load(using: appState, forceRefresh: true)
-                markInitialLoadCompleted(for: selectedTimeline)
-
-                guard !Task.isCancelled else {
-                    return
-                }
-
-                refreshFeedbackTrigger.toggle()
+                await refreshSelectedTimeline()
             }
+            .errorAlertToast($bindablePrivateViewModel.errorMessage)
             .errorAlertToast($bindableLocalViewModel.errorMessage)
             .errorAlertToast($bindableGlobalViewModel.errorMessage)
             .sensoryFeedback(.impact, trigger: refreshFeedbackTrigger)
@@ -146,20 +141,70 @@ struct OtherTimelineScreen: View {
         }
     }
 
+    private var timelineLoadTaskID: String {
+        "\(appState.activeAccountID?.uuidString ?? "no-account"):\(selectedTimeline.rawValue)"
+    }
+
     private var activeViewModel: TimelineViewModel {
-        selectedTimeline == .local ? localViewModel : globalViewModel
+        viewModel(for: selectedTimeline)
+    }
+
+    private func viewModel(for timeline: TimelineSelection) -> TimelineViewModel {
+        switch timeline {
+        case .privateHome:
+            privateViewModel
+        case .local:
+            localViewModel
+        case .global:
+            globalViewModel
+        }
     }
 
     private var activeHasCompletedInitialLoad: Bool {
-        selectedTimeline == .local ? hasCompletedInitialLocalLoad : hasCompletedInitialGlobalLoad
+        completedInitialLoads.contains(selectedTimeline)
     }
 
-    private func markInitialLoadCompleted(for timeline: OtherTimelineSelection) {
-        switch timeline {
-        case .local:
-            hasCompletedInitialLocalLoad = true
-        case .global:
-            hasCompletedInitialGlobalLoad = true
+    private func loadSelectedTimelineIfNeeded() async {
+        let accountID = appState.activeAccountID
+        if viewModelsAccountID != accountID {
+            resetTimelines()
+            viewModelsAccountID = accountID
         }
+
+        let timeline = selectedTimeline
+        guard !completedInitialLoads.contains(timeline) else {
+            return
+        }
+
+        let timelineViewModel = viewModel(for: timeline)
+        await timelineViewModel.load(using: appState)
+
+        guard !Task.isCancelled, appState.activeAccountID == accountID else {
+            return
+        }
+
+        completedInitialLoads.insert(timeline)
+    }
+
+    private func refreshSelectedTimeline() async {
+        let accountID = appState.activeAccountID
+        let timeline = selectedTimeline
+        let timelineViewModel = viewModel(for: timeline)
+
+        await timelineViewModel.load(using: appState, forceRefresh: true)
+
+        guard !Task.isCancelled, appState.activeAccountID == accountID else {
+            return
+        }
+
+        completedInitialLoads.insert(timeline)
+        refreshFeedbackTrigger.toggle()
+    }
+
+    private func resetTimelines() {
+        privateViewModel = TimelineViewModel(kind: .privateHome)
+        localViewModel = TimelineViewModel(kind: .local)
+        globalViewModel = TimelineViewModel(kind: .global)
+        completedInitialLoads = []
     }
 }

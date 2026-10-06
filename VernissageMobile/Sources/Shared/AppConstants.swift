@@ -7,6 +7,12 @@
 import CoreGraphics
 
 enum AppConstants {
+    enum Explore {
+        static let listPageSize = 100
+        static let statusesLimit = 10
+        static let timelinePageSize = 40
+    }
+
     enum StorageKeys {
         static let settingsAlwaysShowNsfw = "settings.alwaysShowNsfw"
         static let settingsShowAlternativeText = "settings.showAlternativeText"
@@ -31,6 +37,10 @@ enum AppConstants {
         static let webpMimeType = "image/webp"
         static let jpegFileExtension = "jpg"
         static let webpFileExtension = "webp"
+    }
+
+    enum LocalModel {
+        static let maximumHashtagCount = 10
     }
 
     enum OAuth {

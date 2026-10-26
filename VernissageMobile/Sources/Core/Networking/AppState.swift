@@ -16,6 +16,38 @@ final class AppState {
     private(set) var unreadNotificationsCount = 0
     @ObservationIgnored private(set) var api: APIServiceContainer!
 
+    private var instanceDetailsByAccount: [UUID: InstanceDetails] = [:]
+
+    var activeInstanceDetails: InstanceDetails? {
+        guard let activeAccountID else {
+            return nil
+        }
+
+        return instanceDetailsByAccount[activeAccountID]
+    }
+
+    var supportsDirectMessages: Bool {
+        ServerVersion.supportsDirectMessages(activeInstanceDetails?.version)
+    }
+
+    func refreshInstanceCapabilities() async {
+        guard let accountID = activeAccountID else {
+            return
+        }
+
+        do {
+            let details = try await api.instance.fetchInstanceDetails(showToastOnError: false)
+
+            guard !Task.isCancelled, activeAccountID == accountID else {
+                return
+            }
+
+            instanceDetailsByAccount[accountID] = details
+        } catch {
+            // Retain the last successful capability result for this account.
+        }
+    }
+
     var errorToastMessage: String?
     var warningToastMessage: String?
     var infoToastMessage: String?

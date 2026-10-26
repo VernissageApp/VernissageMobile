@@ -1209,12 +1209,12 @@ struct StatusDetailScreen: View {
     }
 
     private func handleStatusMarkdownURL(_ url: URL) -> OpenURLAction.Result {
-        if let hashtag = hashtagName(from: url) {
+        if let hashtag = MarkdownLinkResolver.hashtagName(from: url) {
             hashtagTimelineRoute = HashtagTimelineRoute(hashtagName: hashtag)
             return .handled
         }
 
-        if let userName = userName(from: url) {
+        if let userName = MarkdownLinkResolver.userName(from: url) {
             openMentionedUserOrFallback(userName: userName, fallbackURL: url)
             return .handled
         }
@@ -1225,13 +1225,8 @@ struct StatusDetailScreen: View {
     private func openMentionedUserOrFallback(userName: String, fallbackURL: URL) {
         Task {
             do {
-                let result = try await appState.api.search.search(query: userName, type: SearchScopeSelection.users.rawValue)
-                if let matchedUser = preferredMentionSearchUser(in: result.users ?? [], query: userName),
-                   let routeUserName = routeUserName(from: matchedUser) {
-                    mentionedUserRoute = MentionedUserRoute(
-                        userName: routeUserName,
-                        preferredDisplayName: matchedUser.name?.nilIfEmpty
-                    )
+                if let route = try await MarkdownLinkResolver.profileRoute(userName: userName, using: appState) {
+                    mentionedUserRoute = route
                     return
                 }
             } catch {
@@ -1240,77 +1235,6 @@ struct StatusDetailScreen: View {
 
             openURL(fallbackURL)
         }
-    }
-
-    private func hashtagName(from url: URL) -> String? {
-        if let fragment = url.fragment?.nilIfEmpty {
-            let normalizedFragment = fragment.trimmingPrefix("#")
-            if !normalizedFragment.isEmpty {
-                return normalizedFragment
-            }
-        }
-
-        let pathComponents = url.pathComponents
-        if pathComponents.contains(where: { $0.caseInsensitiveCompare("tags") == .orderedSame }),
-           let lastComponent = pathComponents.last?.nilIfEmpty {
-            let normalizedTag = lastComponent.trimmingPrefix("#")
-            return normalizedTag.nilIfEmpty
-        }
-
-        return nil
-    }
-
-    private func userName(from url: URL) -> String? {
-        userNameFromAtPath(url)
-    }
-
-    private func userNameFromAtPath(_ url: URL) -> String? {
-        guard let lastPathComponent = url.lastPathComponent.nilIfEmpty,
-              lastPathComponent.first == "@",
-              let host = url.host?.nilIfEmpty else {
-            return nil
-        }
-
-        let userPart = lastPathComponent
-            .trimmingPrefix("@")
-            .split(separator: "@", maxSplits: 1, omittingEmptySubsequences: true)
-            .first
-            .map(String.init)
-
-        guard let normalizedUserPart = userPart?.nilIfEmpty else {
-            return nil
-        }
-
-        return "\(normalizedUserPart)@\(host)"
-    }
-
-    private func preferredMentionSearchUser(in users: [User], query: String) -> User? {
-        let normalizedQuery = query.trimmingPrefix("@").lowercased()
-        guard !users.isEmpty else {
-            return nil
-        }
-
-        if let exactMatch = users.first(where: { user in
-            let userName = user.userName?.trimmingPrefix("@").lowercased()
-            let account = user.account?.trimmingPrefix("@").lowercased()
-            return userName == normalizedQuery || account == normalizedQuery
-        }) {
-            return exactMatch
-        }
-
-        return users.first
-    }
-
-    private func routeUserName(from user: User) -> String? {
-        if let userName = user.userName?.trimmingPrefix("@").nilIfEmpty {
-            return userName
-        }
-
-        if let account = user.account?.trimmingPrefix("@").nilIfEmpty {
-            return account
-        }
-
-        return nil
     }
 
     private func intersectedHashtagNames(statusHashtags: [Hashtag], followedHashtags: [Hashtag]) -> [String] {

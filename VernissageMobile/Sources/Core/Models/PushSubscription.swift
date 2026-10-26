@@ -22,12 +22,13 @@ struct PushSubscription: Codable, Identifiable {
     var webPushAdminSignUpEnabled: Bool
     var webPushAdminReportEnabled: Bool
     var webPushNewCommentEnabled: Bool
+    var webPushDirectMessageEnabled: Bool?
     var createdAt: Date?
     var updatedAt: Date?
 }
 
 extension PushSubscription {
-    init(endpoint: String, keyMaterial: WebPushKeyMaterial, settings: PushNotificationSettings) {
+    init(endpoint: String, keyMaterial: WebPushKeyMaterial, settings: PushNotificationSettings, supportsDirectMessages: Bool) {
         self.id = nil
         self.endpoint = endpoint
         self.userAgentPublicKey = keyMaterial.p256dh
@@ -43,6 +44,7 @@ extension PushSubscription {
         self.webPushAdminSignUpEnabled = settings.adminSignUpEnabled
         self.webPushAdminReportEnabled = settings.adminReportEnabled
         self.webPushNewCommentEnabled = settings.newCommentEnabled
+        self.webPushDirectMessageEnabled = supportsDirectMessages ? settings.directMessageEnabled : nil
         self.createdAt = nil
         self.updatedAt = nil
     }

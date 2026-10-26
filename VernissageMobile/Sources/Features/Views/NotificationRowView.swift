@@ -7,6 +7,7 @@
 import SwiftUI
 
 struct NotificationRowView: View {
+    @Environment(AppState.self) private var appState
     let notification: AppNotification
 
     private var actorDisplayName: String {
@@ -63,10 +64,20 @@ struct NotificationRowView: View {
                         .lineLimit(1)
                 }
 
-                Text(notification.displayText)
-                    .font(.footnote)
-                    .foregroundStyle(.primary)
-                    .lineLimit(2)
+                if let conversationID = notification.conversationId, appState.supportsDirectMessages {
+                    NavigationLink {
+                        DirectConversationScreen(conversation: nil, conversationID: conversationID)
+                    } label: {
+                        Text(notification.displayText)
+                            .font(.footnote)
+                            .lineLimit(2)
+                    }
+                } else {
+                    Text(notification.displayText)
+                        .font(.footnote)
+                        .foregroundStyle(.primary)
+                        .lineLimit(2)
+                }
 
                 if let createdAt = notification.createdAt {
                     Text(createdAt.relativeDateLabel)

@@ -31,6 +31,11 @@ struct PushNotificationSettingsSheet: View {
                 Section("Notification types") {
                     Toggle("Mentions", isOn: $bindableViewModel.settings.mentionEnabled)
                     Toggle("New comments", isOn: $bindableViewModel.settings.newCommentEnabled)
+
+                    if appState.supportsDirectMessages {
+                        Toggle(AppConstants.DirectMessages.title, isOn: $bindableViewModel.settings.directMessageEnabled)
+                    }
+
                     Toggle("Boosts", isOn: $bindableViewModel.settings.reblogEnabled)
                     Toggle("New followers", isOn: $bindableViewModel.settings.followEnabled)
                     Toggle("Follow requests", isOn: $bindableViewModel.settings.followRequestEnabled)

@@ -13,6 +13,7 @@ struct AppNotification: Decodable {
     let status: Status?
     let mainStatus: Status?
     let createdAt: Date?
+    let conversationId: String?
 }
 extension AppNotification {
     var typedNotificationType: AppNotificationType? {
@@ -24,6 +25,11 @@ extension AppNotification {
     }
 
     var linkedStatus: Status? {
+        // Conversation notifications open the chat instead of exposing a direct message through public status navigation.
+        guard conversationId == nil else {
+            return nil
+        }
+
         if let mainStatus, mainStatus.hasAttachment {
             return mainStatus
         }
@@ -52,7 +58,9 @@ extension AppNotification {
         case .followRequest:
             return "want to follow you"
         case .favourite:
-            if mainStatus == nil {
+            if conversationId != nil {
+                return "favourited your direct message"
+            } else if mainStatus == nil {
                 return "favourited your photo"
             } else {
                 return "favourited your comment"
@@ -63,6 +71,8 @@ extension AppNotification {
             return "is a new user"
         case .adminReport:
             return "has been reported"
+        case .directMessage:
+            return "sent you a direct message"
         case .newComment:
             return "wrote new comment"
         case .none:
@@ -90,7 +100,7 @@ extension AppNotification {
             return "person.crop.rectangle.stack.badge.plus"
         case .adminReport:
             return "exclamationmark.bubble"
-        case .newComment:
+        case .directMessage, .newComment:
             return "bubble.left.and.bubble.right"
         case .none:
             return "bell"
@@ -117,7 +127,7 @@ extension AppNotification {
             return .purple
         case .adminReport:
             return .red
-        case .newComment:
+        case .directMessage, .newComment:
             return .pink
         case .none:
             return .blue

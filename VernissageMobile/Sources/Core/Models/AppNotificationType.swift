@@ -16,5 +16,6 @@ enum AppNotificationType: String {
     case update
     case adminSignUp
     case adminReport
+    case directMessage
     case newComment
 }

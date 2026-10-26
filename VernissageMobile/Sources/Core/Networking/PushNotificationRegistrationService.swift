@@ -84,7 +84,8 @@ struct PushNotificationRegistrationService {
         let pushSubscription = PushSubscription(
             endpoint: endpoint,
             keyMaterial: storedSubscription.keyMaterial,
-            settings: settings
+            settings: settings,
+            supportsDirectMessages: appState.supportsDirectMessages
         )
 
         let savedSubscription: PushSubscription

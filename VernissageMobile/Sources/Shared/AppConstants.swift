@@ -5,8 +5,25 @@
 //
 
 import CoreGraphics
+import Foundation
 
 enum AppConstants {
+    enum DirectMessages {
+        static let title = "Direct messages"
+        static let apiPath = "/api/v1/direct-messages"
+        static let minimumVersion = [1, 45, 0]
+        static let pageSize = 40
+        static let maximumRecipients = 100
+        static let maximumReadBatchSize = 100
+        static let supportedImageMimeTypes = ["image/jpeg", "image/png", "image/webp", "image/heic", "image/heif"]
+        static let defaultMaxCharacters = 500
+        static let defaultMaxAttachments = 4
+        static let defaultImageSizeLimit = 10 * 1024 * 1024
+        static let refreshInterval: Duration = .seconds(15)
+        static let privacyNotice = "Direct messages are not end-to-end encrypted. Do not share sensitive information."
+        static let deletedMessage = "Message deleted"
+    }
+
     enum Explore {
         static let listPageSize = 100
         static let statusesLimit = 10

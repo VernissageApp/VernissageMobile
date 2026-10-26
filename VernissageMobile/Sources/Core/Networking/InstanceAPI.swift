@@ -14,13 +14,14 @@ final class InstanceAPI {
         self.appState = appState
     }
 
-    func fetchInstanceDetails() async throws -> InstanceDetails {
+    func fetchInstanceDetails(showToastOnError: Bool = true) async throws -> InstanceDetails {
         let account = try appState.requireActiveAccount()
 
         return try await appState.api.authorizedRequest(
             account: account,
             path: "/api/v1/instance",
-            queryItems: []
+            queryItems: [],
+            showToastOnError: showToastOnError
         )
     }
     

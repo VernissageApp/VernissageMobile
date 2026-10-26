@@ -50,15 +50,17 @@ final class AttachmentsAPI {
         )
     }
 
-    func deleteAttachment(attachmentId: String) async throws {
-        let account = try appState.requireActiveAccount()
+    func deleteAttachment(attachmentId: String, for accountOverride: StoredAccount? = nil,
+                          showToastOnError: Bool = true) async throws {
+        let account = try accountOverride ?? appState.requireActiveAccount()
         let encodedAttachmentId = attachmentId.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) ?? attachmentId
 
         try await appState.api.authorizedRequestNoContent(
             account: account,
             path: "/api/v1/attachments/\(encodedAttachmentId)",
             method: "DELETE",
-            queryItems: []
+            queryItems: [],
+            showToastOnError: showToastOnError
         )
     }
 

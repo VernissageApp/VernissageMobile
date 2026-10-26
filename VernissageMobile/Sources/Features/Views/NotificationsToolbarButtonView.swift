@@ -23,7 +23,6 @@ struct NotificationsToolbarButtonView: View {
                 .foregroundStyle(hasUnreadNotifications ? .red : .primary, .primary)
                 .frame(width: 32, height: 32)
         }
-        .frame(width: 44, height: 44)
         .buttonStyle(.plain)
         .accessibilityLabel("Notifications")
         .accessibilityValue(hasUnreadNotifications ? "Unread notifications" : "No unread notifications")

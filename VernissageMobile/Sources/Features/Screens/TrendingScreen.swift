@@ -58,14 +58,13 @@ struct TrendingScreen: View {
                     }
                 }
 
-                ToolbarItem(placement: .topBarTrailing) {
-                    HStack(spacing: 12) {
-                        AddToolbarButtonView {
-                            showAddSheet = true
-                        }
-                        SettingsToolbarButtonView()
-                        NotificationsToolbarButtonView()
+                ToolbarItemGroup(placement: .topBarTrailing) {
+                    AddToolbarButtonView {
+                        showAddSheet = true
                     }
+
+                    MessagesToolbarButtonView()
+                    NotificationsToolbarButtonView()
                 }
             }
             .navigationDestination(isPresented: $isShowingProfile) {

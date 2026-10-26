@@ -23,6 +23,7 @@ struct StatusComposeScreen: View {
 
     @State private var profile: User?
     @State private var statusText: String
+    @State private var supportsDirectMessages: Bool?
     @State private var selectedVisibility: StatusVisibility
     @State private var commentsDisabled: Bool
     @State private var isSensitive: Bool
@@ -486,7 +487,7 @@ struct StatusComposeScreen: View {
             }
             
             composeMenuField(title: "Visibility", value: selectedVisibility.title) {
-                ForEach(StatusVisibility.allCases, id: \.rawValue) { item in
+                ForEach(availableVisibilities, id: \.rawValue) { item in
                     Button {
                         selectedVisibility = item
                     } label: {
@@ -499,6 +500,15 @@ struct StatusComposeScreen: View {
                 }
             }
         }
+    }
+
+    private var availableVisibilities: [StatusVisibility] {
+        guard supportsDirectMessages ?? appState.supportsDirectMessages else {
+            return StatusVisibility.allCases
+        }
+
+        // Newer servers handle private conversations through the dedicated direct-message composer.
+        return StatusVisibility.allCases.filter { $0 != .mentioned }
     }
 
     @ViewBuilder
@@ -929,6 +939,7 @@ struct StatusComposeScreen: View {
             applyRememberedCategoryIfNeeded()
 
             let instance = try await fetchedInstance
+            supportsDirectMessages = ServerVersion.supportsDirectMessages(instance.version)
             maxStatusCharacters = max(instance.configuration?.statuses?.maxCharacters ?? 500, 1)
             maxMediaAttachments = max(instance.configuration?.statuses?.maxMediaAttachments ?? 4, 1)
             if let imageSizeLimit = instance.configuration?.attachments?.imageSizeLimit,

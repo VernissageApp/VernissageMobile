@@ -10,6 +10,8 @@ import Foundation
 final class APIServiceContainer {
     private unowned let appState: AppState
 
+    let directMessages: DirectMessagesAPI
+    let account: AccountAPI
     let timelines: TimelinesAPI
     let categories: CategoriesAPI
     let cameras: CamerasAPI
@@ -29,6 +31,8 @@ final class APIServiceContainer {
 
     init(appState: AppState) {
         self.appState = appState
+        directMessages = DirectMessagesAPI(appState: appState)
+        account = AccountAPI(appState: appState)
         timelines = TimelinesAPI(appState: appState)
         categories = CategoriesAPI(appState: appState)
         cameras = CamerasAPI(appState: appState)

@@ -8,4 +8,5 @@ import SwiftUI
 
 struct InstanceAttachmentsConfiguration: Decodable {
     let imageSizeLimit: Int?
+    let supportedMimeTypes: [String]?
 }

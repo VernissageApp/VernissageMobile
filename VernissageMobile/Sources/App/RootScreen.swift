@@ -33,6 +33,7 @@ struct RootScreen: View {
         .informationAlertToast($bindableAppState.infoToastMessage)
         .successAlertToast($bindableAppState.successToastMessage)
         .task(id: appState.activeAccountID) {
+            await appState.refreshInstanceCapabilities()
             await appState.refreshActiveTokenIfNeeded(force: false)
             await appState.refreshUnreadNotificationsCount()
             appState.scheduleInactiveAccountsTokenRefreshIfNeeded()
@@ -43,6 +44,7 @@ struct RootScreen: View {
             }
 
             Task {
+                await appState.refreshInstanceCapabilities()
                 await appState.refreshUnreadNotificationsCount()
             }
         }

@@ -16,7 +16,6 @@ struct AddToolbarButtonView: View {
                 .foregroundStyle(.primary)
                 .frame(width: 32, height: 32)
         }
-        .frame(width: 44, height: 44)
         .buttonStyle(.plain)
         .accessibilityLabel("Add status")
     }

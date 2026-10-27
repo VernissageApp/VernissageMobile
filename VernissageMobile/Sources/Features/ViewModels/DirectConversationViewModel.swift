@@ -18,6 +18,7 @@ final class DirectConversationViewModel {
     private(set) var attachments: [UploadedAttachment] = []
     private(set) var isPreparing = false
     private(set) var isLoading = false
+    private(set) var isLoadingOlderMessages = false
     private(set) var isSending = false
     private(set) var isUploading = false
     private(set) var isMuting = false
@@ -38,6 +39,7 @@ final class DirectConversationViewModel {
     private var sessionAccount: StoredAccount?
     private var reading = false
     private var contentRevision = 0
+    @ObservationIgnored private var refreshWaiters: [CheckedContinuation<Void, Never>] = []
 
     init(conversation: DirectConversation?, conversationID: String? = nil) {
         self.conversation = conversation
@@ -113,6 +115,7 @@ final class DirectConversationViewModel {
 
         defer {
             isPreparing = false
+            resumeRefreshWaitersIfIdle()
         }
 
         do {
@@ -219,16 +222,55 @@ final class DirectConversationViewModel {
         note = recipientMentions + note.dropFirst(previousMentions.count)
     }
 
+    func refresh(using appState: AppState) async {
+        let requestedAccountID = appState.activeAccountID
+
+        // Wait for current operations so a push arriving during loading or sending is not discarded.
+        while isPreparing || isLoading || isSending || !pendingActions.isEmpty {
+            await withCheckedContinuation { refreshWaiters.append($0) }
+
+            guard !Task.isCancelled else {
+                return
+            }
+        }
+
+        guard !Task.isCancelled, appState.activeAccountID == requestedAccountID else {
+            return
+        }
+
+        if isReady {
+            await loadMessages(using: appState, reportErrors: false)
+        } else {
+            await prepare(using: appState)
+        }
+    }
+
+    private func resumeRefreshWaitersIfIdle() {
+        guard !isPreparing, !isLoading, !isSending, pendingActions.isEmpty else {
+            return
+        }
+
+        let waiters = refreshWaiters
+        refreshWaiters.removeAll()
+
+        for waiter in waiters {
+            waiter.resume()
+        }
+    }
+
     func loadMessages(using appState: AppState, more: Bool = false, reportErrors: Bool = true) async {
         guard !isLoading, !isSending, pendingActions.isEmpty, !more || hasMore, let conversation, isCurrent(appState) else {
             return
         }
 
         isLoading = true
+        isLoadingOlderMessages = more
         let revision = contentRevision
 
         defer {
             isLoading = false
+            isLoadingOlderMessages = false
+            resumeRefreshWaitersIfIdle()
         }
 
         do {
@@ -243,7 +285,7 @@ final class DirectConversationViewModel {
             var fetchedMessages = result.data
             var refreshedPage = result
 
-            // Bridge all new pages back to known history after long pauses in background polling.
+            // Bridge all new pages back to known history after a long interval between refresh events.
             if !more, let latestKnownID = messages.last?.id {
                 var refreshPage = 1
 
@@ -297,6 +339,7 @@ final class DirectConversationViewModel {
 
         defer {
             isSending = false
+            resumeRefreshWaitersIfIdle()
         }
 
         let request = DirectMessageRequest(
@@ -344,6 +387,7 @@ final class DirectConversationViewModel {
 
         defer {
             pendingActions.remove(message.id)
+            resumeRefreshWaitersIfIdle()
         }
 
         do {
@@ -372,6 +416,7 @@ final class DirectConversationViewModel {
 
         defer {
             pendingActions.remove(message.id)
+            resumeRefreshWaitersIfIdle()
         }
 
         do {

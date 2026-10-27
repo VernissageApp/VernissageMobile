@@ -15,7 +15,7 @@ struct MessagesToolbarButtonView: View {
                 DirectMessagesScreen()
                     .id(appState.activeAccountID)
             } label: {
-                Image(systemName: "message")
+                Image(systemName: "bubble.left")
                     .font(.system(size: 16, weight: .semibold))
                     .foregroundStyle(.primary)
             }

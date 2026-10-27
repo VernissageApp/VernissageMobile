@@ -19,7 +19,6 @@ enum AppConstants {
         static let defaultMaxCharacters = 500
         static let defaultMaxAttachments = 4
         static let defaultImageSizeLimit = 10 * 1024 * 1024
-        static let refreshInterval: Duration = .seconds(15)
         static let privacyNotice = "Direct messages are not end-to-end encrypted. Do not share sensitive information."
         static let deletedMessage = "Message deleted"
     }

@@ -39,7 +39,7 @@ struct DirectMessagesScreen: View {
                     .disabled(model.isLoading)
                 }
 
-                if model.isLoading {
+                if model.isLoadingMoreConversations || (model.isLoading && model.conversations.isEmpty) {
                     ProgressView().frame(maxWidth: .infinity)
                 }
 
@@ -69,23 +69,17 @@ struct DirectMessagesScreen: View {
             await model.load(using: appState)
         }
         .errorAlertToast($model.errorMessage)
-        .task {
-            // Keep the initial request independent of visibility changes that can cancel and restart polling.
-            if !model.didLoad {
-                await model.load(using: appState)
-            } else {
-                await model.refresh(using: appState)
-            }
-        }
         .task(id: scenePhase) {
             guard scenePhase == .active else {
                 return
             }
 
+            // Queue pushes during loading and process refreshes sequentially without a periodic timer.
+            let pushes = NotificationCenter.default.notifications(named: .pushNotificationReceived).makeAsyncIterator()
+            await model.refresh(using: appState)
+
             while !Task.isCancelled {
-                do {
-                    try await Task.sleep(for: AppConstants.DirectMessages.refreshInterval)
-                } catch {
+                guard await pushes.next() != nil, !Task.isCancelled else {
                     return
                 }
 

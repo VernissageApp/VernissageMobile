@@ -92,32 +92,21 @@ struct DirectConversationScreen: View {
                 }
             }
         }
-        .task {
-            // Preparing the conversation must finish independently of polling lifecycle changes.
-            if model.isReady {
-                await model.loadMessages(using: appState)
-            } else {
-                await model.prepare(using: appState)
-            }
-        }
         .task(id: scenePhase) {
             guard scenePhase == .active else {
                 return
             }
 
+            // Subscribe before loading so pushes received during a request remain queued for the next refresh.
+            let pushes = NotificationCenter.default.notifications(named: .pushNotificationReceived).makeAsyncIterator()
+            await model.refresh(using: appState)
+
             while !Task.isCancelled {
-                do {
-                    try await Task.sleep(for: AppConstants.DirectMessages.refreshInterval)
-                } catch {
+                guard await pushes.next() != nil, !Task.isCancelled else {
                     return
                 }
 
-                // Retry initialization after a transient failure before polling an established conversation.
-                if model.isReady {
-                    await model.loadMessages(using: appState, reportErrors: false)
-                } else {
-                    await model.prepare(using: appState)
-                }
+                await model.refresh(using: appState)
             }
         }
         .task(id: profileLinkURL) {
@@ -187,7 +176,7 @@ struct DirectConversationScreen: View {
                         .disabled(model.isLoading)
                     }
 
-                    if model.isPreparing || model.isLoading {
+                    if model.isPreparing || model.isLoadingOlderMessages || (model.isLoading && model.messages.isEmpty) {
                         ProgressView()
                     }
 
@@ -259,5 +248,4 @@ struct DirectConversationScreen: View {
 
         return .systemAction
     }
-
 }

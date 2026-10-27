@@ -13,12 +13,14 @@ final class DirectMessagesViewModel {
     private(set) var conversations: [DirectConversation] = []
     private(set) var currentUserID: String?
     private(set) var isLoading = false
+    private(set) var isLoadingMoreConversations = false
     private(set) var hasMore = false
     private(set) var didLoad = false
     var query = ""
     var errorMessage: String?
     private var page = 0
     private var accountID: UUID?
+    @ObservationIgnored private var refreshWaiters: [CheckedContinuation<Void, Never>] = []
 
     var filteredConversations: [DirectConversation] {
         let search = query.trimmingCharacters(in: .whitespacesAndNewlines)
@@ -37,9 +39,12 @@ final class DirectMessagesViewModel {
 
         accountID = account.id
         isLoading = true
+        isLoadingMoreConversations = more
 
         defer {
             isLoading = false
+            isLoadingMoreConversations = false
+            resumeRefreshWaiters()
         }
 
         do {
@@ -76,7 +81,18 @@ final class DirectMessagesViewModel {
     }
 
     func refresh(using appState: AppState) async {
-        guard !isLoading, let accountID, appState.activeAccountID == accountID else {
+        let requestedAccountID = appState.activeAccountID
+
+        // Preserve pushes received while another inbox request is still in progress.
+        while isLoading {
+            await withCheckedContinuation { refreshWaiters.append($0) }
+
+            guard !Task.isCancelled else {
+                return
+            }
+        }
+
+        guard !Task.isCancelled, appState.activeAccountID == requestedAccountID else {
             return
         }
 
@@ -86,10 +102,15 @@ final class DirectMessagesViewModel {
             return
         }
 
+        guard let accountID, appState.activeAccountID == accountID else {
+            return
+        }
+
         isLoading = true
 
         defer {
             isLoading = false
+            resumeRefreshWaiters()
         }
 
         do {
@@ -108,7 +129,16 @@ final class DirectMessagesViewModel {
                 hasMore = result.hasMore
             }
         } catch {
-            // Background refresh retries while the inbox remains visible.
+            // Preserve the current inbox if a notification-triggered refresh fails.
+        }
+    }
+
+    private func resumeRefreshWaiters() {
+        let waiters = refreshWaiters
+        refreshWaiters.removeAll()
+
+        for waiter in waiters {
+            waiter.resume()
         }
     }
 }

@@ -11,6 +11,7 @@ struct DirectMessageBubbleView: View {
     let isOwn: Bool
     let isActionPending: Bool
     let onOpenMarkdownURL: (URL) -> OpenURLAction.Result
+    let onOpenProfile: (User) -> Void
     let onLike: () -> Void
     let onDelete: () -> Void
     let onOpenAttachment: ([Attachment], Int) -> Void
@@ -22,8 +23,7 @@ struct DirectMessageBubbleView: View {
             }
 
             if !isOwn {
-                AsyncAvatarView(urlString: message.sender?.avatarUrl, size: 32)
-                    .accessibilityHidden(true)
+                avatar
             }
 
             VStack(alignment: isOwn ? .trailing : .leading, spacing: 5) {
@@ -73,13 +73,28 @@ struct DirectMessageBubbleView: View {
             }
 
             if isOwn {
-                AsyncAvatarView(urlString: message.sender?.avatarUrl, size: 32)
-                    .accessibilityHidden(true)
+                avatar
             }
 
             if !isOwn {
                 Spacer(minLength: 36)
             }
+        }
+    }
+
+    @ViewBuilder
+    private var avatar: some View {
+        if let sender = message.sender {
+            Button {
+                onOpenProfile(sender)
+            } label: {
+                AsyncAvatarView(urlString: sender.avatarUrl, size: 32)
+            }
+            .buttonStyle(.plain)
+            .accessibilityLabel("Open profile of \(sender.name?.nilIfEmpty ?? sender.userName ?? "Unknown")")
+        } else {
+            AsyncAvatarView(urlString: nil, size: 32)
+                .accessibilityHidden(true)
         }
     }
 

@@ -8,6 +8,7 @@ import SwiftUI
 
 struct DirectMessageRecipientsView: View {
     @Bindable var model: DirectConversationViewModel
+    let onOpenProfile: (User) -> Void
 
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
@@ -16,9 +17,17 @@ struct DirectMessageRecipientsView: View {
                     HStack(spacing: 8) {
                         ForEach(model.recipients, id: \.uniquenessKey) { user in
                             HStack(spacing: 6) {
-                                AsyncAvatarView(urlString: user.avatarUrl, size: 28)
-                                Text(user.name?.nilIfEmpty ?? user.userName ?? "Unknown")
-                                    .font(.subheadline)
+                                Button {
+                                    onOpenProfile(user)
+                                } label: {
+                                    HStack(spacing: 6) {
+                                        AsyncAvatarView(urlString: user.avatarUrl, size: 28)
+                                        Text(user.name?.nilIfEmpty ?? user.userName ?? "Unknown")
+                                            .font(.subheadline)
+                                    }
+                                }
+                                .buttonStyle(.plain)
+                                .accessibilityLabel("Open profile of \(user.name?.nilIfEmpty ?? user.userName ?? "Unknown")")
 
                                 if model.isDraft {
                                     Button {

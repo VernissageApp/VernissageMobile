@@ -27,7 +27,7 @@ struct DirectConversationScreen: View {
         @Bindable var model = model
 
         VStack(spacing: 0) {
-            DirectMessageRecipientsView(model: model)
+            DirectMessageRecipientsView(model: model, onOpenProfile: openUserProfile)
 
             if !model.isDraft {
                 Divider()
@@ -194,6 +194,7 @@ struct DirectConversationScreen: View {
                             message: message, isOwn: message.sender?.id == model.currentUserID,
                             isActionPending: model.pendingActions.contains(message.id),
                             onOpenMarkdownURL: handleMessageMarkdownURL,
+                            onOpenProfile: openUserProfile,
                             onLike: {
                                 Task {
                                     await model.toggleLike(message, using: appState)
@@ -233,6 +234,15 @@ struct DirectConversationScreen: View {
                 await model.loadMessages(using: appState)
             }
         }
+    }
+
+    private func openUserProfile(_ user: User) {
+        guard let userName = user.userName?.trimmingPrefix("@").nilIfEmpty
+                ?? user.account?.trimmingPrefix("@").nilIfEmpty else {
+            return
+        }
+
+        mentionedUserRoute = MentionedUserRoute(userName: userName, preferredDisplayName: user.name?.nilIfEmpty)
     }
 
     private func handleMessageMarkdownURL(_ url: URL) -> OpenURLAction.Result {

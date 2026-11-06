@@ -1,5 +1,12 @@
 #!/usr/bin/env python3
-"""Align the embedded C2PA framework's deployment metadata with its Mach-O binary."""
+"""Align the embedded C2PA framework's deployment metadata with its Mach-O binary.
+
+The app target has an explicitly approved script-sandbox exception in Debug and
+Release. Updating and re-signing an existing framework modifies files owned by
+Xcode's embedding tasks, which cannot also be declared as script output files.
+Project-wide sandboxing remains enabled for other targets. Revisit the exception
+before adding further script phases to the app target.
+"""
 
 import os
 from pathlib import Path

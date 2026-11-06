@@ -24,6 +24,8 @@ struct StatusDetailScreen: View {
 
     @State private var displayedStatus: Status
     @State private var selectedAttachmentIndex = 0
+    @State private var contentCredentials: ContentCredentials?
+    @State private var presentedContentCredentials: ContentCredentials?
     @State private var mediaContentWidth: CGFloat = 0
     @State private var isBoostProcessing = false
     @State private var isFavouriteProcessing = false
@@ -79,6 +81,9 @@ struct StatusDetailScreen: View {
                 statusMoreMenu
             }
         }
+        .task(id: contentCredentialsImageURL, priority: .utility) {
+            await loadContentCredentials()
+        }
         .onFirstAppear {
             await loadStatusDetail()
         }
@@ -94,6 +99,11 @@ struct StatusDetailScreen: View {
 
     private var statusDetailSheetsLayer: some View {
         statusDetailBaseLayer
+            .sheet(item: $presentedContentCredentials) { credentials in
+                ContentCredentialsSheet(credentials: credentials)
+                    .presentationDetents([.large])
+                    .presentationDragIndicator(.visible)
+            }
             .sheet(item: $replySheetTarget) { target in
                 replyComposerSheet(for: target)
                     .presentationDetents([.medium, .large])
@@ -185,6 +195,11 @@ struct StatusDetailScreen: View {
             attachmentsSection
             statusActionsSection
             statusInformationSection
+
+            if let contentCredentials, contentCredentials.imageURL == contentCredentialsImageURL {
+                ContentCredentialsCardView(credentials: contentCredentials, onDetails: showContentCredentials)
+            }
+
             commentsSection
         }
         .padding(16)
@@ -436,6 +451,35 @@ struct StatusDetailScreen: View {
 
         let safeIndex = min(max(selectedAttachmentIndex, 0), displayableAttachments.count - 1)
         return displayableAttachments[safeIndex]
+    }
+
+    private var contentCredentialsImageURL: URL? {
+        guard let originalURL = selectedAttachmentForMetadata?.originalFile?.url else {
+            return nil
+        }
+
+        return URL(string: originalURL)
+    }
+
+    private func loadContentCredentials() async {
+        contentCredentials = nil
+
+        guard let imageURL = contentCredentialsImageURL else {
+            return
+        }
+
+        let result = await ContentCredentialsService.shared.credentials(for: imageURL)
+
+        // A completed request may belong to the attachment the user has already swiped away from.
+        guard !Task.isCancelled, contentCredentialsImageURL == imageURL else {
+            return
+        }
+
+        contentCredentials = result
+    }
+
+    private func showContentCredentials() {
+        presentedContentCredentials = contentCredentials
     }
 
     private var selectedAttachmentAltTextForDisplay: String? {

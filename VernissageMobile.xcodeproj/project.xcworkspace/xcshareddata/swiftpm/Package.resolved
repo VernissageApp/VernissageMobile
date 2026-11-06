@@ -1,6 +1,15 @@
 {
-  "originHash" : "c94c222677ce595feedea5075708acf6b25594af9ca8372195095fb6db8fd489",
+  "originHash" : "122ca5795f1f55a4c24cfbb2c73b9d2b6113a871666d4053b9387f9f92659c49",
   "pins" : [
+    {
+      "identity" : "c2pa-swift",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/contentauth/c2pa-swift.git",
+      "state" : {
+        "revision" : "cbc23123d5a76ac621aa35fcf288fbb06e67b832",
+        "version" : "0.0.16"
+      }
+    },
     {
       "identity" : "emojitext",
       "kind" : "remoteSourceControl",
@@ -29,12 +38,39 @@
       }
     },
     {
+      "identity" : "swift-asn1",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/apple/swift-asn1.git",
+      "state" : {
+        "revision" : "917b472dbe53ba699cbb0495f9a95a084bc6364d",
+        "version" : "1.7.4"
+      }
+    },
+    {
+      "identity" : "swift-certificates",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/apple/swift-certificates.git",
+      "state" : {
+        "revision" : "84f03fafeca28c19f5fc4b528df3d22ce8896bd7",
+        "version" : "1.21.1"
+      }
+    },
+    {
       "identity" : "swift-cmark",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/swiftlang/swift-cmark.git",
       "state" : {
         "revision" : "5d9bdaa4228b381639fff09403e39a04926e2dbe",
         "version" : "0.7.1"
+      }
+    },
+    {
+      "identity" : "swift-crypto",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/apple/swift-crypto.git",
+      "state" : {
+        "revision" : "da9d28d69ebe3894b18376c8f2395c2f37b8448f",
+        "version" : "4.5.2"
       }
     },
     {

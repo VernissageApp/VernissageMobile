@@ -57,6 +57,7 @@ struct TrendingScreen: View {
                         showAccountSwitcher = true
                     }
                 }
+                .sharedBackgroundVisibility(.hidden)
 
                 ToolbarItemGroup(placement: .topBarTrailing) {
                     AddToolbarButtonView {

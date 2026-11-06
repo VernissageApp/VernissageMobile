@@ -84,6 +84,7 @@ struct ExploreScreen: View {
                         showAccountSwitcher = true
                     }
                 }
+                .sharedBackgroundVisibility(.hidden)
 
                 ToolbarItemGroup(placement: .topBarTrailing) {
                     AddToolbarButtonView {

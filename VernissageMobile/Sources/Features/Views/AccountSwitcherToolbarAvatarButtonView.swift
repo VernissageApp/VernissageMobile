@@ -31,10 +31,6 @@ struct AccountSwitcherToolbarAvatarButtonView: View {
             }
             .frame(width: 32, height: 32)
             .clipShape(Circle())
-            .overlay(
-                Circle()
-                    .stroke(.white.opacity(0.55), lineWidth: 1)
-            )
             .frame(width: 44, height: 44)
         }
         .buttonStyle(.plain)

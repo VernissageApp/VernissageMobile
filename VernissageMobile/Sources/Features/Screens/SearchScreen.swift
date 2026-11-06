@@ -78,8 +78,8 @@ struct SearchScreen: View {
                     } onLongPress: {
                         showAccountSwitcher = true
                     }
-                    
                 }
+                .sharedBackgroundVisibility(.hidden)
 
                 ToolbarItemGroup(placement: .topBarTrailing) {
                     AddToolbarButtonView {

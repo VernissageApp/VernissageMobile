@@ -1393,6 +1393,7 @@
 				A10000051000000100000005 /* Frameworks */,
 				A10000121000000100000012 /* Resources */,
 				B10030000000000000000002 /* Embed Foundation Extensions */,
+				C2FA00000000000000000004 /* Normalize C2PA framework metadata */,
 			);
 			buildRules = (
 			);
@@ -1525,6 +1526,27 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		C2FA00000000000000000004 /* Normalize C2PA framework metadata */ = {
+			isa = PBXShellScriptBuildPhase;
+			alwaysOutOfDate = 1;
+			buildActionMask = 2147483647;
+			files = ();
+			inputPaths = (
+				"$(SRCROOT)/Scripts/normalize_c2pa_framework.py",
+				"$(TARGET_BUILD_DIR)/$(FRAMEWORKS_FOLDER_PATH)/C2PAC.framework/C2PAC",
+				"$(TARGET_BUILD_DIR)/$(FRAMEWORKS_FOLDER_PATH)/C2PAC.framework/Info.plist",
+			);
+			name = "Normalize C2PA framework metadata";
+			outputPaths = (
+				"$(TARGET_BUILD_DIR)/$(FRAMEWORKS_FOLDER_PATH)",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "python3 \"$SRCROOT/Scripts/normalize_c2pa_framework.py\"\n";
+		};
+/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		A10000111000000100000011 /* Sources */ = {

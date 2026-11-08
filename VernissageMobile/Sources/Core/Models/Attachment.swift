@@ -10,6 +10,7 @@ struct Attachment: Decodable {
     let id: String?
     let smallFile: AttachmentFile?
     let originalFile: AttachmentFile?
+    let originalImagePreserved: Bool?
     let blurhash: String?
     let description: String?
     let metadata: AttachmentMetadata?

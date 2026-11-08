@@ -389,6 +389,7 @@ struct ComposeAttachmentDetailsSheet: View {
             id: attachment.serverId?.nilIfEmpty,
             smallFile: remoteAttachmentFile,
             originalFile: remoteAttachmentFile,
+            originalImagePreserved: nil,
             blurhash: attachment.blurhash?.nilIfEmpty,
             description: attachment.altText.trimmingCharacters(in: .whitespacesAndNewlines).nilIfEmpty,
             metadata: nil,

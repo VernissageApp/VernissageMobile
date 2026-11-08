@@ -454,7 +454,9 @@ struct StatusDetailScreen: View {
     }
 
     private var contentCredentialsImageURL: URL? {
-        guard let originalURL = selectedAttachmentForMetadata?.originalFile?.url else {
+        guard let attachment = selectedAttachmentForMetadata,
+              attachment.originalImagePreserved == true,
+              let originalURL = attachment.originalFile?.url else {
             return nil
         }
 

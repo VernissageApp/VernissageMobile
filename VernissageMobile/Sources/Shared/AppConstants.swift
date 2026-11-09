@@ -14,6 +14,7 @@ enum AppConstants {
         static let symbol = "checkmark.seal"
         static let minimumTapSize: CGFloat = 44
         static let appOrDeviceUsed = "App or device used"
+        static let identityDIDUnavailableCode = "cawg.ica.did_unavailable"
         static let unverifiedMetadata = "The author, device and image history shown below are unverified."
         static let verifiedSummary = "The image contains a valid C2PA manifest and passed client-side validation."
         static let validationCaution = "This does not necessarily mean the image was forged. Re-exporting or processing the image on another server can also break validation."

@@ -19,7 +19,9 @@ struct ContentCredentialsParser {
         }
 
         let manifests = store["manifests"]?.object ?? [:]
-        let errors = validationErrors(store: store, manifest: manifest)
+        let failures = validationFailures(store: store, manifest: manifest)
+        let identityWarning = failures.first { $0.code == AppConstants.ContentCredentials.identityDIDUnavailableCode }
+        let errors = failures.filter { $0.code != AppConstants.ContentCredentials.identityDIDUnavailableCode }
         let state = store["validation_state"]?.string
         let allActions = actions(manifest)
 
@@ -40,7 +42,8 @@ struct ContentCredentialsParser {
             actionsCount: allActions.count,
             validationStatuses: validationStatuses(store["validation_status"])
                 + validationStatuses(manifest["validation_status"]),
-            verificationStatus: verificationStatus(state: state, errors: errors),
+            verificationStatus: verificationStatus(state: state, errors: errors, hasIdentityWarning: identityWarning != nil),
+            identityVerificationWarning: identityWarning,
             validationErrors: errors,
             validationState: state,
             verifyURL: verifyURL,
@@ -201,9 +204,11 @@ struct ContentCredentialsParser {
 
     private func verificationStatus(
         state: String?,
-        errors: [ContentCredentialsValidationStatus]
+        errors: [ContentCredentialsValidationStatus],
+        hasIdentityWarning: Bool
     ) -> ContentCredentialsVerification {
-        if state == "Invalid" || !errors.isEmpty {
+        // The SDK can report Invalid when DID resolution is the only failure.
+        if !errors.isEmpty || (state == "Invalid" && !hasIdentityWarning) {
             return .invalid
         }
 
@@ -217,7 +222,7 @@ struct ContentCredentialsParser {
         }
     }
 
-    private func validationErrors(
+    private func validationFailures(
         store: ContentCredentialsJSON,
         manifest: ContentCredentialsJSON
     ) -> [ContentCredentialsValidationStatus] {
@@ -226,21 +231,21 @@ struct ContentCredentialsParser {
             + statusesForFailures(manifest["validation_status"])
             + validationFailures(store["validation_results"])
             + validationFailures(manifest["validation_results"])
-        var errors: [ContentCredentialsValidationStatus] = []
+        var uniqueFailures: [ContentCredentialsValidationStatus] = []
 
         // An untrusted issuer does not invalidate integrity. Keep all other failures and
         // deduplicate by code and explanation, preserving the first occurrence as on the web.
         for failure in failures where failure.code != "signingCredential.untrusted" {
-            let alreadyIncluded = errors.contains { error in
-                error.code == failure.code && error.explanation == failure.explanation
+            let alreadyIncluded = uniqueFailures.contains { status in
+                status.code == failure.code && status.explanation == failure.explanation
             }
 
             if !alreadyIncluded {
-                errors.append(failure)
+                uniqueFailures.append(failure)
             }
         }
 
-        return errors
+        return uniqueFailures
     }
 
     private func validationStatuses(_ value: ContentCredentialsJSON?) -> [ContentCredentialsValidationStatus] {

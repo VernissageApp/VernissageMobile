@@ -24,7 +24,7 @@ struct ContentCredentialsSummaryView: View {
                 }
                 .font(.subheadline)
                 .bold()
-                .foregroundStyle(credentials.verificationStatus == .invalid ? Color.orange : Color.primary)
+                .foregroundStyle(credentials.verificationStatus == .invalid ? Color.red : Color.primary)
             }
 
             if !credentials.verificationStatus.hasValidIntegrity {
@@ -38,6 +38,22 @@ struct ContentCredentialsSummaryView: View {
             } else if detailed {
                 Text(AppConstants.ContentCredentials.verifiedSummary)
                     .foregroundStyle(.secondary)
+            }
+
+            if let warning = credentials.identityVerificationWarning {
+                Label("Identity could not be verified.", systemImage: "exclamationmark.triangle")
+                    .font(.subheadline)
+
+                if detailed {
+                    Text("The identity credential issuer’s DID document could not be resolved.")
+                        .foregroundStyle(.secondary)
+
+                    if let code = warning.code {
+                        Text(code)
+                            .font(.footnote)
+                            .foregroundStyle(.secondary)
+                    }
+                }
             }
         }
     }

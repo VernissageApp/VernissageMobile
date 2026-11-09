@@ -11,7 +11,10 @@ struct ContentCredentialsDetailsView: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: AppConstants.ContentCredentials.spacing) {
-            ContentCredentialsFieldView(title: "Identity", value: credentials.identity)
+            ContentCredentialsFieldView(
+                title: credentials.identityVerificationWarning == nil ? "Identity" : "Unverified identity",
+                value: credentials.identity
+            )
             ContentCredentialsFieldView(
                 title: AppConstants.ContentCredentials.appOrDeviceUsed,
                 value: credentials.appOrDeviceUsed

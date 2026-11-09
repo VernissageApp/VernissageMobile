@@ -27,6 +27,7 @@ struct ContentCredentials: Identifiable, Sendable {
     let actionsCount: Int
     let validationStatuses: [ContentCredentialsValidationStatus]
     let verificationStatus: ContentCredentialsVerification
+    let identityVerificationWarning: ContentCredentialsValidationStatus?
     let validationErrors: [ContentCredentialsValidationStatus]
     let validationState: String?
     let verifyURL: URL

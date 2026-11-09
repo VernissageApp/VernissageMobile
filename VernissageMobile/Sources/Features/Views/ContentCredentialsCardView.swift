@@ -11,14 +11,15 @@ struct ContentCredentialsCardView: View {
     let onDetails: () -> Void
 
     private var borderColor: Color {
-        switch credentials.verificationStatus {
-        case .verified, .untrusted:
-            .green
-        case .invalid:
-            .orange
-        case .unknown:
-            .secondary
+        if credentials.verificationStatus == .invalid {
+            return .red
         }
+
+        if credentials.identityVerificationWarning != nil {
+            return .orange
+        }
+
+        return credentials.verificationStatus.hasValidIntegrity ? .green : .secondary
     }
 
     var body: some View {
@@ -41,7 +42,7 @@ struct ContentCredentialsCardView: View {
                     .buttonStyle(.plain)
             }
 
-            if credentials.verificationStatus != .untrusted {
+            if credentials.verificationStatus != .untrusted || credentials.identityVerificationWarning != nil {
                 ContentCredentialsSummaryView(credentials: credentials)
             }
             ContentCredentialsFieldView(title: "Author", value: credentials.author ?? credentials.signatureIssuer)
